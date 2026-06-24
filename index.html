@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portale Web App Didattiche — Sacra Famiglia</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+    <style>
+        :root {
+            --bg: #f0f4ff;
+            --bg-white: #ffffff;
+            --text-dark: #2d3047;
+            --text-medium: #5a5f7d;
+            --text-light: #8b90a8;
+            --shadow-soft: 0 2px 16px rgba(45,48,71,0.06);
+            --shadow-card: 0 4px 24px rgba(45,48,71,0.08);
+            --shadow-hover: 0 12px 40px rgba(45,48,71,0.14);
+            --radius: 20px;
+            --radius-sm: 14px;
+            --radius-xs: 10px;
+            --c-cittadinanza: #1a535c; --c-cittadinanza-bg: #eef6f7; --c-cittadinanza-light: #d5eaed;
+            --c-scrittura: #5d6e3b; --c-scrittura-bg: #f2f5ec; --c-scrittura-light: #e3e8d8;
+            --c-tech: #2d4a3e; --c-tech-bg: #edf3f0; --c-tech-light: #d5e3dc;
+            --c-scienze: #6b7c3e; --c-scienze-bg: #f4f6ee; --c-scienze-light: #e5e9d8;
+            --c-scuola: #3d6b5c; --c-scuola-bg: #eef4f2; --c-scuola-light: #d8e8e3;
+            --c-sport: #7a8a4a; --c-sport-bg: #f5f6ef; --c-sport-light: #e8eadb;
+            --c-biblioteca: #8b6914; --c-biblioteca-bg: #fef9ee; --c-biblioteca-light: #fdf0d5;
+            --c-esame: #b45309; --c-esame-bg: #fffbeb; --c-esame-light: #fef3c7;
+            --c-coding: #355070; --c-coding-bg: #eef2f7; --c-coding-light: #d8e2ee;
+            --c-lezioni: #9a5b3f; --c-lezioni-bg: #f7efe9; --c-lezioni-light: #ecdccf;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text-dark); min-height: 100vh; overflow-x: hidden; }
+
+        /* ═══ HERO ═══ */
+        .hero {
+            background: linear-gradient(135deg, #6b7c3e 0%, #1a535c 50%, #2d3047 100%);
+            position: relative; padding: 2.5rem 2rem 3.5rem; overflow: hidden; color: #fff;
+        }
+        .hero-shapes { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+        .hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .hero-stats { display: none; }
+        .hero-counters { display: flex; align-items: center; gap: 2rem; margin-top: .8rem; animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .3s both; }
+        .hero-stat { display: flex; align-items: center; gap: .4rem; }
+        .hero-stat .stat-num { font-family: 'DM Sans', sans-serif; font-size: 2rem; font-weight: 800; color: rgba(255,255,255,0.4); line-height: 1; letter-spacing: -0.03em; }
+        .hero-stat .stat-label { font-family: 'DM Sans', sans-serif; font-size: .55rem; font-weight: 600; color: rgba(255,255,255,0.35); line-height: 1.3; text-transform: uppercase; letter-spacing: 0.04em; }
+        .hero-update { }
+        .hero-survey { position: absolute; right: 3%; top: 50%; transform: translateY(-50%); z-index: 3; display: flex; gap: .6rem; align-items: center; animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .5s both; }
+        .hero-survey a { display: inline-block; text-decoration: none; text-align: center; padding: .5rem 1.2rem; background: rgba(255,255,255,0.2); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 12px; backdrop-filter: blur(8px); transition: all .3s ease; }
+        .hero-survey a:hover { background: rgba(255,255,255,0.35); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.15); }
+        .hero-survey .survey-title { font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 800; color: #fff; letter-spacing: 0.02em; }
+        .hero-survey .survey-sub { font-family: 'DM Sans', sans-serif; font-size: .6rem; font-weight: 600; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.05em; margin-top: .15rem; }
+        .hero-content { position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; }
+        .hero-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .hero-brand { display: flex; align-items: stretch; gap: 1.2rem; }
+        .hero-logo {
+            width: 120px; height: 120px; border-radius: 18px;
+            object-fit: cover;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            animation: logoPopIn 0.6s cubic-bezier(0.175,0.885,0.32,1.275) both;
+            flex-shrink: 0;
+        }
+        @keyframes logoPopIn { from { opacity:0; transform:scale(0.5) rotate(-10deg); } to { opacity:1; transform:scale(1) rotate(0); } }
+        .hero-text { display: flex; flex-direction: column; justify-content: center; }
+        .hero-pre { font-family: 'DM Sans', sans-serif; font-size: 1.3rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .05s both; }
+        .hero-text h1 { font-family: 'DM Sans', sans-serif; font-size: 3.2rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; text-shadow: 0 2px 12px rgba(0,0,0,0.15); animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .1s both; }
+        .hero-text p { font-size: .95rem; opacity: .85; font-weight: 600; animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .2s both; }
+        .hero-badge { display: inline-flex; align-items: center; gap: .25rem; padding: .15rem .6rem; border-radius: 50px; background: rgba(255,255,255,.2); color: #fff; font-size: .7rem; font-weight: 700; text-decoration: none; border: 1px solid rgba(255,255,255,.25); backdrop-filter: blur(6px); margin-top: .4rem; margin-right: .4rem; transition: all .25s ease; }
+        .hero-badge:hover { background: #fff; color: #5d6e3b; transform: translateY(-1px); }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+        .hero-buttons { display: flex; flex-direction: column; align-items: flex-end; gap: .5rem; animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .3s both; }
+        .hero-btns-row { display: flex; gap: .6rem; }
+        .hero-btn { display: inline-flex; align-items: center; gap: .45rem; padding: .55rem 1.1rem; border-radius: 50px; text-decoration: none; font-family: 'Nunito'; font-size: .82rem; font-weight: 700; transition: all .3s cubic-bezier(.16,1,.3,1); white-space: nowrap; }
+        .hero-btn.glass { background: rgba(255,255,255,.2); color: #fff; border: 1.5px solid rgba(255,255,255,.3); backdrop-filter: blur(8px); }
+        .hero-btn.glass:hover { background: rgba(255,255,255,.35); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.15); }
+        .hero-btn.solid { background: #fff; color: #5d6e3b; border: none; box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+        .hero-btn.solid:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,.18); }
+
+        /* ═══ BUTTON GROUP GENITORI ═══ */
+        .btn-group { display: flex; align-items: center; gap: 0; animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .35s both; }
+        .btn-group-label {
+            padding: .55rem .9rem; border-radius: 50px 0 0 50px;
+            background: #fff; color: #5d6e3b;
+            font-family: 'Nunito'; font-size: .82rem; font-weight: 700;
+            white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,.12);
+            border-right: 1.5px solid rgba(118,75,162,.12);
+        }
+        .btn-group-actions { display: flex; gap: 0; }
+        .btn-group-actions a {
+            display: inline-flex; align-items: center; gap: .3rem;
+            padding: .55rem .75rem;
+            background: #fff; color: #5d6e3b;
+            font-family: 'Nunito'; font-size: .78rem; font-weight: 700;
+            text-decoration: none; white-space: nowrap;
+            box-shadow: 0 4px 16px rgba(0,0,0,.12);
+            transition: all .3s cubic-bezier(.16,1,.3,1);
+            border-right: 1.5px solid rgba(118,75,162,.08);
+        }
+        .btn-group-actions a:first-child { border-radius: 50px 0 0 50px; }
+        .btn-group-actions a:last-child { border-right: none; border-radius: 0 50px 50px 0; }
+        .btn-group-actions a:hover { background: #5d6e3b; color: #fff; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,.18); }
+
+        /* ═══ SEARCH ═══ */
+        .search-wrapper { max-width: 1200px; margin: -1.5rem auto 0; padding: 0 2rem; position: relative; z-index: 20; animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .4s both; }
+        .quick-links { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: .45rem; padding: .8rem 2rem; animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .4s both; border-bottom: 1px solid #e8ecf0; margin-bottom: .5rem; }
+        .quick-links a { display: inline-flex; align-items: center; gap: .3rem; padding: .45rem .9rem; border-radius: 50px; font-family: 'Nunito'; font-size: .78rem; font-weight: 700; text-decoration: none; color: var(--text-dark); background: var(--bg-white); box-shadow: var(--shadow-soft); border: 2px solid transparent; transition: all .3s cubic-bezier(.16,1,.3,1); }
+        .quick-links a:hover { background: #5d6e3b; color: #fff; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,.15); border-color: #5d6e3b; }
+        .quick-links a .ti { font-size: .95rem; }
+        .ql-sep { width: 1px; height: 20px; background: #d1d5db; margin: 0 .3rem; }
+        .ql-glass { background: transparent !important; border: 1.5px solid #c5cfb0 !important; color: var(--text-medium) !important; box-shadow: none !important; }
+        .ql-glass:hover { background: #5d6e3b !important; color: #fff !important; border-color: #5d6e3b !important; }
+        .ql-search { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid #c5cfb0; background: transparent; color: var(--text-medium); cursor: pointer; transition: all .3s ease; font-size: .95rem; padding: 0; }
+        .ql-search:hover { background: #5d6e3b; color: #fff; border-color: #5d6e3b; }
+        .ql-lock { padding: .45rem .55rem !important; opacity: 0.5; }
+        .ql-lock:hover { opacity: 1; }
+        .ql-search-input { width: 0; padding: 0; border: none; outline: none; font-family: 'Nunito'; font-size: .8rem; font-weight: 600; color: var(--text-dark); background: var(--bg-white); border-radius: 50px; transition: all .3s ease; box-shadow: none; }
+        .ql-search.open ~ .ql-search-input { width: 160px; padding: .4rem .8rem; border: 1.5px solid #c5cfb0; box-shadow: var(--shadow-soft); }
+        .search-count { background: var(--bg); padding: .45rem .9rem; border-radius: 50px; font-size: .75rem; font-weight: 800; color: var(--text-medium); white-space: nowrap; }
+
+        /* ═══ CHIPS ═══ */
+        .filters { position: sticky; top: 0; z-index: 50; max-width: 100%; margin: 1.25rem auto 0; padding: .6rem 2rem; display: flex; justify-content: center; gap: .5rem; flex-wrap: wrap; animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .5s both; background: rgba(244,246,249,.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid #e8ecf0; }
+        .chip { padding: .45rem .95rem; border-radius: 50px; font-size: .8rem; font-weight: 700; cursor: pointer; transition: all .3s cubic-bezier(.16,1,.3,1); user-select: none; border: 2px solid transparent; background: var(--bg-white); color: var(--text-medium); box-shadow: var(--shadow-soft); }
+        .chip:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
+        .chip.active { color: #fff; transform: translateY(-2px); }
+        .chip[data-cat="all"].active { background: linear-gradient(135deg,#6b7c3e,#1a535c); }
+        .chip[data-cat="cittadinanza"].active { background: var(--c-cittadinanza); }
+        .chip[data-cat="scrittura"].active { background: var(--c-scrittura); }
+        .chip[data-cat="biblioteca"].active { background: var(--c-biblioteca); }
+        .chip[data-cat="tech"].active { background: var(--c-tech); }
+        .chip[data-cat="coding"].active { background: var(--c-coding); }
+        .chip[data-cat="lezioni"].active { background: var(--c-lezioni); }
+        .chip[data-cat="scienze"].active { background: var(--c-scienze); }
+        .chip[data-cat="esame"].active { background: var(--c-esame); }
+        .chip[data-cat="scuola"].active { background: var(--c-scuola); }
+        .chip[data-cat="sport"].active { background: var(--c-sport); }
+
+        /* ═══ GRID ═══ */
+        .grid { max-width: 1200px; margin: 2rem auto 0; padding: 0 2rem 3rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem; }
+        .card {
+            background: var(--bg-white); border-radius: var(--radius); overflow: hidden;
+            box-shadow: var(--shadow-soft); transition: all .4s cubic-bezier(.16,1,.3,1);
+            animation: cardPop .6s cubic-bezier(.175,.885,.32,1.275) both;
+            border: 2px solid transparent; position: relative;
+        }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--card-color); border-radius: var(--radius) var(--radius) 0 0; }
+        .card:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); border-color: var(--card-color-light, #e2e8f0); }
+        @keyframes cardPop { from { opacity:0; transform:translateY(40px) scale(.95); } to { opacity:1; transform:translateY(0) scale(1); } }
+        .card:nth-child(1) { animation-delay: .45s; } .card:nth-child(2) { animation-delay: .52s; }
+        .card:nth-child(3) { animation-delay: .59s; } .card:nth-child(4) { animation-delay: .66s; }
+        .card:nth-child(5) { animation-delay: .73s; } .card:nth-child(6) { animation-delay: .8s; }
+
+        .card-head { padding: 1.3rem 1.4rem .6rem; display: flex; align-items: center; gap: .8rem; }
+        .card-emoji { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: var(--card-color-bg); transition: transform .3s cubic-bezier(.175,.885,.32,1.275); flex-shrink: 0; }
+        .card-emoji .ti { font-size: 1.5rem; color: var(--card-color); }
+        .card:hover .card-emoji { transform: scale(1.15) rotate(-5deg); }
+        .card-info { flex: 1; min-width: 0; }
+        .card-name { font-family: 'DM Sans', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--text-dark); line-height: 1.2; }
+        .card-badge { display: inline-block; font-size: .68rem; font-weight: 800; color: var(--card-color); background: var(--card-color-bg); padding: .15rem .55rem; border-radius: 50px; margin-top: .2rem; }
+        .card-pdf-btn { display: inline-block; font-size: .68rem; font-weight: 700; color: #5d6e3b; background: #f2f5ec; padding: .25rem .7rem; border-radius: 50px; text-decoration: none; margin: .4rem 0 .2rem 1rem; border: 1px solid #e3e8d8; transition: all .25s ease; }
+        .card-pdf-btn:hover { background: #5d6e3b; color: #fff; transform: translateY(-1px); }
+
+        /* ═══ CARD LIST — con descrizioni ═══ */
+        .card-list { list-style: none; padding: .3rem .75rem 1rem; counter-reset: app-num; }
+        .card-list li { border-radius: var(--radius-xs); transition: all .2s ease; counter-increment: app-num; }
+        .card-list li + li { margin-top: 1px; }
+        .card-list li:hover { background: var(--card-color-bg); }
+        .card-list a { display: flex; align-items: center; gap: .65rem; padding: .6rem .7rem; text-decoration: none; color: var(--text-medium); transition: all .25s ease; border-radius: var(--radius-xs); }
+        .card-list a:hover { color: var(--card-color); }
+        .link-num { min-width: 22px; height: 22px; border-radius: 7px; background: var(--card-color); opacity: .85; display: flex; align-items: center; justify-content: center; flex-shrink: 0; align-self: flex-start; margin-top: .25rem; font-family: 'DM Sans', sans-serif; font-size: .65rem; font-weight: 800; color: #fff; transition: all .3s cubic-bezier(.175,.885,.32,1.275); }
+        .link-num::before { content: counter(app-num); }
+        .card-list a:hover .link-num { opacity: 1; transform: scale(1.1); }
+        .link-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .1rem; }
+        .link-name { font-size: .88rem; font-weight: 700; line-height: 1.25; color: var(--text-dark); transition: color .25s ease; }
+        .card-list a:hover .link-name { color: var(--card-color); }
+        .link-desc { font-size: .74rem; font-weight: 600; line-height: 1.3; color: var(--text-light); transition: color .25s ease; }
+        .card-list a:hover .link-desc { color: var(--text-medium); }
+        .link-go { margin-left: auto; font-size: .8rem; opacity: 0; transform: translateX(-6px); transition: all .25s ease; color: var(--card-color); flex-shrink: 0; align-self: center; }
+        .card-list a:hover .link-go { opacity: 1; transform: translateX(0); }
+
+        /* ═══ MODALITÀ FILTRATA: card singola a tutta larghezza, app su più colonne ═══ */
+        .grid.solo-mode { grid-template-columns: 1fr; max-width: 1100px; }
+        .grid.solo-mode .card { animation: none; }
+        .grid.solo-mode .card-head { padding-bottom: 1rem; border-bottom: 1px solid var(--card-color-light, #eee); margin: 0 .65rem; }
+        .grid.solo-mode .card-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: .2rem .6rem;
+            padding-top: .8rem;
+        }
+        .grid.solo-mode .card-list li + li { margin-top: 0; }
+        .grid.solo-mode .link-num { width: 26px; min-width: 26px; height: 26px; font-size: .72rem; border-radius: 8px; }
+        .grid.solo-mode .link-name { font-size: .92rem; }
+        .grid.solo-mode .link-desc { font-size: .76rem; }
+        /* il pulsante PDF resta in cima, fuori dalla griglia delle app */
+        .grid.solo-mode .card-pdf-btn { margin-left: 1.05rem; }
+
+        .card[data-theme="cittadinanza"] { --card-color: var(--c-cittadinanza); --card-color-bg: var(--c-cittadinanza-bg); --card-color-light: var(--c-cittadinanza-light); }
+        .card[data-theme="scrittura"] { --card-color: var(--c-scrittura); --card-color-bg: var(--c-scrittura-bg); --card-color-light: var(--c-scrittura-light); }
+        .card[data-theme="tech"] { --card-color: var(--c-tech); --card-color-bg: var(--c-tech-bg); --card-color-light: var(--c-tech-light); }
+        .card[data-theme="scienze"] { --card-color: var(--c-scienze); --card-color-bg: var(--c-scienze-bg); --card-color-light: var(--c-scienze-light); }
+        .card[data-theme="scuola"] { --card-color: var(--c-scuola); --card-color-bg: var(--c-scuola-bg); --card-color-light: var(--c-scuola-light); }
+        .card[data-theme="sport"] { --card-color: var(--c-sport); --card-color-bg: var(--c-sport-bg); --card-color-light: var(--c-sport-light); }
+        .card[data-theme="biblioteca"] { --card-color: var(--c-biblioteca); --card-color-bg: var(--c-biblioteca-bg); --card-color-light: var(--c-biblioteca-light); }
+        .card[data-theme="esame"] { --card-color: var(--c-esame); --card-color-bg: var(--c-esame-bg); --card-color-light: var(--c-esame-light); }
+        .card[data-theme="coding"] { --card-color: var(--c-coding); --card-color-bg: var(--c-coding-bg); --card-color-light: var(--c-coding-light); }
+        .card[data-theme="lezioni"] { --card-color: var(--c-lezioni); --card-color-bg: var(--c-lezioni-bg); --card-color-light: var(--c-lezioni-light); }
+
+        /* ═══ NO RESULTS ═══ */
+        @keyframes wobble { 0%,100% { transform:rotate(0); } 25% { transform:rotate(-8deg); } 75% { transform:rotate(8deg); } }
+
+        /* ═══ FOOTER ═══ */
+        .site-footer { max-width: 1200px; margin: 0 auto; padding: 1.5rem 2rem 2rem; font-size: .8rem; font-weight: 700; color: var(--text-light); display: flex; flex-direction: column; gap: .75rem; }
+        .footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
+        .footer-left { display: flex; align-items: center; gap: .5rem; }
+        .footer-pulse { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.4; transform:scale(.8); } }
+        .footer-lock { text-decoration: none; font-size: .85rem; opacity: .35; transition: opacity .25s ease; }
+        .footer-lock:hover { opacity: .8; }
+
+        /* ═══ RESPONSIVE ═══ */
+        @media (max-width: 768px) {
+            .hero { padding: 2rem 1.25rem 3rem; }
+            .hero-top { flex-direction: column; align-items: flex-start; }
+            .hero-text h1 { font-size: 2.4rem; }
+            .search-wrapper, .filters, .grid { padding-left: 1.25rem; padding-right: 1.25rem; }
+            .grid { grid-template-columns: 1fr; }
+            .search-count { display: none; }
+        }
+        @media (max-width: 400px) {
+            .hero-text h1 { font-size: 1.8rem; }
+            .hero-btn { font-size: .75rem; padding: .45rem .85rem; }
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: #c5cfb0; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #9aab7d; }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <div class="hero-shapes"><canvas class="hero-canvas" id="heroNet"></canvas></div>
+        <div class="hero-content">
+            <div class="hero-top">
+                <div class="hero-brand">
+                    <img src="logo_petrolio.jpg" alt="Logo Sacra Famiglia" class="hero-logo">
+                    <div class="hero-text">
+                        <div class="hero-pre">Portale</div>
+                        <h1>Web App Didattiche</h1>
+                        <p>Andrea Cerioli · Animatore Digitale</p>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-counters">
+                <div class="hero-stat"><span class="stat-num" data-target="118">0</span><span class="stat-label">Web App<br>Studenti & Docenti</span></div>
+                <div class="hero-stat"><span class="stat-num" data-target="19">0</span><span class="stat-label">Strumenti<br>Area Riservata</span></div>
+                <div class="hero-stat"><span class="stat-num" data-target="3">0</span><span class="stat-label">Web App<br>Genitori</span></div>
+                <div class="hero-stat hero-update"><span class="stat-num" id="dayNum"></span><span class="stat-label" id="dateLabel"></span></div>
+            </div>
+            <div class="hero-survey">
+                <a href="https://sondaggiostudenti.vercel.app/" target="_blank">
+                    <div class="survey-title">TI ASCOLTO!</div>
+                    <div class="survey-sub">sondaggio studente</div>
+                </a>
+                <a href="https://feedback-fine-anno-scolastico.vercel.app/" target="_blank">
+                    <div class="survey-title">FINE ANNO</div>
+                    <div class="survey-sub">autovalutazione</div>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="quick-links">
+        <a href="https://calibro.neocities.org/" target="_blank"><i class="ti ti-plant"></i> Calibro</a>
+        <a href="https://pattodigitale.neocities.org/" target="_blank"><i class="ti ti-handshake"></i> Patto Digitale di Famiglia</a>
+        <a href="https://genitori.neocities.org/" target="_blank"><i class="ti ti-device-mobile"></i> Guida per Genitori</a>
+        <a href="https://scuolaipad.neocities.org/" target="_blank"><i class="ti ti-device-imac"></i> Scuola Digitale</a>
+        <a href="https://chatbotai.neocities.org/" target="_blank"><i class="ti ti-robot"></i> Didattica e AI</a>
+        <span class="ql-sep"></span>
+        <a href="metodologie.html" class="ql-glass"><i class="ti ti-brain"></i> Metodologie</a>
+        <a href="laboratorio.html" class="ql-glass"><i class="ti ti-camera"></i> Laboratorio</a>
+        <a href="scuolafutura.html" class="ql-glass"><i class="ti ti-school"></i> Percorsi Scuola Futura</a>
+        <a href="https://ineai.neocities.org/" target="_blank" class="ql-glass"><i class="ti ti-brain"></i> IN + IA</a>
+        <a href="riservata.html" class="ql-glass ql-lock"><i class="ti ti-lock"></i></a>
+        <button class="ql-search" id="searchToggle" onclick="this.classList.toggle('open');document.getElementById('searchBox').focus()"><i class="ti ti-search"></i></button>
+        <input type="text" id="searchBox" class="ql-search-input" placeholder="Cerca..." oninput="filterCards(this.value)">
+    </div>
+
+    <div class="filters" id="filters">
+        <span class="chip active" data-cat="all" onclick="filterByCategory('all', this)">Tutte</span>
+        <span class="chip" data-cat="cittadinanza" onclick="filterByCategory('cittadinanza', this)">Cittadinanza</span>
+        <span class="chip" data-cat="scrittura" onclick="filterByCategory('scrittura', this)">Scrittura</span>
+        <span class="chip" data-cat="biblioteca" onclick="filterByCategory('biblioteca', this)">Biblioteca</span>
+        <span class="chip" data-cat="tech" onclick="filterByCategory('tech', this)">Informatica</span>
+        <span class="chip" data-cat="coding" onclick="filterByCategory('coding', this)">Coding</span>
+        <span class="chip" data-cat="lezioni" onclick="filterByCategory('lezioni', this)">Lezioni</span>
+        <span class="chip" data-cat="scienze" onclick="filterByCategory('scienze', this)">Approfondimenti</span>
+        <span class="chip" data-cat="esame" onclick="filterByCategory('esame', this)">Esame</span>
+        <span class="chip" data-cat="scuola" onclick="filterByCategory('scuola', this)">Sacra Famiglia</span>
+        <span class="chip" data-cat="sport" onclick="filterByCategory('sport', this)">Sport e Giochi</span>
+    </div>
+
+    <main class="grid" id="grid">
+
+        <!-- ══════ CITTADINANZA DIGITALE ══════ -->
+        <div class="card" data-theme="cittadinanza" data-category="cittadinanza">
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-shield-lock"></i></div><div class="card-info"><div class="card-name">Cittadinanza Digitale</div><span class="card-badge">16 risorse</span></div></div>
+            <a href="percorso_cittadinanza_digitale.pdf" target="_blank" class="card-pdf-btn"><i class="ti ti-file-text"></i> Scopri il Progetto — PDF</a>
+            <ul class="card-list">
+                <li><a href="https://guglielmoildentone.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">L'Occhio Critico</span><span class="link-desc">Essere o apparire? Attività su giudizio, aspetto e pensiero critico</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://manipolazione.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Riconosci la Manipolazione</span><span class="link-desc">Come i media e il web influenzano opinioni e comportamenti</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://socialschool.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Social sotto la Lente</span><span class="link-desc">Instagram e TikTok: cosa succede davvero dietro lo schermo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://comportamentismo.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Sei un Piccione?</span><span class="link-desc">Come i social ci trasformano in piccioni da laboratorio — e come riconoscerlo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://aiconsumi.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Quanto consuma l'AI?</span><span class="link-desc">L'impatto ambientale delle tue azioni digitali: ogni prompt, ogni video, ogni ricerca ha un costo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://sicofante.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Il Sicofante Digitale</span><span class="link-desc">Quando l'AI e i social ti dicono solo quello che vuoi sentire: riconosci la sycophancy</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://famigliaaccorti.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Famiglia Accorti</span><span class="link-desc">Guida interattiva alla sicurezza digitale in famiglia</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://socialguide.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Navigare Sicuri</span><span class="link-desc">Attività e risorse per il Safer Internet Day</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://pizzeriagoogle.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Pizzeria Google</span><span class="link-desc">Scopri come i tuoi dati diventano il "menù" di Internet</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://securepassword.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Generatore di Password</span><span class="link-desc">Crea password sicure e scopri come proteggere i tuoi account</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://cyberbullismo.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Stop Cyberbullismo</span><span class="link-desc">Riconoscere, prevenire e reagire al bullismo online</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://missionedigitale.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Indagine Digitale 2026</span><span class="link-desc">Otto missioni investigative per esplorare il mondo digitale</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://cyberescape.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">CyberEscape</span><span class="link-desc">Simulatore attacchi informatici Scuola-Casa</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://truffa-ballerina.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Il Voto che Ruba</span><span class="link-desc">Smonta una truffa WhatsApp: 50 messaggi da analizzare e smascherare</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://attacchinformatici.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Cyber Sentinel</span><span class="link-desc">Monitor minacce globali e academy di cybersecurity con profilo metacognitivo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://polizia-postale.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Commissariato Digitale</span><span class="link-desc">Simulazione Polizia Postale: guida ai pericoli digitali</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- ══════ LAB. SCRITTURA ══════ -->
+        <div class="card" data-theme="scrittura" data-category="scrittura">
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-writing"></i></div><div class="card-info"><div class="card-name">Lab. Scrittura</div><span class="card-badge">15 risorse</span></div></div>
+            <a href="percorso_scrittura.pdf" target="_blank" class="card-pdf-btn"><i class="ti ti-file-text"></i> Scopri il Progetto — PDF</a>
+            <ul class="card-list">
+                <li><a href="https://mattoncini.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">I Mattoncini del Testo</span><span class="link-desc">Costruire frasi e paragrafi un pezzo alla volta</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://errore.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Impara dall'Errore</span><span class="link-desc">Riconoscere e correggere gli errori per scrivere meglio</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://fattopinione.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Fatto o Opinione?</span><span class="link-desc">Distingui fatti verificabili da opinioni personali in un gioco a livelli</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://scrivere.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Le 3 Forme del Testo</span><span class="link-desc">Descrivere, narrare e argomentare: strutture a confronto</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://laboratorioscrittura2.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Testo Descrittivo</span><span class="link-desc">Le cuffiette: esercizio guidato di descrizione oggettiva e soggettiva</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://immagine.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Scrivere con le Immagini</span><span class="link-desc">Dalla lettura visiva alla produzione testuale</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://insegnareapensare.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">La Bottega dell'Argomentazione</span><span class="link-desc">7 mosse strategiche per costruire ragionamenti solidi — classi 4ª e 5ª</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://laboratorioscrittura.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Testo Argomentativo</span><span class="link-desc">Lo sharenting come tema per imparare ad argomentare</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://argomentor.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">ArgoMentor</span><span class="link-desc">Impara a sostenere le tue idee: guida al testo argomentativo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://ascolto.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Scrivere dall'Ascolto</span><span class="link-desc">Stimoli sonori come punto di partenza per la scrittura creativa</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://mentalcoach.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Mental Coaching</span><span class="link-desc">Tecniche di scrittura per allenare il pensiero</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://videoshorts.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-movie"></i> Video Shorts</span><span class="link-desc">Laboratorio di editing e narrazione video breve</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://schooldebate.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Debate in Classe</span><span class="link-desc">Struttura e regole per il dibattito argomentativo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://laboscrittura.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Bottega</span><span class="link-desc">Scrivi come un artigiano: impara dai modelli, in silenzio e con concentrazione</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://tracciatema.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">ScriviMeglio</span><span class="link-desc">Costruisci la scaletta del tuo testo e scarica il PDF</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- ══════ BIBLIOTECA DIGITALE ══════ -->
+        <div class="card" data-theme="biblioteca" data-category="biblioteca">
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-headphones"></i></div><div class="card-info"><div class="card-name">Biblioteca Digitale</div><span class="card-badge">17 risorse</span></div></div>
+            <ul class="card-list">
+                <li><a href="https://harrypotter-1.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Harry Potter e la Pietra Filosofale</span><span class="link-desc">Audiolettura interattiva: segui il narratore parola per parola, con segnalibro</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://harrypotter-2.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Harry Potter e la Camera dei Segreti</span><span class="link-desc">Audiolettura interattiva: il secondo capitolo della saga, parola per parola</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://ventimila-leghe.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Ventimila Leghe sotto i Mari</span><span class="link-desc">Audiolettura interattiva: il viaggio del capitano Nemo, parola per parola</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://pennutispennati.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-movie"></i> Pennuti Spennati</span><span class="link-desc">Cortometraggio Pixar con attività di osservazione e metacognizione</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://agnellorimbalzello.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-movie"></i> L'Agnello Rimbalzello</span><span class="link-desc">Cortometraggio Pixar: il video si ferma 5 volte, tu rispondi e costruisci il tuo diario</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://gerisgame.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-movie"></i> La Mossa di Geri</span><span class="link-desc">Cortometraggio Pixar senza parole: Geri gioca a scacchi, tu osservi e rispondi</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://parzialmentenuvoloso.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-movie"></i> Le Nuvole di Gus</span><span class="link-desc">Cortometraggio Pixar senza parole: le nuvole creano i cuccioli, tu esplori il significato</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://cignoappiccica.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-headphones"></i> Il Cigno Appiccica</span><span class="link-desc">Fiaba sonora: ascolta e completa le parole mancanti — esercizio di ascolto attivo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://treporcellini.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-headphones"></i> I Tre Porcellini</span><span class="link-desc">Fiaba interattiva con tre livelli di difficoltà: ascolta, leggi, gioca</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://pifferaio.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-headphones"></i> Il Pifferaio Magico</span><span class="link-desc">Fiaba interattiva di Hamelin: ascolta e indovina le parole mancanti</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://dragoleprotto.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-headphones"></i> Il Drago e il Leprotto</span><span class="link-desc">Guarda la fiaba, poi metti alla prova il tuo ascolto con il dettato</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://pinocchio-mauve.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Le Avventure di Pinocchio</span><span class="link-desc">Audiolettura interattiva del romanzo di Collodi, capitolo per capitolo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://unonessunocentomila.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Uno, Nessuno e Centomila</span><span class="link-desc">Audiolettura interattiva del romanzo di Pirandello</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://dizionario-musicale.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-music"></i> Vocabolario d'Autore</span><span class="link-desc">Le canzoni d'autore italiane che ti regalano parole: ascolta in cuffia e impara</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://ciparisso.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-headphones"></i> Il Mito di Ciparisso</span><span class="link-desc">Un mito antico raccontato da Enrico Galiano: ascolta, rifletti, scopri</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://lost-in-translation-phi.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-language"></i> Lost in Translation</span><span class="link-desc">English idioms from real songs: impara le espressioni inglesi attraverso la musica</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://la-macchina-per-fare-i-compiti.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-book"></i> La Macchina per Fare i Compiti</span><span class="link-desc">Lettura interattiva ispirata a Gianni Rodari: la macchina che fa i compiti al posto tuo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- ══════ INFORMATICA & TECH ══════ -->
+        <div class="card" data-theme="tech" data-category="tech">
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-device-laptop"></i></div><div class="card-info"><div class="card-name">Informatica & Tech</div><span class="card-badge">17 risorse</span></div></div>
+            <ul class="card-list">
+                <li><a href="https://fakehunter.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Fake Hunter</span><span class="link-desc">Caccia alle bufale: impara a smascherare le fake news</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://truffe.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Truffe & Phishing</span><span class="link-desc">Scam, phishing e inganni digitali: come difendersi in rete</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://stampa3d.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-3d-cube-sphere"></i> Stampa 3D</span><span class="link-desc">Dalla modellazione alla stampa: introduzione alla prototipazione</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://keyboardmac.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Scorciatoie Mac</span><span class="link-desc">I comandi rapidi da tastiera per lavorare più velocemente</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://glossarioinfo.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Glossario Digitale</span><span class="link-desc">Le parole chiave del mondo informatico dalla A alla Z</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://typegame.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Sfida di Videoscrittura</span><span class="link-desc">Gioco interattivo per imparare a scrivere al computer</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://tastiera.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Allenamento Tastiera</span><span class="link-desc">Esercizi pratici per digitare con velocità e precisione</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://pesodigitale.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">La Scala Digitale</span><span class="link-desc">KB, MB, GB: misura i file, gestisci lo spazio e simula la velocità di rete</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://barscuola.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Bar della Scuola</span><span class="link-desc">Compito autentico — matematica: gestisci la cassa e calcola il resto</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://genalfa.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Algoritmi e Reti Neurali</span><span class="link-desc">La Gen Alfa e il nuovo digitale</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://escapecity.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Guarda Due Volte</span><span class="link-desc">Laboratorio di lettura lenta: un'immagine, otto zone nascoste, una frase da scoprire</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://indirizzo-url.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">L'Indirizzo Digitale</span><span class="link-desc">Come funziona Internet? Scopri il WWW, i browser, i server e il linguaggio del web</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://bottega-delle-app.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">La Bottega delle App</span><span class="link-desc">Si entra, si prova, si impara facendo: gli strumenti digitali come mestiere</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://family-dash-two.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">FamilyDash</span><span class="link-desc">Un mese, giorno per giorno: quattro settimane nella vita di una famiglia</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://dopamina-loop.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Mystery Drop</span><span class="link-desc">Una partita veloce che svela il meccanismo del loop della dopamina</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://cyber-security-ex9b.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Cyber Security</span><span class="link-desc">Minacce digitali, difese e buone pratiche per navigare in sicurezza</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://cybersicurezza-figli-genitori.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Cybersicurezza Figli & Genitori</span><span class="link-desc">La sicurezza digitale si impara in famiglia: percorso per genitori e figli insieme</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- ══════ CODING ══════ -->
+        <div class="card" data-theme="coding" data-category="coding">
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-code"></i></div><div class="card-info"><div class="card-name">Coding</div><span class="card-badge">5 risorse</span></div></div>
+            <ul class="card-list">
+                <li><a href="https://controcorrente-lilac.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">ControCorrente</span><span class="link-desc">Sfide di logica e pensiero computazionale controintuitive</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://roccacifrata.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Rocca Cifrata</span><span class="link-desc">Crittografia per giovani menti: cifra e decifra messaggi segreti</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://fontaniere-coding.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Il Fontaniere</span><span class="link-desc">Collega i tubi e porta l'acqua a destinazione: logica e sequenze</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://basket-sacrafamiglia.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Basket Coding</span><span class="link-desc">Programma i tiri e segna canestro: coordinate, angoli e istruzioni</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://pollice-verde-rho.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Pollice Verde</span><span class="link-desc">Coltiva il tuo orto digitale con cicli e condizioni di crescita</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- ══════ LEZIONI ══════ -->
+        <div class="card" data-theme="lezioni" data-category="lezioni">
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-school"></i></div><div class="card-info"><div class="card-name">Lezioni</div><span class="card-badge">6 risorse</span></div></div>
+            <ul class="card-list">
+                <li><a href="https://identit-digitale.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Identità Digitale</span><span class="link-desc">Chi siamo online: reputazione, tracce e cittadinanza digitale</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://anti-alibi.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Anti-Alibi</span><span class="link-desc">Smontare le scuse: responsabilità e scelte consapevoli</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://ipad-carta.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">iPad e Carta</span><span class="link-desc">Quando usare il digitale e quando la carta: scegliere lo strumento giusto</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://excel-basic-lesson.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Excel Basic</span><span class="link-desc">Primi passi nei fogli di calcolo: celle, formule e tabelle</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://magnifica-humanitas-nu.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Magnifica Humanitas</span><span class="link-desc">Il valore dell'umano nell'epoca delle macchine</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://ai-nuovo-mondo.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">AI, il Nuovo Mondo</span><span class="link-desc">Capire l'intelligenza artificiale: opportunità, limiti e responsabilità</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- ══════ APPROFONDIMENTI E RICERCHE ══════ -->
+        <div class="card" data-theme="scienze" data-category="scienze">
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-search"></i></div><div class="card-info"><div class="card-name">Approfondimenti e Ricerche</div><span class="card-badge">16 risorse</span></div></div>
+            <ul class="card-list">
+                <li><a href="https://geografiamaps.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Gite Virtuali</span><span class="link-desc">Esplora il mondo con Google Maps senza uscire da scuola</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://sacrafamiglialabinfo.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Ciro il Dinosauro</span><span class="link-desc">Alla scoperta del primo cucciolo di dinosauro italiano</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://dinosauri.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Il Mondo dei Dinosauri</span><span class="link-desc">Laboratorio Biomeccanico Virtuale</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://apparati.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Il Corpo Umano</span><span class="link-desc">Viaggio interattivo tra gli apparati e i sistemi del corpo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://errore.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Trasformiamo l'Errore in Opportunità</span><span class="link-desc">Percorso interdisciplinare sull'errore come strumento di crescita</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://debaterrore.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Debate sull'Errore</span><span class="link-desc">Dibattito strutturato: l'errore è davvero un'opportunità?</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://notebooklmstyle.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Infografiche con Notebook LM</span><span class="link-desc">Come scegliere gli stili per le tue infografiche</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://teamdebate.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Arena del Pensiero</span><span class="link-desc">Il debate di squadra in classe</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://labinfo.my.canva.site/canto3" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Canto III — Divina Commedia</span><span class="link-desc">Approfondimento multimediale sul terzo canto</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://garagevalley.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">I Geni della Tecnologia</span><span class="link-desc">Come le loro idee hanno rivoluzionato il mondo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://labscienze.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Laboratorio Scientifico</span><span class="link-desc">Esplora, sperimenta, scopri — dalla 3ª Primaria alla 3ª Secondaria</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://sintesiproteica.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Sintesi Proteica</span><span class="link-desc">Dal DNA alle proteine: il viaggio della sintesi proteica</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://homoavdventure.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Il Viaggio dell'Uomo</span><span class="link-desc">Dalle origini alla storia: il percorso dell'umanità</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://pizzeria-sacrafamiglia-iepo.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Pizzeria delle Frazioni</span><span class="link-desc">Diventa pizzaiolo e impara le frazioni preparando pizze</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://ai-video-azure.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">AI Video</span><span class="link-desc">Quando l'intelligenza artificiale crea video: capire, riconoscere, valutare</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://storia-new.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Viaggio nella Storia</span><span class="link-desc">Percorso interattivo attraverso epoche ed eventi storici</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- ══════ ESAME DI STATO ══════ -->
+        <div class="card" data-theme="esame" data-category="esame">
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-certificate"></i></div><div class="card-info"><div class="card-name">Esame di Stato</div><span class="card-badge">5 risorse</span></div></div>
+            <ul class="card-list">
+                <li><a href="https://invalsi.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Missione INVALSI 2026</span><span class="link-desc">Tutto per prepararsi alle prove nazionali di aprile</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://esame.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Guida all'Esame</span><span class="link-desc">Risorse e indicazioni per prepararsi all'esame di terza media</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://farelatesina.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Costruisci la tua Tesina</span><span class="link-desc">Percorso guidato: 9 slide, una alla volta, con post-it che ti dicono cosa fare</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://pontremoli.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Pontremoli — Tesina d'Esame</span><span class="link-desc">Percorso interdisciplinare per la tesina conclusiva del primo ciclo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://gancioxcolloquio.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Il Lab del Gancio</span><span class="link-desc">Prepara i primi 90 secondi del tuo colloquio orale</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- ══════ SACRA FAMIGLIA ══════ -->
+        <div class="card" data-theme="scuola" data-category="scuola">
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-heart-handshake"></i></div><div class="card-info"><div class="card-name">Sacra Famiglia</div><span class="card-badge">8 risorse</span></div></div>
+            <ul class="card-list">
+                <li><a href="https://100anni.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">100 Anni di Storia in Musica</span><span class="link-desc">Un secolo di vita e missione della Sacra Famiglia, in musica</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://sfida.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Il Gioco delle Case</span><span class="link-desc">Il Gioco delle Case della Sacra Famiglia</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://autovalutazione.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Autovalutazione Lezione</span><span class="link-desc">Strumento per riflettere sulla qualità della propria lezione</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://sacrafamiglia.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Le Mascotte delle Case</span><span class="link-desc">Le mascotte delle Case della Sacra Famiglia</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://santapaola.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">S. Paola Elisabetta</span><span class="link-desc">Festa e ricorrenza della fondatrice</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://quizzonespaola.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Quizzone S. Paola</span><span class="link-desc">Quanto conosci Santa Paola? Mettiti alla prova!</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://randomecase.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Consegna alle Case</span><span class="link-desc">Assegnazione casuale delle consegne per i lavori di gruppo in classe, con timer facoltativo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://albo-doro-case.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Albo d'Oro delle Case</span><span class="link-desc">Le vittorie e i traguardi delle quattro Case nel tempo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- ══════ SPORT E GIOCHI ══════ -->
+        <div class="card" data-theme="sport" data-category="sport">
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-trophy"></i></div><div class="card-info"><div class="card-name">Sport e Giochi</div><span class="card-badge">11 risorse</span></div></div>
+            <ul class="card-list">
+                <li><a href="https://studiomusicale.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Studio Musicale</span><span class="link-desc">Esplora strumenti, note e ritmi in modo interattivo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://giamaica.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Cool Runnings</span><span class="link-desc">La storia incredibile della squadra di bob giamaicana</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://labinfo.my.canva.site/c17sxqtedy2jyaw7" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Milano Cortina</span><span class="link-desc">Le Olimpiadi Tecnologiche</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://olimpictech.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Tech & Olimpiadi</span><span class="link-desc">Come la tecnologia ha cambiato lo sport olimpico</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://milanocortina.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Milano-Cortina 2026</span><span class="link-desc">I geni italiani protagonisti delle Olimpiadi invernali</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://sacrafamigliatornei.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Gestione Tornei</span><span class="link-desc">Organizza e gestisci i tornei sportivi scolastici</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://sacrafamigliagames.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Word Games</span><span class="link-desc">Giochi di parole per divertirsi e arricchire il lessico</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://profemon.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Profemon</span><span class="link-desc">Il gioco di carte cooperativo della scuola: schierate i prof e superate le sfide!</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://calcio-one.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Storia del Calcio</span><span class="link-desc">Un viaggio nel calcio dal 2000 al 2025</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://masterchef-iota.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Master Chef</span><span class="link-desc">Ricette italiane: un viaggio tra sapori e tradizioni</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://euro-capitali.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Euro Capitali</span><span class="link-desc">Quiz geografico sulle capitali europee: metti alla prova le tue conoscenze</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+            </ul>
+        </div>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-top">
+            <div class="footer-left"><div class="footer-pulse"></div><span>Andrea Cerioli — Animatore Digitale</span></div>
+            <span>© 2026 Andrea Cerioli — Scuola Sacra Famiglia. Tutti i diritti riservati.</span>
+        </div>
+    </footer>
+
+    <script>
+        /* ═══ HERO: ITALIA CONNESSA AL MONDO ═══ */
+        (function() {
+            var canvas = document.getElementById('heroNet');
+            if (!canvas) return;
+            var ctx = canvas.getContext('2d');
+            var W, H;
+
+            function resize() {
+                canvas.width = canvas.parentElement.offsetWidth || 1;
+                canvas.height = canvas.parentElement.offsetHeight || 1;
+                W = canvas.width; H = canvas.height;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            /* Italy — high-fidelity coastline ~150 pts */
+            var italyMain = [
+                /* ── Liguria (confine FR → La Spezia) ── */
+                [7.53,43.79],[7.62,43.80],[7.77,43.80],[7.92,43.82],[8.05,43.87],
+                [8.18,43.88],[8.30,43.92],[8.45,44.00],[8.58,44.10],[8.70,44.22],
+                [8.80,44.32],[8.92,44.40],[9.08,44.42],[9.22,44.38],[9.38,44.32],
+                [9.52,44.28],[9.65,44.22],[9.78,44.15],[9.88,44.08],
+                /* ── Toscana ── */
+                [10.00,43.98],[10.08,43.82],[10.15,43.68],[10.22,43.55],
+                [10.30,43.42],[10.35,43.28],[10.42,43.12],[10.48,42.98],
+                [10.55,42.85],[10.65,42.72],[10.72,42.60],
+                /* promontorio Argentario */
+                [10.80,42.48],[10.90,42.38],[11.02,42.30],[11.10,42.22],
+                [11.15,42.12],
+                /* ── Lazio ── */
+                [11.18,42.00],[11.22,41.88],[11.32,41.72],[11.48,41.58],
+                [11.65,41.45],[11.82,41.38],[11.95,41.42],[12.10,41.50],
+                [12.22,41.62],[12.32,41.72],[12.42,41.68],[12.50,41.58],
+                [12.55,41.48],[12.62,41.38],[12.72,41.28],
+                /* Circeo / Gaeta */
+                [12.85,41.22],[13.02,41.18],[13.18,41.22],[13.35,41.12],
+                [13.52,41.05],
+                /* ── Campania — golfo di Napoli ── */
+                [13.68,41.00],[13.82,40.92],[13.95,40.85],[14.08,40.82],
+                [14.18,40.78],[14.28,40.72],
+                /* penisola sorrentina / Amalfi */
+                [14.38,40.65],[14.48,40.62],[14.55,40.58],[14.65,40.55],
+                /* ── Cilento ── */
+                [14.78,40.45],[14.88,40.35],[14.98,40.28],[15.08,40.18],
+                [15.18,40.08],[15.28,40.00],
+                /* ── Calabria costa tirrenica ── */
+                [15.38,39.90],[15.48,39.78],[15.55,39.65],[15.62,39.52],
+                [15.68,39.38],[15.72,39.25],[15.78,39.12],[15.82,39.00],
+                [15.78,38.88],[15.72,38.72],[15.68,38.58],[15.65,38.42],
+                [15.62,38.28],[15.62,38.18],
+                /* ── PUNTA DELLO STIVALE ── */
+                [15.65,38.05],[15.72,37.95],[15.82,37.92],[15.92,37.95],
+                [16.02,38.00],
+                /* ── Calabria costa ionica (risalita) ── */
+                [16.12,38.08],[16.22,38.15],[16.32,38.28],[16.42,38.42],
+                [16.48,38.55],[16.55,38.68],[16.62,38.82],[16.68,38.95],
+                [16.72,39.08],[16.78,39.22],[16.82,39.35],
+                /* ── Golfo di Taranto ── */
+                [16.88,39.48],[16.95,39.62],[17.02,39.75],[17.08,39.88],
+                [17.15,39.98],
+                /* ── Puglia — verso il tacco ── */
+                [17.28,40.05],[17.45,40.08],[17.62,40.10],[17.78,40.08],
+                [17.92,40.02],[18.05,39.95],[18.15,39.85],
+                /* ── TACCO — Salento ── */
+                [18.28,39.78],[18.38,39.72],[18.45,39.62],[18.50,39.52],
+                [18.52,39.42],[18.48,39.35],
+                /* punta di Leuca */
+                [18.35,39.48],[18.22,39.58],[18.12,39.68],
+                /* risalita adriatica Puglia */
+                [18.22,39.82],[18.35,39.98],[18.48,40.08],[18.52,40.18],
+                [18.50,40.28],[18.42,40.38],[18.32,40.48],[18.18,40.55],
+                [18.02,40.62],[17.85,40.72],[17.68,40.82],[17.48,40.92],
+                [17.28,41.00],[17.08,41.08],
+                /* ── Gargano (sperone) ── */
+                [16.85,41.15],[16.62,41.22],[16.42,41.35],[16.22,41.52],
+                [16.08,41.62],[15.95,41.72],[15.88,41.82],[15.82,41.92],
+                [15.75,41.98],[15.62,41.95],[15.52,41.88],
+                /* ── Abruzzo / Marche ── */
+                [15.35,42.00],[15.18,42.05],[14.98,42.08],[14.78,42.12],
+                [14.58,42.18],[14.38,42.22],[14.18,42.28],[13.98,42.38],
+                [13.78,42.48],[13.62,42.58],
+                /* ── Romagna / Emilia ── */
+                [13.52,42.72],[13.55,42.88],[13.58,43.05],[13.62,43.22],
+                [13.58,43.38],[13.48,43.52],[13.32,43.62],[13.12,43.72],
+                /* ── Veneto / delta del Po ── */
+                [12.88,43.88],[12.62,44.05],[12.42,44.18],[12.28,44.35],
+                [12.22,44.52],[12.25,44.68],[12.28,44.82],[12.32,44.95],
+                [12.38,45.08],[12.45,45.22],
+                /* ── Venezia / Trieste ── */
+                [12.55,45.35],[12.68,45.42],[12.82,45.48],[13.02,45.55],
+                [13.18,45.62],[13.38,45.65],[13.55,45.68],[13.68,45.72],
+                /* ── Confine NE (Friuli → Trentino) ── */
+                [13.75,45.82],[13.78,46.00],[13.72,46.15],[13.58,46.28],
+                [13.38,46.42],[13.15,46.52],[12.85,46.60],[12.52,46.65],
+                [12.22,46.72],[11.88,46.82],[11.52,46.88],[11.18,46.92],
+                [10.88,46.92],[10.55,46.85],[10.25,46.72],[10.02,46.60],
+                [9.72,46.50],[9.48,46.38],[9.28,46.25],[9.08,46.08],
+                /* ── Confine CH / Piemonte nord ── */
+                [8.82,46.08],[8.58,46.10],[8.32,46.12],[8.12,46.12],
+                [7.92,45.98],[7.72,45.88],[7.52,45.78],
+                /* ── Val d'Aosta / Piemonte ovest ── */
+                [7.32,45.62],[7.12,45.48],[6.92,45.28],[6.72,45.12],
+                [6.65,44.98],[6.72,44.82],[6.82,44.68],[6.95,44.55],
+                [7.08,44.42],[7.22,44.28],[7.38,44.15],[7.53,43.79]
+            ];
+            /* Sicily — triangolo riconoscibile */
+            var sicily = [
+                [13.02,38.18],[13.12,38.12],[13.25,38.08],[13.38,38.02],
+                [13.52,37.92],[13.65,37.82],[13.78,37.72],[13.92,37.58],
+                [14.05,37.48],[14.18,37.35],[14.32,37.18],[14.48,37.05],
+                [14.65,36.92],[14.82,36.82],[15.00,36.72],[15.12,36.72],
+                [15.22,36.78],[15.30,36.92],[15.38,37.08],[15.48,37.28],
+                [15.55,37.48],[15.58,37.68],[15.55,37.85],[15.48,37.98],
+                [15.35,38.08],[15.18,38.15],[15.00,38.18],[14.82,38.20],
+                [14.62,38.20],[14.42,38.18],[14.22,38.18],[14.02,38.20],
+                [13.82,38.22],[13.62,38.22],[13.42,38.22],[13.22,38.20],
+                [13.02,38.18]
+            ];
+            /* Sardinia — forma caratteristica */
+            var sardinia = [
+                [8.15,41.08],[8.25,41.12],[8.38,41.18],[8.52,41.22],
+                [8.68,41.18],[8.82,41.12],[8.95,41.02],[9.08,40.88],
+                [9.18,40.72],[9.28,40.55],[9.35,40.38],[9.42,40.22],
+                [9.48,40.05],[9.55,39.88],[9.60,39.72],[9.65,39.55],
+                [9.68,39.38],[9.68,39.22],[9.65,39.08],[9.58,38.92],
+                [9.48,38.85],[9.35,38.82],[9.22,38.85],[9.08,38.88],
+                [8.92,38.95],[8.78,39.02],[8.62,39.12],[8.48,39.25],
+                [8.38,39.42],[8.28,39.58],[8.22,39.75],[8.18,39.92],
+                [8.15,40.08],[8.12,40.25],[8.10,40.42],[8.08,40.58],
+                [8.08,40.75],[8.10,40.92],[8.15,41.08]
+            ];
+
+            /* Orzinuovi coordinates */
+            var OZ_LON = 9.92, OZ_LAT = 45.40;
+
+            /* project [lon,lat] to canvas pixels — Italy right side */
+            var IT_CX, IT_CY, SC;
+            function calcProjection() {
+                SC = Math.max(1, Math.min(W * 0.042, H * 0.075));
+                IT_CX = W * 0.80;
+                IT_CY = H * 0.5;
+            }
+            calcProjection();
+            window.addEventListener('resize', calcProjection);
+
+            function proj(lon, lat) {
+                return {
+                    x: IT_CX + (lon - 12.5) * SC,
+                    y: IT_CY - (lat - 42.5) * SC * 1.3
+                };
+            }
+
+            function drawShape(pts) {
+                ctx.beginPath();
+                for (var j = 0; j < pts.length; j++) {
+                    var p = proj(pts[j][0], pts[j][1]);
+                    if (j === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+                }
+                ctx.closePath();
+            }
+
+            /* world destinations — positioned around canvas edges */
+            var worldPts = [
+                { label:'New York',   x: 0.02, y: 0.3 },
+                { label:'São Paulo',  x: 0.05, y: 0.85 },
+                { label:'London',     x: 0.35, y: 0.05 },
+                { label:'Berlin',     x: 0.55, y: 0.03 },
+                { label:'Moscow',     x: 0.85, y: 0.05 },
+                { label:'Dubai',      x: 0.95, y: 0.45 },
+                { label:'Tokyo',      x: 0.98, y: 0.25 },
+                { label:'Mumbai',     x: 0.92, y: 0.6 },
+                { label:'Sydney',     x: 0.97, y: 0.85 },
+                { label:'Cape Town',  x: 0.45, y: 0.95 },
+                { label:'Cairo',      x: 0.72, y: 0.85 },
+                { label:'Toronto',    x: 0.08, y: 0.15 },
+                { label:'Buenos Aires', x: 0.1, y: 0.92 },
+            ];
+
+            /* connection pulses */
+            var conns = [];
+            for (var i = 0; i < worldPts.length; i++) {
+                conns.push({
+                    idx: i,
+                    t: Math.random(),
+                    speed: 0.001 + Math.random() * 0.003,
+                    dir: Math.random() > 0.5 ? 1 : -1
+                });
+            }
+
+            /* floating particles */
+            var particles = [];
+            for (var i = 0; i < 40; i++) {
+                particles.push({
+                    x: Math.random() * 2000, y: Math.random() * 500,
+                    vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.18,
+                    r: Math.random() * 1.2 + 0.6, pulse: Math.random() * Math.PI * 2
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                var t = Date.now() * 0.001;
+
+                /* Google Earth zoom — dive into Orzinuovi */
+                var savedSC = SC;
+                var savedCX = IT_CX;
+                var savedCY = IT_CY;
+
+                /* cycle: 18 seconds */
+                var cycle = (t % 18) / 18;
+                var zoomT;
+                if (cycle < 0.3) {
+                    /* zoom IN with easing */
+                    var p = cycle / 0.3;
+                    zoomT = p * p * (3 - 2 * p);
+                } else if (cycle < 0.45) {
+                    /* hold close-up on Orzinuovi */
+                    zoomT = 1;
+                } else if (cycle < 0.75) {
+                    /* zoom OUT with easing */
+                    var p = (cycle - 0.45) / 0.3;
+                    zoomT = 1 - p * p * (3 - 2 * p);
+                } else {
+                    /* hold wide view */
+                    zoomT = 0;
+                }
+
+                /* scale: 1x → 2.8x */
+                var zoomFactor = 1 + zoomT * 1.8;
+                SC = savedSC * zoomFactor;
+
+                /* where Orzinuovi lands with current scale but original center */
+                var ozScreenX = savedCX + (OZ_LON - 12.5) * SC;
+                var ozScreenY = savedCY - (OZ_LAT - 42.5) * SC * 1.3;
+                /* shift center so Orzinuovi moves to savedCX/savedCY */
+                IT_CX = savedCX + (savedCX - ozScreenX) * zoomT;
+                IT_CY = savedCY + (savedCY - ozScreenY) * zoomT;
+
+                var oz = proj(OZ_LON, OZ_LAT);
+                if (!isFinite(oz.x) || !isFinite(oz.y) || !isFinite(SC) || SC <= 0) {
+                    SC = savedSC; IT_CX = savedCX; IT_CY = savedCY;
+                    requestAnimationFrame(draw); return;
+                }
+
+                /* glow behind Italy */
+                var grd = ctx.createRadialGradient(oz.x, oz.y, 10, oz.x, oz.y, SC * 18);
+                grd.addColorStop(0, 'rgba(255,255,255,0.08)');
+                grd.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = grd;
+                ctx.fillRect(0, 0, W, H);
+
+                /* draw Italy mainland */
+                drawShape(italyMain);
+                ctx.fillStyle = 'rgba(255,255,255,0.13)';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.30)';
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+
+                /* draw Sicily */
+                drawShape(sicily);
+                ctx.fillStyle = 'rgba(255,255,255,0.13)';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.30)';
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+
+                /* draw Sardinia */
+                drawShape(sardinia);
+                ctx.fillStyle = 'rgba(255,255,255,0.13)';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.30)';
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+
+                /* Orzinuovi — radar sweep */
+                var sweep = (t * 0.8) % (Math.PI * 2);
+                var radarR = 20 + Math.sin(t * 0.5) * 5;
+                /* radar cone */
+                ctx.beginPath();
+                ctx.moveTo(oz.x, oz.y);
+                ctx.arc(oz.x, oz.y, radarR, sweep, sweep + 0.8);
+                ctx.closePath();
+                var coneGrd = ctx.createRadialGradient(oz.x, oz.y, 0, oz.x, oz.y, radarR);
+                coneGrd.addColorStop(0, 'rgba(255,255,255,0.12)');
+                coneGrd.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = coneGrd;
+                ctx.fill();
+                /* expanding rings */
+                for (var r = 0; r < 3; r++) {
+                    var ringT = ((t * 0.6 + r * 1.2) % 3.6) / 3.6;
+                    var ringR = ringT * 35;
+                    var ringA = (1 - ringT) * 0.2;
+                    ctx.beginPath();
+                    ctx.arc(oz.x, oz.y, ringR, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(255,255,255,' + ringA + ')';
+                    ctx.lineWidth = 0.8;
+                    ctx.stroke();
+                }
+                /* center dot */
+                ctx.beginPath();
+                ctx.arc(oz.x, oz.y, 3.5, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255,255,255,0.85)';
+                ctx.fill();
+                /* soft glow around dot */
+                ctx.beginPath();
+                ctx.arc(oz.x, oz.y, 6, 0, Math.PI * 2);
+                var dotGlow = ctx.createRadialGradient(oz.x, oz.y, 2, oz.x, oz.y, 6);
+                dotGlow.addColorStop(0, 'rgba(255,255,255,0.3)');
+                dotGlow.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = dotGlow;
+                ctx.fill();
+
+                /* restore projection */
+                SC = savedSC;
+                IT_CX = savedCX;
+                IT_CY = savedCY;
+
+                /* world destinations + connections */
+                for (var i = 0; i < worldPts.length; i++) {
+                    var wp = worldPts[i];
+                    var wx = wp.x * W;
+                    var wy = wp.y * H;
+
+                    /* arc from Orzinuovi to world point */
+                    var mx = (oz.x + wx) / 2;
+                    var my = (oz.y + wy) / 2;
+                    var dx = wx - oz.x;
+                    var dy = wy - oz.y;
+                    var dist = Math.sqrt(dx*dx + dy*dy);
+                    var nx = -dy / dist * dist * 0.15;
+                    var ny = dx / dist * dist * 0.15;
+                    var cpx = mx + nx;
+                    var cpy = my + ny;
+
+                    /* pulsing arc opacity */
+                    var arcAlpha = 0.08 + Math.sin(t * 0.8 + i * 0.5) * 0.04;
+                    ctx.beginPath();
+                    ctx.moveTo(oz.x, oz.y);
+                    ctx.quadraticCurveTo(cpx, cpy, wx, wy);
+                    ctx.strokeStyle = 'rgba(255,255,255,' + arcAlpha + ')';
+                    ctx.lineWidth = 0.7;
+                    ctx.stroke();
+
+                    /* traveling pulse along arc — with trail */
+                    var cn = conns[i];
+                    cn.t = (cn.t + cn.speed * cn.dir + 1) % 1;
+                    var pt = cn.t;
+                    var px = (1-pt)*(1-pt)*oz.x + 2*(1-pt)*pt*cpx + pt*pt*wx;
+                    var py = (1-pt)*(1-pt)*oz.y + 2*(1-pt)*pt*cpy + pt*pt*wy;
+                    /* trail glow */
+                    var trailGrd = ctx.createRadialGradient(px, py, 0, px, py, 6);
+                    trailGrd.addColorStop(0, 'rgba(255,255,255,0.5)');
+                    trailGrd.addColorStop(1, 'rgba(255,255,255,0)');
+                    ctx.beginPath();
+                    ctx.arc(px, py, 6, 0, Math.PI * 2);
+                    ctx.fillStyle = trailGrd;
+                    ctx.fill();
+                    /* core dot */
+                    ctx.beginPath();
+                    ctx.arc(px, py, 1.8, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+                    ctx.fill();
+
+                    /* destination dot with glow */
+                    var dotAlpha = 0.2 + Math.sin(t * 1.5 + i) * 0.1;
+                    ctx.beginPath();
+                    ctx.arc(wx, wy, 2.5, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,255,255,' + dotAlpha + ')';
+                    ctx.fill();
+                }
+
+                /* floating particles */
+                for (var i = 0; i < particles.length; i++) {
+                    var p = particles[i];
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0 || p.x > W) p.vx *= -1;
+                    if (p.y < 0 || p.y > H) p.vy *= -1;
+                    for (var j = i + 1; j < particles.length; j++) {
+                        var q = particles[j];
+                        var ddx = p.x - q.x; var ddy = p.y - q.y;
+                        var dd = Math.sqrt(ddx*ddx + ddy*ddy);
+                        if (dd < 120) {
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+                            ctx.strokeStyle = 'rgba(255,255,255,' + ((1 - dd/120) * 0.08) + ')';
+                            ctx.lineWidth = 0.4;
+                            ctx.stroke();
+                        }
+                    }
+                    var gl = 0.12 + Math.sin(t * 1.5 + p.pulse) * 0.06;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,255,255,' + gl + ')';
+                    ctx.fill();
+                }
+
+                requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+    </script>
+    <script>
+        /* auto-allineamento counter "Studenti & Docenti" = <li> delle card + app pinned nell'hero (Ti Ascolto, Fine Anno...) */
+        (function() {
+            var liCount = document.querySelectorAll('.card .card-list > li').length;
+            var pinnedCount = document.querySelectorAll('.hero-survey > a').length;
+            var total = liCount + pinnedCount;
+            document.querySelectorAll('.hero-counters .hero-stat').forEach(function(stat) {
+                var label = stat.querySelector('.stat-label');
+                if (label && /Studenti/.test(label.textContent)) {
+                    var num = stat.querySelector('.stat-num[data-target]');
+                    if (num) num.dataset.target = total;
+                }
+            });
+        })();
+        /* deep-link: index.html#coding apre già filtrato sulla categoria */
+        (function() {
+            var cat = (location.hash || '').replace('#', '');
+            if (!cat) return;
+            var chip = document.querySelector('.filters .chip[data-cat="' + cat + '"]');
+            if (chip) filterByCategory(cat, chip);
+        })();
+        /* count-up animation */
+        document.querySelectorAll('.stat-num[data-target]').forEach(function(el, idx) {
+            var target = parseInt(el.dataset.target);
+            var delay = 800 + idx * 400;
+            setTimeout(function() {
+                var duration = 1200;
+                var t0 = performance.now();
+                function tick(now) {
+                    var p = Math.min((now - t0) / duration, 1);
+                    var ease = p < 0.5 ? 4*p*p*p : 1-Math.pow(-2*p+2,3)/2;
+                    el.textContent = Math.round(ease * target);
+                    if (p < 1) requestAnimationFrame(tick);
+                }
+                requestAnimationFrame(tick);
+            }, delay);
+        });
+        /* auto-date */
+        (function() {
+            var mesi = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+            var now = new Date();
+            document.getElementById('dayNum').textContent = now.getDate();
+            document.getElementById('dateLabel').innerHTML = mesi[now.getMonth()] + ' ' + now.getFullYear() + '<br>Ultimo aggiornamento';
+        })();
+    </script>
+    <script>
+        function filterByCategory(cat, chip) {
+            /* il filtro categoria azzera la ricerca testuale */
+            var box = document.getElementById('searchBox');
+            if (box) box.value = '';
+            document.querySelectorAll('.filters .chip').forEach(function(c) { c.classList.remove('active'); });
+            if (chip) chip.classList.add('active');
+            document.querySelectorAll('.card').forEach(function(card) {
+                var show = (cat === 'all') || (card.dataset.category === cat);
+                card.style.display = show ? '' : 'none';
+                /* ripristina eventuali li nascosti da una ricerca precedente */
+                card.querySelectorAll('.card-list li').forEach(function(li) { li.style.display = ''; });
+            });
+            /* una sola categoria attiva → vista a griglia full-width; "Tutte" → mosaico */
+            var grid = document.getElementById('grid');
+            if (grid) grid.classList.toggle('solo-mode', cat !== 'all');
+        }
+        function filterCards(q) {
+            q = q.toLowerCase().trim();
+            /* la ricerca testuale riporta i chip su "Tutte" e torna al mosaico */
+            document.querySelectorAll('.filters .chip').forEach(function(c) {
+                c.classList.toggle('active', c.dataset.cat === 'all');
+            });
+            var grid = document.getElementById('grid');
+            if (grid) grid.classList.remove('solo-mode');
+            document.querySelectorAll('.card').forEach(card => {
+                var items = card.querySelectorAll('.card-list li');
+                var hasMatch = false;
+                items.forEach(li => {
+                    var match = !q || li.textContent.toLowerCase().includes(q);
+                    li.style.display = match ? '' : 'none';
+                    if (match) hasMatch = true;
+                });
+                card.style.display = hasMatch ? '' : 'none';
+            });
+        }
+    </script>
+<script src="dpia-badges.js" defer></script>
+
+</body>
+</html>

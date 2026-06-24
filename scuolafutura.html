@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formazione Scuola Futura — Sacra Famiglia</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+    <style>
+        :root { --bg: #f0f4ff; --bg-white: #ffffff; --text-dark: #2d3047; --text-medium: #5a5f7d; --text-light: #8b90a8; --shadow-soft: 0 2px 16px rgba(45,48,71,0.06); --shadow-card: 0 4px 24px rgba(45,48,71,0.08); --radius: 20px; --radius-sm: 14px; --accent: #5d6e3b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text-dark); min-height: 100vh; overflow-x: hidden; }
+
+        .hero { background: linear-gradient(135deg, #6b7c3e 0%, #1a535c 50%, #2d3047 100%); position: relative; padding: 2rem 2rem 3rem; overflow: hidden; color: #fff; }
+        .hero-shapes { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+        .hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .hero-left { display: flex; align-items: stretch; gap: 1rem; }
+        .hero-icon .ti { font-size: 2rem; }
+        .hero-icon { width: 80px; height: 80px; border-radius: 18px; background: rgba(255,255,255,0.25); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; font-size: 2rem; border: 2px solid rgba(255,255,255,0.3); animation: logoPopIn 0.6s cubic-bezier(0.175,0.885,0.32,1.275) both; flex-shrink: 0; }
+        @keyframes logoPopIn { from { opacity:0; transform:scale(0.5) rotate(-10deg); } to { opacity:1; transform:scale(1) rotate(0); } }
+        .hero-text { display: flex; flex-direction: column; justify-content: center; }
+        .hero-text h1 { font-family: 'DM Sans', sans-serif; font-size: 2.6rem; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; text-shadow: 0 2px 12px rgba(0,0,0,0.15); animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .1s both; }
+        .hero-text p { font-size: 1rem; opacity: .85; font-weight: 600; margin-top: .15rem; animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .2s both; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+        .back-btn { position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: inline-flex; align-items: center; gap: .45rem; padding: .55rem 1.1rem; border-radius: 50px; text-decoration: none; font-family: 'Nunito'; font-size: .82rem; font-weight: 700; background: rgba(255,255,255,.2); color: #fff; border: 1.5px solid rgba(255,255,255,.3); backdrop-filter: blur(8px); transition: all .3s cubic-bezier(.16,1,.3,1); white-space: nowrap; animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .3s both; }
+        .back-btn:hover { background: #fff; color: #5d6e3b; transform: translateY(-50%) translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.15); }
+
+        .stats { max-width: 1200px; margin: -1.5rem auto 0; padding: 0 2rem; position: relative; z-index: 3; animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .35s both; }
+        .stats-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .stat-card { flex: 1; min-width: 120px; background: var(--bg-white); border-radius: var(--radius-sm); padding: 1.2rem 1rem; text-align: center; box-shadow: var(--shadow-card); }
+        .stat-num { font-family: 'DM Sans', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--accent); line-height: 1; }
+        .stat-label { font-size: .72rem; font-weight: 700; color: var(--text-light); margin-top: .2rem; text-transform: uppercase; letter-spacing: .03em; }
+
+        .timeline-wrap { max-width: 800px; margin: 2rem auto 0; padding: 0 2rem 3rem; }
+        .year-group { margin-bottom: 1.5rem; }
+        .year-label { font-family: 'DM Sans', sans-serif; font-size: 1.15rem; font-weight: 800; color: var(--accent); margin-bottom: .6rem; padding-left: .2rem; }
+        .cert-card { background: var(--bg-white); border-radius: var(--radius-sm); padding: 1rem 1.2rem; margin-bottom: .6rem; box-shadow: var(--shadow-soft); border-left: 4px solid var(--accent); transition: all .3s cubic-bezier(.16,1,.3,1); animation: fadeUp .5s cubic-bezier(.16,1,.3,1) both; }
+        .cert-card.in-corso { border-left-color: #f59e0b; }
+        .cert-card:hover { transform: translateX(6px); box-shadow: var(--shadow-card); }
+        .cert-top { display: flex; align-items: flex-start; justify-content: space-between; gap: .8rem; }
+        .cert-title { font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 700; line-height: 1.25; color: var(--text-dark); flex: 1; }
+        .cert-hours { font-size: .72rem; font-weight: 800; color: var(--accent); background: #f2f5ec; padding: .15rem .55rem; border-radius: 50px; white-space: nowrap; flex-shrink: 0; }
+        .cert-meta { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: .35rem; font-size: .75rem; font-weight: 600; color: var(--text-light); }
+        .cert-meta span { display: inline-flex; align-items: center; gap: .25rem; }
+        .cert-badges { display: flex; gap: .35rem; flex-wrap: wrap; margin-top: .4rem; }
+        .cert-badge { display: inline-block; font-size: .65rem; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; padding: .12rem .5rem; border-radius: 50px; }
+        .badge-futura { color: #0d9488; background: #f0fdfa; }
+        .badge-evento { color: #d97706; background: #fffbeb; }
+        .badge-done { color: #10b981; background: #ecfdf5; }
+        .badge-progress { color: #f59e0b; background: #fffbeb; }
+
+        /* ── DigCompEdu profilo ── */
+        .digcomp { max-width: 800px; margin: 1.5rem auto 0; padding: 0 2rem; }
+        .digcomp-card { background: var(--bg-white); border-radius: var(--radius); padding: 1.4rem 1.6rem; box-shadow: var(--shadow-card); animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .45s both; }
+        .digcomp-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.2rem; flex-wrap: wrap; padding-bottom: 1rem; border-bottom: 1px solid #eef1f6; }
+        .digcomp-title { display: flex; flex-direction: column; }
+        .digcomp-label { font-family: 'DM Sans', sans-serif; font-size: 1.1rem; font-weight: 800; color: #1a535c; letter-spacing: -0.01em; }
+        .digcomp-sub { font-size: .68rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: .04em; margin-top: 0.15rem; }
+        .digcomp-stats { display: flex; gap: .6rem; }
+        .digcomp-num { background: linear-gradient(135deg, #1a535c 0%, #2d3047 100%); color: #fff; padding: .55rem 1rem; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: .1rem; min-width: 85px; }
+        .digcomp-num strong { font-family: 'DM Sans', sans-serif; font-size: 1.5rem; font-weight: 800; line-height: 1; }
+        .digcomp-num span { font-family: 'Nunito', sans-serif; font-size: .58rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; opacity: .85; }
+        .digcomp-areas { display: flex; flex-direction: column; gap: .65rem; }
+        .digcomp-area { display: grid; grid-template-columns: minmax(0,1fr) 120px 28px; align-items: center; gap: .8rem; }
+        .digcomp-area-label { font-size: .8rem; font-weight: 700; color: var(--text-dark); line-height: 1.3; }
+        .digcomp-area-id { display: inline-block; font-size: .6rem; font-weight: 800; color: #1a535c; background: #e6f1f3; padding: .1rem .42rem; border-radius: 6px; margin-right: .4rem; text-transform: uppercase; letter-spacing: .04em; vertical-align: 2px; }
+        .digcomp-area-bar { background: #e6ebef; border-radius: 50px; height: 8px; overflow: hidden; }
+        .digcomp-area-fill { background: linear-gradient(90deg, #5d6e3b, #1a535c); height: 100%; border-radius: 50px; transition: width 1.2s cubic-bezier(.16,1,.3,1); }
+        .digcomp-area-num { font-family: 'DM Sans', sans-serif; font-size: 1.05rem; font-weight: 800; color: #1a535c; text-align: right; }
+        .digcomp-note { font-size: .7rem; font-weight: 600; color: var(--text-light); margin-top: 1rem; line-height: 1.4; font-style: italic; }
+
+        .site-footer { max-width: 1200px; margin: 0 auto; padding: 1.5rem 2rem 2rem; font-size: .8rem; font-weight: 700; color: var(--text-light); display: flex; flex-direction: column; gap: .75rem; }
+        .footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
+        .footer-left { display: flex; align-items: center; gap: .5rem; }
+        .footer-pulse { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.4; transform:scale(.8); } }
+
+        @media (max-width: 520px) {
+            .hero { padding: 1.5rem 1.25rem 2.5rem; }
+            .hero-content { flex-direction: column; align-items: flex-start; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .timeline-wrap { padding: 0 1.25rem 2rem; }
+            .stats { padding: 0 1.25rem; }
+            .stat-card { min-width: 80px; padding: .8rem .5rem; }
+            .stat-num { font-size: 1.4rem; }
+            .digcomp { padding: 0 1.25rem; }
+            .digcomp-card { padding: 1rem 1.1rem; }
+            .digcomp-header { flex-direction: column; align-items: flex-start; gap: .8rem; }
+            .digcomp-stats { width: 100%; }
+            .digcomp-num { flex: 1; min-width: 0; padding: .45rem .6rem; }
+            .digcomp-num strong { font-size: 1.2rem; }
+            .digcomp-area { grid-template-columns: minmax(0,1fr) 70px 26px; gap: .55rem; }
+            .digcomp-area-label { font-size: .72rem; }
+            .digcomp-area-id { font-size: .55rem; padding: .08rem .35rem; margin-right: .3rem; }
+            .digcomp-area-num { font-size: .95rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <div class="hero-shapes"><canvas class="hero-canvas" id="heroNet"></canvas></div>
+        <div class="hero-content">
+            <div class="hero-left">
+                <div class="hero-icon"><i class="ti ti-school"></i></div>
+                <div class="hero-text">
+                    <h1>Formazione Scuola Futura</h1>
+                    <p>Andrea Cerioli &mdash; Animatore Digitale</p>
+                </div>
+            </div>
+            <a href="index.html" class="back-btn">&larr; Torna al Portale</a>
+        </div>
+    </header>
+
+    <div class="stats"><div class="stats-row">
+        <div class="stat-card"><div class="stat-num">27</div><div class="stat-label">Percorsi formativi</div></div>
+        <div class="stat-card"><div class="stat-num">23</div><div class="stat-label">Completati</div></div>
+        <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">In corso</div></div>
+        <div class="stat-card"><div class="stat-num">393</div><div class="stat-label">Ore di formazione</div></div>
+    </div></div>
+
+    <div class="digcomp">
+        <div class="digcomp-card">
+            <div class="digcomp-header">
+                <div class="digcomp-title">
+                    <span class="digcomp-label">Profilo Transizione Digitale</span>
+                    <span class="digcomp-sub">Framework europeo DigCompEdu &middot; Scuola Futura</span>
+                </div>
+                <div class="digcomp-stats">
+                    <div class="digcomp-num"><strong>21</strong><span>percorsi</span></div>
+                    <div class="digcomp-num"><strong>389</strong><span>ore certificate</span></div>
+                </div>
+            </div>
+            <div class="digcomp-areas">
+                <div class="digcomp-area">
+                    <div class="digcomp-area-label"><span class="digcomp-area-id">Area 1</span>Coinvolgimento e valorizzazione professionale</div>
+                    <div class="digcomp-area-bar"><div class="digcomp-area-fill" style="width:75%"></div></div>
+                    <div class="digcomp-area-num">12</div>
+                </div>
+                <div class="digcomp-area">
+                    <div class="digcomp-area-label"><span class="digcomp-area-id">Area 2</span>Risorse digitali</div>
+                    <div class="digcomp-area-bar"><div class="digcomp-area-fill" style="width:100%"></div></div>
+                    <div class="digcomp-area-num">16</div>
+                </div>
+                <div class="digcomp-area">
+                    <div class="digcomp-area-label"><span class="digcomp-area-id">Area 3</span>Pratiche di insegnamento e apprendimento</div>
+                    <div class="digcomp-area-bar"><div class="digcomp-area-fill" style="width:93.75%"></div></div>
+                    <div class="digcomp-area-num">15</div>
+                </div>
+                <div class="digcomp-area">
+                    <div class="digcomp-area-label"><span class="digcomp-area-id">Area 4</span>Valutazione dell'apprendimento</div>
+                    <div class="digcomp-area-bar"><div class="digcomp-area-fill" style="width:12.5%"></div></div>
+                    <div class="digcomp-area-num">2</div>
+                </div>
+                <div class="digcomp-area">
+                    <div class="digcomp-area-label"><span class="digcomp-area-id">Area 5</span>Valorizzazione delle potenzialit&agrave; degli studenti</div>
+                    <div class="digcomp-area-bar"><div class="digcomp-area-fill" style="width:50%"></div></div>
+                    <div class="digcomp-area-num">8</div>
+                </div>
+                <div class="digcomp-area">
+                    <div class="digcomp-area-label"><span class="digcomp-area-id">Area 6</span>Favorire lo sviluppo delle competenze digitali degli studenti</div>
+                    <div class="digcomp-area-bar"><div class="digcomp-area-fill" style="width:56.25%"></div></div>
+                    <div class="digcomp-area-num">9</div>
+                </div>
+            </div>
+            <p class="digcomp-note">Distribuzione dei 21 percorsi completati sulle sei aree di competenza DigCompEdu. Un singolo percorso pu&ograve; coprire pi&ugrave; aree: il totale per area (62) supera il numero dei corsi unici.</p>
+        </div>
+    </div>
+
+    <div class="timeline-wrap">
+
+        <!-- ═══ 2026 ═══ -->
+        <div class="year-group">
+            <div class="year-label">2026</div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Educazione alla cybersicurezza e cittadinanza digitale: competenze per insegnanti e allievi nella scuola e nella vita onlife</div><span class="cert-hours">20 ore</span></div>
+                <div class="cert-meta"><span>Polo Formativo 2024-2026 &mdash; Roccapiemonte</span><span>09/06/2026</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Intelligenza Artificiale e governance scolastica: sfide e opportunit&agrave;</div><span class="cert-hours">20 ore</span></div>
+                <div class="cert-meta"><span>Polo Formativo 2024-2026 &mdash; Roccapiemonte</span><span>09/06/2026</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">A scuola di prompting: l'AI generativa per la scuola del futuro</div><span class="cert-hours">20 ore</span></div>
+                <div class="cert-meta"><span>Polo Formativo 2024-2026 &mdash; Roccapiemonte</span><span>09/06/2026</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">#IA RaccontIAmo InsegnIAmo ApprendIAmo IncludIAmo &mdash; MOOC</div><span class="cert-hours">12 ore</span></div>
+                <div class="cert-meta"><span>EFT Veneto</span><span>09/06/2026</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">AI Literacy: la scuola al tempo dell'IA</div><span class="cert-hours">4 ore</span></div>
+                <div class="cert-meta"><span>Università Cattolica del Sacro Cuore — Brescia</span><span>18/04/2026</span></div>
+                <div class="cert-badges"><span class="cert-badge" style="background:#e0e7ff;color:#4338ca">Università</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Vibe Coding per le STEAM: AI e Tinkering per la creazione di artefatti didattici interattivi</div><span class="cert-hours">25 ore</span></div>
+                <div class="cert-meta"><span>Polo Formativo Palma di Montechiaro</span><span>10/04/2026</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Educare con l'AI: Linee Guida AI 2025 per un apprendimento inclusivo e innovativo</div><span class="cert-hours">20 ore</span></div>
+                <div class="cert-meta"><span>Polo Formativo Arezzo</span><span>01/02/2026</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+        </div>
+
+        <!-- ═══ 2025 ═══ -->
+        <div class="year-group">
+            <div class="year-label">2025</div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Cogito Ergo Prompt &mdash; Ripensare l'apprendimento tra mediazione umana e intelligenze artificiali</div><span class="cert-hours">20 ore</span></div>
+                <div class="cert-meta"><span>Polo Formativo Venezia</span><span>01/12/2025</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Sicurezza informatica &mdash; Navigare sicuri: tecniche e strategie di Cybersecurity per educatori</div></div>
+                <div class="cert-meta"><span>Polo Didattica digitale &mdash; Roma Montale</span><span>03/11/2025</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">AI Comics Lab &mdash; Fumetti e Intelligenza Artificiale per la didattica</div><span class="cert-hours">15 ore</span></div>
+                <div class="cert-meta"><span>EFT Abruzzo</span><span>27/10/2025</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">#A I Care</div><span class="cert-hours">20 ore</span></div>
+                <div class="cert-meta"><span>EFT Sicilia</span><span>20/10/2025</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card in-corso">
+                <div class="cert-top"><div class="cert-title">Insegnare con l'IA: prompt, strumenti e metodologie</div></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-progress"><i class="ti ti-clock-hour-4"></i> In corso</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Stati Generali della Scuola Digitale 2025</div><span class="cert-hours">2 giorni</span></div>
+                <div class="cert-meta"><span>Impara Digitale &mdash; ChorusLife Arena, Bergamo</span><span>20&ndash;21/02/2025</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-evento">Evento nazionale</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Serious Games</div></div>
+                <div class="cert-meta"><span>Polo Transizione digitale &mdash; Napoli Caro</span><span>11/02/2025</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Fake Hunters: Smascheriamo la disinformazione</div><span class="cert-hours">20 ore</span></div>
+                <div class="cert-meta"><span>Polo Didattica digitale &mdash; Busto Arsizio</span><span>07/02/2025</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+        </div>
+
+        <!-- ═══ 2024 ═══ -->
+        <div class="year-group">
+            <div class="year-label">2024</div>
+
+            <div class="cert-card in-corso">
+                <div class="cert-top"><div class="cert-title">Didattica con l'AI: App mobile arricchite dal Machine Learning</div></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-progress"><i class="ti ti-clock-hour-4"></i> In corso</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Didattica 4.0: Strumenti e buone pratiche per un curricolo digitale innovativo</div><span class="cert-hours">24 ore</span></div>
+                <div class="cert-meta"><span>Polo Transizione digitale &mdash; Taranto</span><span>23/12/2024</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Creare Siti Web e Applicazioni</div><span class="cert-hours">20 ore</span></div>
+                <div class="cert-meta"><span>Polo Transizione digitale &mdash; Napoli</span><span>22/12/2024</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">L'AI Generativa a supporto della didattica: tecnologie, prospettive e applicazioni</div><span class="cert-hours">24 ore</span></div>
+                <div class="cert-meta"><span>Polo Transizione digitale &mdash; Taranto</span><span>17/12/2024</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Dal Disegno 3D alla Stampa 3D</div><span class="cert-hours">16 ore</span></div>
+                <div class="cert-meta"><span>Polo Transizione digitale &mdash; Vicenza</span><span>10/06/2024</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Intelligenza Artificiale e STEM &mdash; Seconda edizione</div><span class="cert-hours">25 ore</span></div>
+                <div class="cert-meta"><span>Polo Didattica digitale &mdash; Perugia</span><span>14/05/2024</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Lesson Plan con AI: piattaforme in rete per progetti innovativi</div><span class="cert-hours">20 ore</span></div>
+                <div class="cert-meta"><span>Polo Didattica digitale &mdash; Tropea</span><span>11/05/2024</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">L'Animatore Digitale ai tempi dell'AI &mdash; Dialoghi e progettualit&agrave; (TD81)</div><span class="cert-hours">14 ore</span></div>
+                <div class="cert-meta"><span>Polo Transizione digitale &mdash; Bergamo</span><span>29/04/2024</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Tecnologie didattiche all'epoca dell'Intelligenza Artificiale</div><span class="cert-hours">12 ore</span></div>
+                <div class="cert-meta"><span>Polo Didattica digitale &mdash; Napoli Ferraris</span><span>25/03/2024</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card">
+                <div class="cert-top"><div class="cert-title">Didattica della Scrittura e AI: narrare, descrivere, argomentare nella transizione digitale</div><span class="cert-hours">12 ore</span></div>
+                <div class="cert-meta"><span>Polo Transizione digitale &mdash; Brindisi</span><span>10/03/2024</span></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-done"><i class="ti ti-circle-check"></i> Completato</span></div>
+            </div>
+
+            <div class="cert-card in-corso">
+                <div class="cert-top"><div class="cert-title">L'Animatore Digitale ai tempi dell'AI &mdash; Dialoghi e progettualit&agrave; (TD76)</div></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-progress"><i class="ti ti-clock-hour-4"></i> In corso</span></div>
+            </div>
+
+            <div class="cert-card in-corso">
+                <div class="cert-top"><div class="cert-title">Ambienti di apprendimento innovativi nella didattica 4.0</div></div>
+                <div class="cert-badges"><span class="cert-badge badge-futura">Scuola Futura</span><span class="cert-badge badge-progress"><i class="ti ti-clock-hour-4"></i> In corso</span></div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-top">
+            <div class="footer-left"><div class="footer-pulse"></div><span>Andrea Cerioli &mdash; Animatore Digitale</span></div>
+            <span>&copy; 2026 Andrea Cerioli — Scuola Sacra Famiglia. Tutti i diritti riservati.</span>
+        </div>
+    </footer>
+
+<script>
+(function(){
+    var c=document.getElementById("heroNet");if(!c)return;
+    var ctx=c.getContext("2d"),W,H;
+    function resize(){c.width=c.parentElement.offsetWidth;c.height=c.parentElement.offsetHeight;W=c.width;H=c.height;}
+    resize();window.addEventListener("resize",resize);
+    var pts=[];for(var i=0;i<45;i++){pts.push({x:Math.random()*2000,y:Math.random()*400,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.2,r:Math.random()*1.5+.8,p:Math.random()*Math.PI*2});}
+    function draw(){
+        ctx.clearRect(0,0,W,H);var t=Date.now()*.001;
+        for(var i=0;i<pts.length;i++){
+            var a=pts[i];a.x+=a.vx;a.y+=a.vy;
+            if(a.x<0||a.x>W)a.vx*=-1;if(a.y<0||a.y>H)a.vy*=-1;
+            for(var j=i+1;j<pts.length;j++){
+                var b=pts[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);
+                if(d<130){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+                ctx.strokeStyle="rgba(255,255,255,"+((1-d/130)*.12)+")";ctx.lineWidth=.5;ctx.stroke();}
+            }
+            var gl=.18+Math.sin(t*1.5+a.p)*.08;
+            ctx.beginPath();ctx.arc(a.x,a.y,a.r,0,Math.PI*2);
+            ctx.fillStyle="rgba(255,255,255,"+gl+")";ctx.fill();
+        }
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
+</script>
+</body>
+</html>
