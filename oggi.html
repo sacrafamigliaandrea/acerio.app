@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Oggi · Agenda</title>
+
+<!-- ===== PWA / iPhone "Aggiungi a Home" ===== -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Oggi">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a535c">
+<link rel="apple-touch-icon" href="acq.jpg">
+<link rel="icon" href="acq.jpg">
+
+<style>
+:root{
+  --green:#1a535c; --green-d:#123e45; --green-bg:#eef6f7; --olive:#6b7c3e;
+  --bg:#f1f5f3; --card:#ffffff; --ink:#243530; --muted:#5d6b65; --faint:#94a59d;
+  --line:#dfe8e3; --pri:#ea7a1c; --sec:#2563eb; --imp:#64748b;
+  --ok:#2d6a4f; --warn:#b45309;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg); color:var(--ink);
+  min-height:100vh; min-height:100dvh;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.wrap{max-width:520px;margin:0 auto;padding:14px 14px 40px}
+
+/* ---------- LOCK ---------- */
+#lock{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;gap:18px}
+#lock.hide{display:none}
+.lk-badge{width:92px;height:92px;border-radius:23px;overflow:hidden;background:#fff;box-shadow:0 12px 30px rgba(26,83,92,.28)}
+/* piccolo zoom per nascondere la cornice arrotondata negli angoli del badge */
+.lk-badge img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.05)}
+.lk-title{font-size:20px;font-weight:800;letter-spacing:-.02em}
+.lk-sub{color:var(--muted);font-size:13.5px;text-align:center;margin-top:-8px;line-height:1.45}
+.lk-form{width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px}
+.lk-form input{width:100%;padding:14px 14px;border:1.5px solid var(--line);border-radius:14px;font-size:16px;background:#fff;outline:none}
+.lk-form input:focus{border-color:var(--green)}
+.lk-form button{width:100%;padding:14px;border:none;border-radius:14px;background:var(--green);color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+.lk-form button:active{background:var(--green-d)}
+.lk-err{color:#dc2626;font-size:13px;text-align:center;min-height:18px;font-weight:600}
+
+/* ---------- APP ---------- */
+#app{display:none}
+#app.show{display:block}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.hd-day{display:block;font-size:13px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.06em}
+.hd-date{display:inline-flex;align-items:center;gap:7px;font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin-top:2px}
+.hd-actions{display:flex;gap:8px;flex:0 0 auto}
+.icbtn{flex:0 0 auto;width:42px;height:42px;border-radius:13px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;cursor:pointer;color:var(--muted)}
+.icbtn.primary{background:var(--green);border-color:var(--green);color:#fff}
+.icbtn.primary:active{background:var(--green-d)}
+.icbtn:active{background:var(--green-bg)}
+.icbtn svg{width:20px;height:20px}
+.icbtn.spin svg{animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ---------- calendario mensile (dentro la sheet a comparsa) ---------- */
+.cal{background:#fff;border-radius:18px;padding:2px 2px 4px}
+.cal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.cal-month{font-size:15.5px;font-weight:800;color:var(--green);text-transform:capitalize;letter-spacing:-.01em}
+.cal-ctrls{display:flex;align-items:center;gap:6px}
+.cal-ctrls button{border:1px solid var(--line);background:#fff;border-radius:10px;cursor:pointer;color:var(--muted);font-weight:700;height:34px}
+.cal-ctrls .cal-arrow{width:34px;display:grid;place-items:center;padding:0}
+.cal-ctrls .cal-arrow svg{width:17px;height:17px}
+.cal-ctrls .cal-today{padding:0 13px;font-size:13px;color:var(--green);border-color:var(--green-bg);background:var(--green-bg)}
+.cal-ctrls button:active{background:var(--green-bg)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dow{text-align:center;font-size:10.5px;font-weight:800;color:var(--faint);padding:2px 0 6px;text-transform:uppercase}
+.cal-cell{aspect-ratio:1/1;border:none;background:none;border-radius:11px;font-size:14.5px;font-weight:700;color:var(--ink);cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;padding:0}
+.cal-cell.empty{visibility:hidden;cursor:default}
+.cal-cell.weekend{color:var(--faint)}
+.cal-cell:active{background:var(--green-bg)}
+.cal-cell.today{box-shadow:inset 0 0 0 2px var(--olive);color:var(--olive)}
+.cal-cell.sel{background:var(--green);color:#fff;box-shadow:none}
+.cal-cell .dot{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--olive)}
+.cal-cell.sel .dot{background:#fff}
+
+.sec-h{font-size:12px;font-weight:800;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;margin:18px 2px 8px;display:flex;align-items:center;justify-content:space-between}
+
+.row{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 14px;margin-bottom:9px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 1px 2px rgba(15,23,42,.03)}
+.row.susp{opacity:.7}
+.row.susp .topic{text-decoration:line-through;color:var(--faint)}
+.r-time{flex:0 0 auto;text-align:center;min-width:50px;padding-top:1px}
+.r-time .t1{font-size:15px;font-weight:800}
+.r-time .t2{font-size:11.5px;color:var(--faint);font-weight:600;margin-top:1px}
+.r-body{flex:1 1 auto;min-width:0}
+.r-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cls{display:inline-flex;align-items:center;font-size:12.5px;font-weight:800;padding:3px 9px;border-radius:8px;color:#fff;white-space:nowrap}
+.cls.pri{background:var(--pri)} .cls.sec{background:var(--sec)} .cls.imp{background:var(--imp)}
+.topic{font-size:15.5px;font-weight:700;margin-top:6px;line-height:1.3;word-break:break-word}
+.topic.empty{color:var(--faint);font-weight:600;font-style:italic;font-size:14px}
+.r-note{font-size:13.5px;color:var(--muted);margin-top:7px;line-height:1.45;white-space:pre-wrap;word-break:break-word;border-left:3px solid var(--line);padding-left:9px;cursor:pointer}
+.r-actions{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
+.r-link,.r-edit{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;text-decoration:none;border-radius:9px;padding:5px 10px;cursor:pointer;border:1px solid var(--line)}
+.r-link{color:var(--green);background:var(--green-bg);border-color:#cfe0db}
+.r-edit{color:var(--muted);background:#eef3f0}
+.r-link svg,.r-edit svg{width:13px;height:13px}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px}
+.badge.done{color:var(--ok);background:rgba(5,150,105,.12)}
+.badge.susp{color:var(--warn);background:rgba(217,119,6,.14)}
+.badge svg{width:12px;height:12px}
+
+.empty-card{background:var(--card);border:1px dashed var(--line);border-radius:18px;padding:30px 20px;text-align:center;color:var(--muted)}
+.empty-card svg{width:42px;height:42px;color:var(--faint);margin-bottom:10px}
+.empty-card .et{font-size:16px;font-weight:700;color:var(--ink)}
+.empty-card .es{font-size:13.5px;margin-top:5px}
+.empty-card .ec-btn{margin-top:16px;display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:none;border-radius:13px;padding:11px 18px;font-size:14.5px;font-weight:700;cursor:pointer}
+.empty-card .ec-btn:active{background:var(--green-d)}
+.empty-card .ec-btn svg{width:18px;height:18px;color:#fff;margin:0}
+
+.note-box{background:linear-gradient(180deg,#fffdf3,#fff9e6);border:1px solid #f3e6b8;border-radius:16px;padding:13px 15px;font-size:14px;line-height:1.5;color:#5c4a16;white-space:pre-wrap;word-break:break-word;cursor:pointer;min-height:46px}
+.note-box.empty{color:#b39a52;font-style:italic;display:flex;align-items:center;gap:8px}
+.note-box.empty svg{width:16px;height:16px;flex:0 0 auto}
+
+.foot{margin-top:24px;text-align:center;color:var(--faint);font-size:11.5px;line-height:1.6}
+.foot b{color:var(--muted)}
+
+/* ---------- editor bottom-sheet ---------- */
+.sheet{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:flex-end;z-index:50}
+.sheet.show{display:flex}
+.sheet-card{background:#fff;width:100%;max-width:520px;margin:0 auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(0,0,0,.2)}
+.sheet-title{font-size:15px;font-weight:800;margin-bottom:4px}
+.sheet-sub{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.sheet textarea{width:100%;min-height:130px;border:1.5px solid var(--line);border-radius:14px;padding:12px;font-size:16px;font-family:inherit;line-height:1.5;resize:vertical;outline:none;color:var(--ink)}
+.sheet textarea:focus{border-color:var(--green)}
+.sheet-actions{display:flex;gap:10px;margin-top:12px}
+.sheet-actions button{flex:1;padding:13px;border-radius:13px;font-size:15px;font-weight:700;cursor:pointer;border:none}
+#edCancel{background:#eef0f6;color:var(--ink)}
+#edSave{background:var(--green);color:#fff}
+#edSave:disabled{opacity:.55}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;padding:11px 18px;border-radius:12px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:90%}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- ===================== LOCK ===================== -->
+<div id="lock">
+  <div class="lk-badge">
+    <img src="acq.jpg" alt="Logo Andrea Cerioli">
+  </div>
+  <div class="lk-title">Agenda · Oggi</div>
+  <div class="lk-sub">Inserisci la tua password della Suite<br>per vedere e annotare gli impegni.</div>
+  <form class="lk-form" id="lockForm" autocomplete="off">
+    <input type="password" id="pw" placeholder="Password" autocomplete="current-password" inputmode="text" enterkeyhint="go">
+    <button type="submit" id="lkBtn">Apri</button>
+    <div class="lk-err" id="lkErr"></div>
+  </form>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div id="app">
+  <div class="wrap">
+    <div class="hd">
+      <div>
+        <div class="hd-day" id="hdDay">—</div>
+        <div class="hd-date" id="hdDate">—</div>
+      </div>
+      <div class="hd-actions">
+        <button class="icbtn primary" id="calOpenBtn" title="Apri il calendario" aria-label="Calendario">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </button>
+        <button class="icbtn" id="refreshBtn" title="Aggiorna dal Google Sheet" aria-label="Aggiorna">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="agenda"></div>
+
+    <div id="notesWrap" style="display:none">
+      <div class="sec-h">Note del giorno</div>
+      <div class="note-box" id="dayNote"></div>
+    </div>
+
+    <div class="foot" id="foot"></div>
+  </div>
+</div>
+
+<!-- ===================== EDITOR SHEET ===================== -->
+<div class="sheet" id="editor">
+  <div class="sheet-card">
+    <div class="sheet-title" id="edTitle">Nota</div>
+    <div class="sheet-sub" id="edSub"></div>
+    <textarea id="edText" placeholder="Scrivi qui…" enterkeyhint="done"></textarea>
+    <div class="sheet-actions">
+      <button id="edCancel" type="button">Annulla</button>
+      <button id="edSave" type="button">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CALENDARIO (a comparsa) ===================== -->
+<div class="sheet" id="calSheet">
+  <div class="sheet-card">
+    <div class="cal">
+      <div class="cal-top">
+        <div class="cal-month" id="calMonth">—</div>
+        <div class="cal-ctrls">
+          <button class="cal-arrow" id="calPrev" title="Mese precedente" aria-label="Mese precedente">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="cal-today" id="calToday">Oggi</button>
+          <button class="cal-arrow" id="calNext" title="Mese successivo" aria-label="Mese successivo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ======================= COSTANTI (identiche a suite.html) ======================= */
+const WEEKS = 33;
+const MONTHS_FULL = ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
+const DAY_FULL = ["domenica","lunedì","martedì","mercoledì","giovedì","venerdì","sabato"];
+const DAY_NAMES = ["Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
+const DEFAULT_SYNC_URL = "https://script.google.com/macros/s/AKfycbyBxrxcFF3n3hxF9FDdaNz0FiEzWOWBvruG76umJ5Bk-WOwrqqUcDHvgeOf04mwuGaZ/exec";
+const SYNC_TOKEN = "sk_acerio_sync_7Qx2Lp9Vd4Rn8Tz";
+const PBKDF2_ITER = 210000;
+const BLOB_KEY = "acerio-oggi-blob";   // cache locale (solo l'envelope cifrato, per uso offline)
+
+// Stesso gate del proprietario di suite.html: con OWNER_GATE impostato, la chiave
+// del gate coincide con quella che cifra i dati → posso leggere E riscrivere.
+const OWNER_GATE = {"salt":"q3Z+vVBqh4k777OmVPFmtg==","check":"ysEi1n72bw44n9b1WVFYyXkIYfuIBBE4knxZf+WDhyKWVH5bjQmSjw=="};
+const GATE_MARKER = "ACERIO-OWNER";
+
+/* ======================= CRYPTO (AES-256-GCM) — identica a suite.html ======================= */
+const enc = new TextEncoder(), dec = new TextDecoder();
+function b64(buf){let s="";const b=new Uint8Array(buf);for(let i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s);}
+function unb64(str){const s=atob(str);const b=new Uint8Array(s.length);for(let i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b;}
+async function deriveKey(password, salt){
+  const mat = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    {name:"PBKDF2", salt, iterations:PBKDF2_ITER, hash:"SHA-256"},
+    mat, {name:"AES-GCM", length:256}, false, ["encrypt","decrypt"]);
+}
+async function decryptEnvelope(envStr, key){
+  const env = JSON.parse(envStr);
+  const raw = unb64(env.ct); const iv = raw.slice(0,12); const data = raw.slice(12);
+  const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv}, key, data);
+  return JSON.parse(dec.decode(pt));
+}
+async function encryptEnvelope(obj){
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({name:"AES-GCM", iv}, cryptoKey, enc.encode(JSON.stringify(obj)));
+  const out = new Uint8Array(12 + ct.byteLength); out.set(iv,0); out.set(new Uint8Array(ct),12);
+  return JSON.stringify({v:1, salt:b64(cryptoSalt), iter:PBKDF2_ITER, ct:b64(out)});
+}
+async function verifyOwnerGate(key){
+  try{
+    const raw = unb64(OWNER_GATE.check); const iv = raw.slice(0,12); const data = raw.slice(12);
+    const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv}, key, data);
+    return dec.decode(pt) === GATE_MARKER;
+  }catch(e){ return false; }
+}
+
+/* ======================= SYNC ======================= */
+async function remoteCall(payload){
+  const res = await fetch(DEFAULT_SYNC_URL, {method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(Object.assign({token:SYNC_TOKEN}, payload))});
+  return res.json();
+}
+async function remoteLoad(){ const r=await remoteCall({action:"load"}); if(!r.ok) throw new Error(r.error||"load"); return r.data||""; }
+async function remoteSave(env){ const r=await remoteCall({action:"save",data:env}); if(!r.ok) throw new Error(r.error||"save"); }
+
+/* ======================= HELPERS (allineati a suite.html) ======================= */
+const $ = s=>document.querySelector(s);
+let state = null, cryptoKey = null, cryptoSalt = null;
+let viewDate = startOfDay(new Date());
+let monthCursor = firstOfMonth(new Date());   // primo giorno del mese mostrato nel calendario
+let lastFromCache = false;
+const DOW_LABELS = ["L","M","M","G","V","S","D"];
+const cls = id=>state.classes.find(c=>c.id===id);
+const app = id=>state.apps.find(a=>a.id===id);
+function lessonKey(w,sid){return w+"|"+sid;}
+function getLesson(w,sid){return state.lessons[lessonKey(w,sid)]||null;}
+function slotAt(d,p){return state.slots.find(s=>s.day===d&&s.period===p)||null;}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}
+function isSchoolWeek(w){return w>=0 && w<WEEKS;}
+function startOfDay(d){const x=new Date(d);x.setHours(0,0,0,0);return x;}
+function firstOfMonth(d){return new Date(d.getFullYear(), d.getMonth(), 1);}
+function regStartOfWeek(d){
+  const x=new Date(d); x.setHours(0,0,0,0);
+  const dow=x.getDay(); x.setDate(x.getDate()+(dow===0?-6:1-dow));
+  return x;
+}
+function weekOfDate(d){
+  const startMon=new Date(state.start+"T00:00:00");
+  const mon=regStartOfWeek(d);
+  return Math.round((mon-startMon)/(7*86400000));
+}
+function dayIdxOf(d){return (d.getDay()+6)%7;}   // 0=Lun … 6=Dom
+function lv(c){return c?(c.level==="primaria"?"pri":c.level==="secondaria"?"sec":"imp"):"";}
+function isoDate(d){const p=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());}
+function sameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2200);}
+
+/* ======================= LOCK FLOW ======================= */
+$("#lockForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const pwd = $("#pw").value;
+  const btn = $("#lkBtn"), err = $("#lkErr");
+  if(!pwd){ err.textContent="Inserisci la password."; return; }
+  btn.disabled = true; btn.textContent="Verifica…"; err.textContent="";
+  try{
+    const key = await deriveKey(pwd, unb64(OWNER_GATE.salt));
+    const ok = await verifyOwnerGate(key);
+    if(!ok){ err.textContent="Password errata."; btn.disabled=false; btn.textContent="Apri"; return; }
+    cryptoKey = key;
+    cryptoSalt = unb64(OWNER_GATE.salt);   // stesso salt del data-envelope → posso ri-cifrare
+    $("#pw").value = "";
+    viewDate = startOfDay(new Date());
+    monthCursor = firstOfMonth(viewDate);
+    await loadAndRender(true);
+    $("#lock").classList.add("hide");
+    $("#app").classList.add("show");
+  }catch(ex){
+    err.textContent = "Errore: "+(ex.message||ex);
+    btn.disabled=false; btn.textContent="Apri";
+  }
+});
+
+/* ======================= LOAD + DECRYPT ======================= */
+async function loadAndRender(allowCache){
+  let envStr = "";
+  lastFromCache = false;
+  try{
+    envStr = await remoteLoad();
+    if(envStr) localStorage.setItem(BLOB_KEY, envStr);
+  }catch(ex){
+    if(allowCache){ envStr = localStorage.getItem(BLOB_KEY) || ""; lastFromCache = !!envStr; }
+    if(!envStr) throw new Error("Niente rete e nessun dato salvato. " + (ex.message||ex));
+  }
+  if(!envStr){ throw new Error("Il Foglio è vuoto: apri prima la Suite e salva."); }
+  state = await decryptEnvelope(envStr, cryptoKey);
+  render();
+}
+
+/* ======================= RENDER ======================= */
+function render(){
+  const wk = weekOfDate(viewDate);
+  const dayIdx = dayIdxOf(viewDate);
+  const days = state.days || 5;
+  const periods = state.periods || 6;
+  const today = startOfDay(new Date());
+  const isToday = sameDay(viewDate, today);
+
+  // intestazione
+  $("#hdDay").textContent = DAY_FULL[viewDate.getDay()];
+  $("#hdDate").textContent = viewDate.getDate()+" "+MONTHS_FULL[viewDate.getMonth()]+" "+viewDate.getFullYear();
+
+  renderCalendar();
+
+  const ag = $("#agenda");
+  const isWeekend = dayIdx >= days;
+
+  if(!isSchoolWeek(wk) || isWeekend){
+    ag.innerHTML = emptyCard(
+      isWeekend ? "Giornata libera" : "Nessuna lezione",
+      isWeekend ? "Questo giorno non è in orario." : "Sei fuori dal periodo scolastico."
+    );
+  } else {
+    let rows = "", count = 0;
+    for(let p=0; p<periods; p++){
+      const s = slotAt(dayIdx, p);
+      if(!s) continue;
+      const c = cls(s.classId);
+      const l = getLesson(wk, s.id);
+      const a = l && l.appId ? app(l.appId) : null;
+      const topic = a ? a.name : (l && l.appName ? l.appName : "");
+      const url = a ? a.url : "";
+      const susp = !!(l && l.suspended);
+      const done = !!(l && l.done && !susp);
+      const t1 = (state.times && state.times[p]) || "";
+      const t2 = (state.timeEnds && state.timeEnds[p]) || "";
+      count++;
+
+      let badges = "";
+      if(susp) badges += "<span class='badge susp'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.4' stroke-linecap='round'><line x1='10' y1='15' x2='10' y2='9'/><line x1='14' y1='15' x2='14' y2='9'/></svg>sospesa</span>";
+      else if(done) badges += "<span class='badge done'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>fatta</span>";
+
+      const hasNote = !!(l && l.notes);
+      rows += "<div class='row"+(susp?" susp":"")+"'>"
+        + "<div class='r-time'><div class='t1'>"+esc(t1)+"</div><div class='t2'>"+esc(t2)+"</div></div>"
+        + "<div class='r-body'>"
+        +   "<div class='r-top'>"+(c?("<span class='cls "+lv(c)+"'>"+esc(c.name)+"</span>"):"")+badges+"</div>"
+        +   (topic ? "<div class='topic'>"+esc(topic)+"</div>" : "<div class='topic empty'>Da assegnare</div>")
+        +   (hasNote ? "<div class='r-note' data-editnote='"+esc(s.id)+"'>"+esc(l.notes)+"</div>" : "")
+        +   "<div class='r-actions'>"
+        +     (url ? "<a class='r-link' href='"+esc(url)+"' target='_blank' rel='noopener'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/><polyline points='15 3 21 3 21 9'/><line x1='10' y1='14' x2='21' y2='3'/></svg>Apri</a>" : "")
+        +     "<button class='r-edit' data-editnote='"+esc(s.id)+"' type='button'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 20h9'/><path d='M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z'/></svg>"+(hasNote?"Modifica nota":"Aggiungi nota")+"</button>"
+        +   "</div>"
+        + "</div></div>";
+    }
+    ag.innerHTML = count
+      ? "<div class='sec-h'><span>Lezioni"+(isToday?" di oggi":"")+" · "+count+"</span></div>"+rows
+      : emptyCard("Nessuna lezione", "Nessuna ora in orario questo giorno.");
+  }
+
+  // ---- Note del giorno (weekNotes[week][dayIndex]) — modificabili nei giorni di lezione
+  const nw = $("#notesWrap"), nb = $("#dayNote");
+  if(isWeekend){
+    nw.style.display = "none";
+  } else {
+    nw.style.display = "";
+    const txt = readDayNote(wk, dayIdx);
+    if(txt && txt.trim()){
+      nb.className = "note-box";
+      nb.textContent = txt;
+    } else {
+      nb.className = "note-box empty";
+      nb.innerHTML = "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><line x1='12' y1='5' x2='12' y2='19'/><line x1='5' y1='12' x2='19' y2='12'/></svg>Tocca per aggiungere una nota…";
+    }
+    nb.dataset.w = wk; nb.dataset.d = dayIdx;
+  }
+
+  // footer
+  const tt = new Date().toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
+  $("#foot").innerHTML = (lastFromCache ? "Dati offline (cache locale)" : "Sincronizzato "+tt)
+    + " · le note salvate vanno sulla <b>Suite</b>";
+}
+
+function readDayNote(w, dayIdx){
+  const wn = state.weekNotes || {};
+  const v = wn[w];
+  if(v && typeof v === "object") return v[dayIdx] || "";
+  if(typeof v === "string" && dayIdx===0) return v;
+  return "";
+}
+
+function emptyCard(t, s){
+  return "<div class='empty-card'>"
+    + "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>"
+    + "<div class='et'>"+esc(t)+"</div><div class='es'>"+esc(s)+"</div>"
+    + "<button class='ec-btn' type='button' data-opencal><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>Apri il calendario</button>"
+    + "</div>";
+}
+
+/* ======================= CALENDARIO MENSILE ======================= */
+// C'è "contenuto" in un giorno se ha una nota del giorno o una lezione con dati.
+function dayHasContent(date){
+  const w = weekOfDate(date);
+  const di = dayIdxOf(date);
+  if(di >= (state.days||5)) return false;       // weekend: nessun puntino
+  const note = readDayNote(w, di);
+  if(note && note.trim()) return true;
+  if(!isSchoolWeek(w)) return false;
+  for(const s of state.slots){
+    if(s.day !== di) continue;
+    const l = getLesson(w, s.id);
+    if(l && (l.appId || l.notes || l.done || l.suspended)) return true;
+  }
+  return false;
+}
+function renderCalendar(){
+  const today = startOfDay(new Date());
+  const y = monthCursor.getFullYear(), m = monthCursor.getMonth();
+  $("#calMonth").textContent = MONTHS_FULL[m] + " " + y;
+
+  const firstIdx = dayIdxOf(new Date(y, m, 1));   // 0=Lun … colonna iniziale
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+  const days = state.days || 5;
+
+  let html = "";
+  for(let i=0;i<7;i++) html += "<div class='cal-dow'>"+DOW_LABELS[i]+"</div>";
+  for(let i=0;i<firstIdx;i++) html += "<button class='cal-cell empty' disabled></button>";
+  for(let d=1; d<=daysInMonth; d++){
+    const date = new Date(y, m, d);
+    const di = dayIdxOf(date);
+    const isToday = sameDay(date, today);
+    const isSel = sameDay(date, viewDate);
+    const weekend = di >= days;
+    let c = "cal-cell";
+    if(weekend) c += " weekend";
+    if(isToday) c += " today";
+    if(isSel) c += " sel";
+    const dot = dayHasContent(date) ? "<span class='dot'></span>" : "";
+    html += "<button class='"+c+"' data-day='"+d+"'>"+d+dot+"</button>";
+  }
+  $("#calGrid").innerHTML = html;
+}
+const calSheet = $("#calSheet");
+function openCal(){ monthCursor = firstOfMonth(viewDate); renderCalendar(); calSheet.classList.add("show"); }
+function closeCal(){ calSheet.classList.remove("show"); }
+$("#calOpenBtn").addEventListener("click", openCal);
+calSheet.addEventListener("click", (e)=>{ if(e.target===calSheet) closeCal(); });
+$("#calPrev").addEventListener("click", ()=>{ monthCursor = new Date(monthCursor.getFullYear(), monthCursor.getMonth()-1, 1); renderCalendar(); });
+$("#calNext").addEventListener("click", ()=>{ monthCursor = new Date(monthCursor.getFullYear(), monthCursor.getMonth()+1, 1); renderCalendar(); });
+$("#calToday").addEventListener("click", ()=>{ viewDate = startOfDay(new Date()); monthCursor = firstOfMonth(viewDate); render(); closeCal(); });
+$("#calGrid").addEventListener("click", (e)=>{
+  const cell = e.target.closest(".cal-cell[data-day]");
+  if(!cell) return;
+  viewDate = startOfDay(new Date(monthCursor.getFullYear(), monthCursor.getMonth(), +cell.dataset.day));
+  render();
+  closeCal();
+});
+
+/* ======================= REFRESH ======================= */
+$("#refreshBtn").addEventListener("click", async ()=>{
+  const b = $("#refreshBtn");
+  if(b.classList.contains("spin")) return;
+  b.classList.add("spin");
+  try{ await loadAndRender(false); toast("Aggiornato"); }
+  catch(ex){ toast("Aggiornamento non riuscito"); }
+  finally{ b.classList.remove("spin"); }
+});
+
+/* ======================= EDITOR NOTE (scrive sulla Suite) ======================= */
+let edOnSave = null;
+const editor = $("#editor");
+function openEditor(title, sub, current, onSave){
+  $("#edTitle").textContent = title;
+  $("#edSub").textContent = sub || "";
+  $("#edText").value = current || "";
+  edOnSave = onSave;
+  editor.classList.add("show");
+  setTimeout(()=>{ try{ $("#edText").focus(); }catch(e){} }, 60);
+}
+function closeEditor(){ editor.classList.remove("show"); edOnSave=null; }
+$("#edCancel").addEventListener("click", closeEditor);
+editor.addEventListener("click", (e)=>{ if(e.target===editor) closeEditor(); });
+$("#edSave").addEventListener("click", async ()=>{
+  if(!edOnSave) return;
+  const btn=$("#edSave"); const val=$("#edText").value;
+  btn.disabled=true; btn.textContent="Salvo…";
+  try{
+    await edOnSave(val);
+    closeEditor();
+    toast("Nota salvata sulla Suite");
+    render();
+  }catch(ex){
+    toast("Salvataggio non riuscito");
+  }finally{
+    btn.disabled=false; btn.textContent="Salva";
+  }
+});
+
+// Salvataggio sicuro: read-modify-write per non sovrascrivere modifiche fatte altrove.
+async function saveChange(mutator){
+  let target = null;
+  try{
+    const envStr = await remoteLoad();
+    if(envStr) target = await decryptEnvelope(envStr, cryptoKey);
+  }catch(e){ target = null; }
+  if(!target) target = state;        // se la rete fallisce, parto dallo stato corrente
+  mutator(target);
+  state = target;
+  const env = await encryptEnvelope(state);
+  localStorage.setItem(BLOB_KEY, env);
+  await remoteSave(env);
+}
+
+// mutator nota del giorno — replica weekNotesObj() della Suite (oggetto giorno→testo)
+function setDayNote(st, w, dayIdx, text){
+  st.weekNotes = st.weekNotes || {};
+  let v = st.weekNotes[w];
+  if(typeof v === "string"){ v = v.trim()?{0:v}:{}; }
+  else if(!v || typeof v!=="object"){ v = {}; }
+  st.weekNotes[w] = v;
+  const t = String(text||"").trim();
+  if(t) v[dayIdx] = t; else delete v[dayIdx];
+  if(!Object.keys(v).length) delete st.weekNotes[w];
+}
+// mutator nota della lezione — replica la pulizia della Suite
+function setLessonNote(st, w, sid, text){
+  const k = w+"|"+sid;
+  const l = st.lessons[k] || {};
+  l.notes = String(text||"").trim();
+  if(!l.appId && !l.notes && !l.done && !l.suspended) delete st.lessons[k];
+  else st.lessons[k] = l;
+}
+
+// tap nota del giorno
+$("#dayNote").addEventListener("click", ()=>{
+  const nb=$("#dayNote"); const w=+nb.dataset.w, d=+nb.dataset.d;
+  openEditor("Nota del giorno", DAY_NAMES[d] || "", readDayNote(w,d),
+    (txt)=>saveChange(st=>setDayNote(st, w, d, txt)));
+});
+
+// tap "nota" su una lezione (delega eventi)
+$("#agenda").addEventListener("click", (e)=>{
+  if(e.target.closest("[data-opencal]")){ openCal(); return; }
+  const el = e.target.closest("[data-editnote]");
+  if(!el) return;
+  const sid = el.getAttribute("data-editnote");
+  const w = weekOfDate(viewDate);
+  const l = getLesson(w, sid);
+  const s = state.slots.find(x=>x.id===sid);
+  const c = s ? cls(s.classId) : null;
+  openEditor("Nota della lezione", c ? (c.name+" · "+DAY_FULL[viewDate.getDay()]) : "",
+    (l && l.notes) || "",
+    (txt)=>saveChange(st=>setLessonNote(st, w, sid, txt)));
+});
+
+// focus password all'avvio
+window.addEventListener("load", ()=>{ try{ $("#pw").focus(); }catch(e){} });
+</script>
+</body>
+</html>

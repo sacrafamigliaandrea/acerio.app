@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Percorsi — Lezioni e Attività · Sacra Famiglia</title>
+<link rel="icon" href="aclogo.png">
+<link rel="apple-touch-icon" href="aclogo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#F5F9F5;  --warm:#EBF2EB;  --card:#FFFFFF;
+  --green:#1B6B3A;  --green2:#22804A; --greenD:#0E4423; --greenL:rgba(27,107,58,.07);
+  --gold:#B8860B;   --gold2:#D4A017;  --goldL:rgba(184,134,11,.10);
+  --text:#1A2E1A;   --muted:#4A6B4A;  --light:#8BA88B;
+  --brd:#C8DCC8;    --brd2:#A8C4A8;
+  --shadow:0 2px 12px rgba(27,107,58,.06);
+  --body:'Atkinson Hyperlegible',Helvetica,Arial,sans-serif;
+  --head:'Lexend',sans-serif;
+  --maxw:1180px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--body); font-size:18px; line-height:1.6;
+  color:var(--text); background:var(--cream);
+  -webkit-text-size-adjust:100%;
+}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+
+/* ── Header ── */
+.hero{
+  background:linear-gradient(135deg,var(--greenD),var(--green));
+  color:#fff; padding:46px 0 40px;
+}
+.hero .wrap{display:flex;flex-direction:column;gap:14px}
+.hero .eyebrow{
+  font-family:var(--head); font-weight:600; letter-spacing:.14em;
+  text-transform:uppercase; font-size:.78rem; color:#CDE8D7;
+}
+.hero h1{
+  font-family:var(--head); font-weight:700; font-size:2.05rem;
+  line-height:1.15; letter-spacing:-.01em;
+}
+.hero p{max-width:62ch;color:#E4F2E9;font-size:1.02rem}
+.hero .by{font-size:.86rem;color:#BBD9C6;font-family:var(--head)}
+.home-btn{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;font-family:var(--head);font-weight:600;font-size:.85rem;color:#E4F2E9;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.30);border-radius:999px;padding:7px 14px;transition:.15s}
+.home-btn:hover,.home-btn:focus-visible{background:rgba(255,255,255,.22);color:#fff;outline:none;transform:translateY(-1px)}
+.home-btn svg{width:16px;height:16px}
+
+/* ── Intro / metodo ── */
+.intro{
+  background:var(--card); border:1px solid var(--brd); border-radius:18px;
+  box-shadow:var(--shadow); padding:22px 24px; margin:-24px auto 30px;
+  max-width:var(--maxw); position:relative;
+}
+.intro h2{font-family:var(--head);font-weight:600;font-size:1.05rem;color:var(--greenD);margin-bottom:8px}
+.intro p{color:var(--muted);font-size:.98rem;max-width:78ch}
+.intro .flow{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.intro .step{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--greenL);border:1px solid var(--brd);
+  border-radius:999px;padding:6px 13px;font-size:.86rem;color:var(--greenD);
+  font-family:var(--head);font-weight:500;
+}
+.intro .step b{font-weight:700}
+
+/* ── Indice (nav) ── */
+.indexnav{position:sticky;top:0;z-index:30;background:rgba(245,249,245,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--brd)}
+.indexnav .wrap{display:flex;flex-wrap:wrap;gap:7px;padding-top:11px;padding-bottom:11px}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--head);font-weight:500;font-size:.84rem;
+  color:var(--greenD);background:var(--card);
+  border:1px solid var(--brd);border-radius:999px;
+  padding:6px 12px;cursor:pointer;transition:.15s;
+}
+.pill:hover,.pill:focus-visible{background:var(--green);color:#fff;border-color:var(--green);outline:none}
+.pill .pn{
+  font-weight:700;color:var(--gold);
+}
+.pill:hover .pn,.pill:focus-visible .pn{color:#FFE7A8}
+
+/* ── Lezione ── */
+.lessons{padding:30px 0 10px}
+.lesson{
+  background:var(--card);border:1px solid var(--brd);border-radius:20px;
+  box-shadow:var(--shadow);padding:24px 24px 26px;margin-bottom:26px;
+  scroll-margin-top:74px;
+}
+.lesson-head{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.lesson-num{
+  flex:none;width:54px;height:54px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--head);font-weight:700;font-size:1.5rem;
+  color:#fff;background:linear-gradient(135deg,var(--green),var(--green2));
+}
+.lesson-meta{flex:1;min-width:200px}
+.lesson-meta h3{font-family:var(--head);font-weight:700;font-size:1.4rem;color:var(--greenD);line-height:1.2}
+.lesson-meta .theme{color:var(--muted);font-size:.95rem;margin-top:2px}
+.lesson-open{
+  flex:none;display:inline-flex;align-items:center;gap:9px;
+  font-family:var(--head);font-weight:600;font-size:.92rem;
+  background:var(--green);color:#fff;border-radius:11px;
+  padding:11px 16px;transition:.15s;
+}
+.lesson-open:hover,.lesson-open:focus-visible{background:var(--greenD);outline:none;transform:translateY(-1px)}
+.lesson-open svg{width:17px;height:17px}
+
+.acts-label{
+  display:flex;align-items:center;gap:10px;
+  margin:20px 0 14px;color:var(--muted);
+  font-family:var(--head);font-weight:600;font-size:.82rem;
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.acts-label .ln{flex:1;height:1px;background:var(--brd)}
+.acts-label .cnt{color:var(--gold);font-weight:700}
+
+/* ── Griglia attività ── */
+.acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.act{
+  display:flex;align-items:center;gap:13px;
+  background:var(--cream);border:1px solid var(--brd);border-radius:13px;
+  padding:13px 14px;transition:.15s;
+}
+.act:hover,.act:focus-visible{
+  background:#fff;border-color:var(--green);
+  box-shadow:0 4px 14px rgba(27,107,58,.10);outline:none;transform:translateY(-1px);
+}
+.act-n{
+  flex:none;width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--head);font-weight:700;font-size:.9rem;
+  color:var(--gold);background:var(--goldL);border:1.5px solid var(--gold);
+}
+.act-body{flex:1;min-width:0}
+.act-name{font-family:var(--head);font-weight:600;font-size:.98rem;color:var(--text);line-height:1.2}
+.act-sec{font-size:.78rem;color:var(--light);margin-top:2px}
+.act-go{flex:none;color:var(--green);opacity:.55;transition:.15s}
+.act-go svg{width:18px;height:18px;display:block}
+.act:hover .act-go,.act:focus-visible .act-go{opacity:1;transform:translateX(2px)}
+
+/* ── Footer ── */
+footer{padding:28px 0 40px;text-align:center;color:var(--light);font-size:.84rem;font-family:var(--head)}
+footer .totals{color:var(--muted);margin-bottom:6px}
+footer .totals b{color:var(--greenD)}
+
+@media(max-width:620px){
+  .hero h1{font-size:1.7rem}
+  .lesson{padding:20px 16px 22px}
+  .lesson-open{width:100%;justify-content:center;margin-top:4px}
+  .intro{margin-left:0;margin-right:0;border-radius:14px}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <a class="home-btn" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg> Torna alla home</a>
+    <span class="eyebrow">Scuola Sacra Famiglia · Andrea Cerioli</span>
+    <h1>Percorsi — Lezioni e Attività</h1>
+    <p>Ogni lezione è il <b>punto di partenza</b> di un argomento. Subito dopo, lo studente
+       svolge una o più <b>attività individuali</b> collegate, disposte in <b>ordine crescente</b>:
+       dalla più introduttiva e concreta alla più approfondita e riflessiva.</p>
+    <span class="by">Cittadinanza digitale · Informatica · AI · Pensiero critico</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="intro">
+    <h2>Come si legge un percorso</h2>
+    <p>La lezione introduce il tema in classe; le attività la prolungano nel lavoro autonomo,
+       una dopo l'altra. Apri prima la lezione, poi segui le attività nell'ordine indicato.</p>
+    <div class="flow">
+      <span class="step"><b>1.</b> Lezione iniziale</span>
+      <span class="step"><b>2.</b> Attività concrete</span>
+      <span class="step"><b>3.</b> Approfondimento e riflessione</span>
+    </div>
+  </section>
+</div>
+
+<nav class="indexnav"><div class="wrap" id="indexNav"></div></nav>
+
+<main class="lessons"><div class="wrap" id="lessons"></div></main>
+
+<footer>
+  <div class="totals" id="totals"></div>
+  <div>I link aprono in una nuova scheda · Aggiornare gli indirizzi da <b>index.html</b></div>
+</footer>
+
+<script>
+const LESSONS = [
+ {n:1, title:"Identità Digitale", url:"https://identit-digitale.vercel.app/", theme:"Reputazione, tracce, cittadinanza", acts:[
+   {name:"Social sotto la Lente", sec:"Cittadinanza Digitale", href:"https://socialschool.neocities.org/"},
+   {name:"L'Occhio Critico", sec:"Cittadinanza Digitale", href:"https://guglielmoildentone.neocities.org/"},
+   {name:"Pizzeria Google", sec:"Cittadinanza Digitale", href:"https://pizzeriagoogle.neocities.org/"},
+   {name:"Generatore di Password", sec:"Cittadinanza Digitale", href:"https://securepassword.neocities.org/"},
+   {name:"Stop Cyberbullismo", sec:"Cittadinanza Digitale", href:"https://cyberbullismo.neocities.org/"},
+   {name:"Indagine Digitale 2026", sec:"Cittadinanza Digitale", href:"https://missionedigitale.neocities.org/"},
+ ]},
+ {n:2, title:"Anti-Alibi", url:"https://anti-alibi.vercel.app/", theme:"Responsabilità, scelte consapevoli", acts:[
+   {name:"Fatto o Opinione?", sec:"Lab. Scrittura", href:"https://fattopinione.vercel.app/"},
+   {name:"Sei un Piccione?", sec:"Cittadinanza Digitale", href:"https://comportamentismo.neocities.org/"},
+   {name:"Mystery Drop", sec:"Informatica & Tech", href:"https://dopamina-loop.vercel.app/"},
+   {name:"Il Sicofante Digitale", sec:"Cittadinanza Digitale", href:"https://sicofante.vercel.app/"},
+   {name:"Mental Coaching", sec:"Lab. Scrittura", href:"https://mentalcoach.neocities.org/"},
+   {name:"Debate in Classe", sec:"Lab. Scrittura", href:"https://schooldebate.neocities.org/"},
+ ]},
+ {n:3, title:"iPad e Carta", url:"https://ipad-carta.vercel.app/", theme:"Scegliere lo strumento giusto", acts:[
+   {name:"Allenamento Tastiera", sec:"Informatica & Tech", href:"https://tastiera.neocities.org/"},
+   {name:"Scorciatoie Mac", sec:"Informatica & Tech", href:"https://keyboardmac.neocities.org/"},
+   {name:"Sfida di Videoscrittura", sec:"Informatica & Tech", href:"https://typegame.neocities.org/"},
+   {name:"Guarda Due Volte", sec:"Informatica & Tech", href:"https://escapecity.vercel.app/"},
+   {name:"La Bottega delle App", sec:"Informatica & Tech", href:"https://bottega-delle-app.vercel.app/"},
+ ]},
+ {n:4, title:"Excel Basic", url:"https://excel-basic-lesson.vercel.app/", theme:"Fogli di calcolo: celle, formule, tabelle", acts:[
+   {name:"La Scala Digitale", sec:"Informatica & Tech", href:"https://pesodigitale.neocities.org/"},
+   {name:"Pizzeria delle Frazioni", sec:"Approfondimenti e Ricerche", href:"https://pizzeria-sacrafamiglia-iepo.vercel.app/"},
+   {name:"Bar della Scuola", sec:"Informatica & Tech", href:"https://barscuola.neocities.org/"},
+   {name:"Gestione Tornei", sec:"Sport e Giochi", href:"https://sacrafamigliatornei.neocities.org/"},
+   {name:"Albo d'Oro delle Case", sec:"Sacra Famiglia", href:"https://albo-doro-case.vercel.app/"},
+ ]},
+ {n:5, title:"Magnifica Humanitas", url:"https://magnifica-humanitas-nu.vercel.app/", theme:"Il valore dell'umano e le macchine", acts:[
+   {name:"L'Occhio Critico", sec:"Cittadinanza Digitale", href:"https://guglielmoildentone.neocities.org/"},
+   {name:"Algoritmi e Reti Neurali", sec:"Informatica & Tech", href:"https://genalfa.neocities.org/"},
+   {name:"Quanto consuma l'AI?", sec:"Cittadinanza Digitale", href:"https://aiconsumi.vercel.app/"},
+   {name:"AI Video", sec:"Approfondimenti e Ricerche", href:"https://ai-video-azure.vercel.app/"},
+   {name:"Il Sicofante Digitale", sec:"Cittadinanza Digitale", href:"https://sicofante.vercel.app/"},
+ ]},
+ {n:6, title:"AI, il Nuovo Mondo", url:"https://ai-nuovo-mondo.vercel.app/", theme:"Capire l'AI: opportunità e limiti", acts:[
+   {name:"Algoritmi e Reti Neurali", sec:"Informatica & Tech", href:"https://genalfa.neocities.org/"},
+   {name:"AI Video", sec:"Approfondimenti e Ricerche", href:"https://ai-video-azure.vercel.app/"},
+   {name:"Quanto consuma l'AI?", sec:"Cittadinanza Digitale", href:"https://aiconsumi.vercel.app/"},
+   {name:"Il Sicofante Digitale", sec:"Cittadinanza Digitale", href:"https://sicofante.vercel.app/"},
+ ]},
+ {n:7, title:"Attacchi Hacker 2026", url:"https://attacchi-hacker-2026.vercel.app/", theme:"Minacce informatiche e come difendersi", acts:[
+   {name:"Generatore di Password", sec:"Cittadinanza Digitale", href:"https://securepassword.neocities.org/"},
+   {name:"Navigare Sicuri", sec:"Cittadinanza Digitale", href:"https://socialguide.neocities.org/"},
+   {name:"Truffe & Phishing", sec:"Informatica & Tech", href:"https://truffe.neocities.org/"},
+   {name:"Fake Hunter", sec:"Informatica & Tech", href:"https://fakehunter.neocities.org/"},
+   {name:"Il Voto che Ruba", sec:"Cittadinanza Digitale", href:"https://truffa-ballerina.vercel.app/"},
+   {name:"CyberEscape", sec:"Cittadinanza Digitale", href:"https://cyberescape.neocities.org/"},
+   {name:"Cyber Security", sec:"Informatica & Tech", href:"https://cyber-security-ex9b.vercel.app/"},
+   {name:"Commissariato Digitale", sec:"Cittadinanza Digitale", href:"https://polizia-postale.vercel.app/"},
+   {name:"Cyber Sentinel", sec:"Cittadinanza Digitale", href:"https://attacchinformatici.neocities.org/"},
+   {name:"Rocca Cifrata", sec:"Coding", href:"https://roccacifrata.vercel.app/"},
+ ]},
+ {n:8, title:"Steve Jobs Lab", url:"https://steve-jobs-lab.vercel.app/", theme:"Innovazione, creatività, visione", acts:[
+   {name:"I Geni della Tecnologia", sec:"Approfondimenti e Ricerche", href:"https://garagevalley.neocities.org/"},
+   {name:"La Bottega delle App", sec:"Informatica & Tech", href:"https://bottega-delle-app.vercel.app/"},
+   {name:"Tech & Olimpiadi", sec:"Sport e Giochi", href:"https://olimpictech.neocities.org/"},
+   {name:"Algoritmi e Reti Neurali", sec:"Informatica & Tech", href:"https://genalfa.neocities.org/"},
+ ]},
+ {n:9, title:"Usa la Testa", url:"https://usa-la-testa.vercel.app/", theme:"Pensiero critico", acts:[
+   {name:"Fatto o Opinione?", sec:"Lab. Scrittura", href:"https://fattopinione.vercel.app/"},
+   {name:"Riconosci la Manipolazione", sec:"Cittadinanza Digitale", href:"https://manipolazione.neocities.org/"},
+   {name:"Fake Hunter", sec:"Informatica & Tech", href:"https://fakehunter.neocities.org/"},
+   {name:"Guarda Due Volte", sec:"Informatica & Tech", href:"https://escapecity.vercel.app/"},
+   {name:"ControCorrente", sec:"Coding", href:"https://controcorrente-lilac.vercel.app/"},
+   {name:"La Bottega dell'Argomentazione", sec:"Lab. Scrittura", href:"https://insegnareapensare.vercel.app/"},
+   {name:"ArgoMentor", sec:"Lab. Scrittura", href:"https://argomentor.vercel.app/"},
+   {name:"Debate in Classe", sec:"Lab. Scrittura", href:"https://schooldebate.neocities.org/"},
+ ]},
+ {n:10, title:"Glossario iPad", url:"https://glossario-ipad26.vercel.app/", theme:"Le parole chiave del digitale, A–Z", acts:[
+   {name:"Glossario Digitale", sec:"Informatica & Tech", href:"https://glossarioinfo.neocities.org/"},
+   {name:"Scorciatoie Mac", sec:"Informatica & Tech", href:"https://keyboardmac.neocities.org/"},
+   {name:"La Scala Digitale", sec:"Informatica & Tech", href:"https://pesodigitale.neocities.org/"},
+   {name:"L'Indirizzo Digitale", sec:"Informatica & Tech", href:"https://indirizzo-url.vercel.app/"},
+   {name:"La Bottega delle App", sec:"Informatica & Tech", href:"https://bottega-delle-app.vercel.app/"},
+ ]},
+ {n:11, title:"Cavi e Porte", url:"https://cavi-e-porte.vercel.app/", theme:"Hardware, connettori e porte: come dialogano i dispositivi", acts:[
+   {name:"Glossario Digitale", sec:"Informatica & Tech", href:"https://glossarioinfo.neocities.org/"},
+   {name:"La Scala Digitale", sec:"Informatica & Tech", href:"https://pesodigitale.neocities.org/"},
+   {name:"L'Indirizzo Digitale", sec:"Informatica & Tech", href:"https://indirizzo-url.vercel.app/"},
+   {name:"Stampa 3D", sec:"Informatica & Tech", href:"https://stampa3d.neocities.org/"},
+ ]},
+ {n:12, title:"Primi Passi nel Coding", url:"https://coding-lesson-five.vercel.app/", theme:"Dal pensiero in sequenza al primo programma", acts:[
+   {name:"ControCorrente", sec:"Coding", href:"https://controcorrente-lilac.vercel.app/"},
+   {name:"Rocca Cifrata", sec:"Coding", href:"https://roccacifrata.vercel.app/"},
+   {name:"Il Fontaniere", sec:"Coding", href:"https://fontaniere-coding.vercel.app/"},
+   {name:"Basket Coding", sec:"Coding", href:"https://basket-sacrafamiglia.vercel.app/"},
+   {name:"Pollice Verde", sec:"Coding", href:"https://pollice-verde-rho.vercel.app/"},
+   {name:"Fontana Algoritmica", sec:"Coding", href:"https://fontana-algoritmica.vercel.app/"},
+   {name:"Acquedotto Mini", sec:"Coding", href:"https://acquedotto-mini.vercel.app/index.html"},
+   {name:"Droni Algoritmici", sec:"Coding", href:"https://droni-algoritmici.vercel.app/"},
+ ]},
+];
+
+const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function renderNav(){
+  document.getElementById('indexNav').innerHTML = LESSONS.map(l =>
+    `<a class="pill" href="#lez-${l.n}"><span class="pn">${l.n}</span>${esc(l.title)}</a>`
+  ).join('');
+}
+
+function renderLessons(){
+  document.getElementById('lessons').innerHTML = LESSONS.map(l => `
+    <section class="lesson" id="lez-${l.n}">
+      <div class="lesson-head">
+        <div class="lesson-num">${l.n}</div>
+        <div class="lesson-meta">
+          <h3>${esc(l.title)}</h3>
+          <div class="theme">${esc(l.theme)}</div>
+        </div>
+        <a class="lesson-open" href="${l.url}" target="_blank" rel="noopener">Apri la lezione ${ARROW}</a>
+      </div>
+      <div class="acts-label"><span>Attività collegate · ordine crescente</span><span class="ln"></span><span class="cnt">${l.acts.length}</span></div>
+      <div class="acts">
+        ${l.acts.map((a,i) => `
+          <a class="act" href="${a.href}" target="_blank" rel="noopener">
+            <span class="act-n">${i+1}</span>
+            <span class="act-body">
+              <span class="act-name">${esc(a.name)}</span>
+              <span class="act-sec">${esc(a.sec)}</span>
+            </span>
+            <span class="act-go">${ARROW}</span>
+          </a>`).join('')}
+      </div>
+    </section>`).join('');
+}
+
+function renderTotals(){
+  const lessons = LESSONS.length;
+  const links = LESSONS.reduce((s,l)=>s+l.acts.length,0);
+  const unique = new Set(LESSONS.flatMap(l=>l.acts.map(a=>a.href))).size;
+  document.getElementById('totals').innerHTML =
+    `<b>${lessons}</b> lezioni · <b>${links}</b> attività collegate · <b>${unique}</b> app distinte`;
+}
+
+renderNav(); renderLessons(); renderTotals();
+</script>
+</body>
+</html>

@@ -29,6 +29,7 @@
             --c-esame: #b45309; --c-esame-bg: #fffbeb; --c-esame-light: #fef3c7;
             --c-coding: #355070; --c-coding-bg: #eef2f7; --c-coding-light: #d8e2ee;
             --c-lezioni: #9a5b3f; --c-lezioni-bg: #f7efe9; --c-lezioni-light: #ecdccf;
+            --c-genitori: #a05a78; --c-genitori-bg: #f9eef3; --c-genitori-light: #f0d8e3;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text-dark); min-height: 100vh; overflow-x: hidden; }
@@ -115,6 +116,9 @@
         .ql-search:hover { background: #5d6e3b; color: #fff; border-color: #5d6e3b; }
         .ql-lock { padding: .45rem .55rem !important; opacity: 0.5; }
         .ql-lock:hover { opacity: 1; }
+        .ql-suite { width: 34px; height: 34px; padding: 0 !important; border-radius: 50% !important; background: transparent !important; border: none !important; box-shadow: var(--shadow-soft) !important; overflow: hidden; flex-shrink: 0; }
+        .ql-suite img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
+        .ql-suite:hover { background: transparent !important; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,.18) !important; }
         .ql-search-input { width: 0; padding: 0; border: none; outline: none; font-family: 'Nunito'; font-size: .8rem; font-weight: 600; color: var(--text-dark); background: var(--bg-white); border-radius: 50px; transition: all .3s ease; box-shadow: none; }
         .ql-search.open ~ .ql-search-input { width: 160px; padding: .4rem .8rem; border: 1.5px solid #c5cfb0; box-shadow: var(--shadow-soft); }
         .search-count { background: var(--bg); padding: .45rem .9rem; border-radius: 50px; font-size: .75rem; font-weight: 800; color: var(--text-medium); white-space: nowrap; }
@@ -206,6 +210,7 @@
         .card[data-theme="esame"] { --card-color: var(--c-esame); --card-color-bg: var(--c-esame-bg); --card-color-light: var(--c-esame-light); }
         .card[data-theme="coding"] { --card-color: var(--c-coding); --card-color-bg: var(--c-coding-bg); --card-color-light: var(--c-coding-light); }
         .card[data-theme="lezioni"] { --card-color: var(--c-lezioni); --card-color-bg: var(--c-lezioni-bg); --card-color-light: var(--c-lezioni-light); }
+        .card[data-theme="genitori"] { --card-color: var(--c-genitori); --card-color-bg: var(--c-genitori-bg); --card-color-light: var(--c-genitori-light); }
 
         /* ═══ NO RESULTS ═══ */
         @keyframes wobble { 0%,100% { transform:rotate(0); } 25% { transform:rotate(-8deg); } 75% { transform:rotate(8deg); } }
@@ -254,9 +259,9 @@
                 </div>
             </div>
             <div class="hero-counters">
-                <div class="hero-stat"><span class="stat-num" data-target="118">0</span><span class="stat-label">Web App<br>Studenti & Docenti</span></div>
-                <div class="hero-stat"><span class="stat-num" data-target="19">0</span><span class="stat-label">Strumenti<br>Area Riservata</span></div>
-                <div class="hero-stat"><span class="stat-num" data-target="3">0</span><span class="stat-label">Web App<br>Genitori</span></div>
+                <div class="hero-stat"><span class="stat-num" data-target="135">0</span><span class="stat-label">Web App<br>Studenti & Docenti</span></div>
+                <div class="hero-stat"><span class="stat-num" data-target="20">0</span><span class="stat-label">Strumenti<br>Area Riservata</span></div>
+                <div class="hero-stat"><span class="stat-num" data-target="5">0</span><span class="stat-label">Web App<br>Genitori</span></div>
                 <div class="hero-stat hero-update"><span class="stat-num" id="dayNum"></span><span class="stat-label" id="dateLabel"></span></div>
             </div>
             <div class="hero-survey">
@@ -273,10 +278,7 @@
     </header>
 
     <div class="quick-links">
-        <a href="https://calibro.neocities.org/" target="_blank"><i class="ti ti-plant"></i> Calibro</a>
-        <a href="https://pattodigitale.neocities.org/" target="_blank"><i class="ti ti-handshake"></i> Patto Digitale di Famiglia</a>
-        <a href="https://genitori.neocities.org/" target="_blank"><i class="ti ti-device-mobile"></i> Guida per Genitori</a>
-        <a href="https://scuolaipad.neocities.org/" target="_blank"><i class="ti ti-device-imac"></i> Scuola Digitale</a>
+        <a href="#genitori" onclick="filterByCategory('genitori');document.getElementById('grid').scrollIntoView({behavior:'smooth'});return false;"><i class="ti ti-home-heart"></i> Genitori</a>
         <a href="https://chatbotai.neocities.org/" target="_blank"><i class="ti ti-robot"></i> Didattica e AI</a>
         <span class="ql-sep"></span>
         <a href="metodologie.html" class="ql-glass"><i class="ti ti-brain"></i> Metodologie</a>
@@ -284,6 +286,7 @@
         <a href="scuolafutura.html" class="ql-glass"><i class="ti ti-school"></i> Percorsi Scuola Futura</a>
         <a href="https://ineai.neocities.org/" target="_blank" class="ql-glass"><i class="ti ti-brain"></i> IN + IA</a>
         <a href="riservata.html" class="ql-glass ql-lock"><i class="ti ti-lock"></i></a>
+        <a href="suite.html" class="ql-suite" title="Suite" aria-label="Suite"><img src="suite-icon.png" alt="Suite"></a>
         <button class="ql-search" id="searchToggle" onclick="this.classList.toggle('open');document.getElementById('searchBox').focus()"><i class="ti ti-search"></i></button>
         <input type="text" id="searchBox" class="ql-search-input" placeholder="Cerca..." oninput="filterCards(this.value)">
     </div>
@@ -339,7 +342,7 @@
                     <span class="link-text"><span class="link-name">Il Sicofante Digitale</span><span class="link-desc">Quando l'AI e i social ti dicono solo quello che vuoi sentire: riconosci la sycophancy</span></span>
                     <span class="link-go">→</span>
                 </a></li>
-                <li><a href="https://famigliaaccorti.neocities.org/" target="_blank">
+                <li><a href="https://famiglia-accorti.vercel.app/" target="_blank">
                     <span class="link-num"></span>
                     <span class="link-text"><span class="link-name">Famiglia Accorti</span><span class="link-desc">Guida interattiva alla sicurezza digitale in famiglia</span></span>
                     <span class="link-go">→</span>
@@ -452,7 +455,7 @@
                     <span class="link-text"><span class="link-name">Mental Coaching</span><span class="link-desc">Tecniche di scrittura per allenare il pensiero</span></span>
                     <span class="link-go">→</span>
                 </a></li>
-                <li><a href="https://videoshorts.neocities.org/" target="_blank">
+                <li><a href="https://shorts-video-acerio.vercel.app/" target="_blank">
                     <span class="link-num"></span>
                     <span class="link-text"><span class="link-name"><i class="ti ti-movie"></i> Video Shorts</span><span class="link-desc">Laboratorio di editing e narrazione video breve</span></span>
                     <span class="link-go">→</span>
@@ -477,7 +480,7 @@
 
         <!-- ══════ BIBLIOTECA DIGITALE ══════ -->
         <div class="card" data-theme="biblioteca" data-category="biblioteca">
-            <div class="card-head"><div class="card-emoji"><i class="ti ti-headphones"></i></div><div class="card-info"><div class="card-name">Biblioteca Digitale</div><span class="card-badge">17 risorse</span></div></div>
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-headphones"></i></div><div class="card-info"><div class="card-name">Biblioteca Digitale</div><span class="card-badge">19 risorse</span></div></div>
             <ul class="card-list">
                 <li><a href="https://harrypotter-1.vercel.app/" target="_blank">
                     <span class="link-num"></span>
@@ -562,6 +565,16 @@
                 <li><a href="https://la-macchina-per-fare-i-compiti.vercel.app/" target="_blank">
                     <span class="link-num"></span>
                     <span class="link-text"><span class="link-name"><i class="ti ti-book"></i> La Macchina per Fare i Compiti</span><span class="link-desc">Lettura interattiva ispirata a Gianni Rodari: la macchina che fa i compiti al posto tuo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://braone-rampante.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-book"></i> Il Barone Rampante</span><span class="link-desc">Audiolettura interattiva del romanzo di Italo Calvino, capitolo per capitolo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://rosso-malpelo.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name"><i class="ti ti-book"></i> Rosso Malpelo</span><span class="link-desc">Audiolettura interattiva della novella di Giovanni Verga, parola per parola</span></span>
                     <span class="link-go">→</span>
                 </a></li>
             </ul>
@@ -661,7 +674,7 @@
 
         <!-- ══════ CODING ══════ -->
         <div class="card" data-theme="coding" data-category="coding">
-            <div class="card-head"><div class="card-emoji"><i class="ti ti-code"></i></div><div class="card-info"><div class="card-name">Coding</div><span class="card-badge">5 risorse</span></div></div>
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-code"></i></div><div class="card-info"><div class="card-name">Coding</div><span class="card-badge">8 risorse</span></div></div>
             <ul class="card-list">
                 <li><a href="https://controcorrente-lilac.vercel.app/" target="_blank">
                     <span class="link-num"></span>
@@ -688,12 +701,28 @@
                     <span class="link-text"><span class="link-name">Pollice Verde</span><span class="link-desc">Coltiva il tuo orto digitale con cicli e condizioni di crescita</span></span>
                     <span class="link-go">→</span>
                 </a></li>
+                <li><a href="https://fontana-algoritmica.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Fontana Algoritmica</span><span class="link-desc">Guida il flusso dell'acqua con algoritmi, cicli e condizioni</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://acquedotto-mini.vercel.app/index.html" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Acquedotto Mini</span><span class="link-desc">Esperimento con il codice binario: porta l'acqua a destinazione tra 0 e 1</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://droni-algoritmici.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Droni Algoritmici</span><span class="link-desc">Programma il volo dei droni con sequenze, cicli e coordinate</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
             </ul>
         </div>
 
         <!-- ══════ LEZIONI ══════ -->
         <div class="card" data-theme="lezioni" data-category="lezioni">
-            <div class="card-head"><div class="card-emoji"><i class="ti ti-school"></i></div><div class="card-info"><div class="card-name">Lezioni</div><span class="card-badge">6 risorse</span></div></div>
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-school"></i></div><div class="card-info"><div class="card-name">Lezioni</div><span class="card-badge">12 risorse</span></div></div>
+            <a href="lezioni.html" class="card-pdf-btn"><i class="ti ti-route"></i> Scopri i Percorsi</a>
             <ul class="card-list">
                 <li><a href="https://identit-digitale.vercel.app/" target="_blank">
                     <span class="link-num"></span>
@@ -725,13 +754,48 @@
                     <span class="link-text"><span class="link-name">AI, il Nuovo Mondo</span><span class="link-desc">Capire l'intelligenza artificiale: opportunità, limiti e responsabilità</span></span>
                     <span class="link-go">→</span>
                 </a></li>
+                <li><a href="https://attacchi-hacker-2026.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Attacchi Hacker 2026</span><span class="link-desc">Come riconoscere e difendersi dalle minacce informatiche più recenti</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://steve-jobs-lab.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Steve Jobs Lab</span><span class="link-desc">Innovazione, creatività e visione: lezioni dalla storia di Steve Jobs</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://usa-la-testa.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Usa la Testa</span><span class="link-desc">Allena il pensiero critico e impara a ragionare prima di agire</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://glossario-ipad26.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Glossario iPad</span><span class="link-desc">Le parole chiave del mondo iPad e del digitale a scuola, dalla A alla Z</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://cavi-e-porte.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Cavi e Porte</span><span class="link-desc">Riconoscere connettori e porte dei dispositivi: USB-C, Lightning e non solo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://coding-lesson-five.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Primi Passi nel Coding</span><span class="link-desc">Sequenze, cicli e condizioni: cos'è il coding, imparato facendo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
             </ul>
         </div>
 
         <!-- ══════ APPROFONDIMENTI E RICERCHE ══════ -->
         <div class="card" data-theme="scienze" data-category="scienze">
-            <div class="card-head"><div class="card-emoji"><i class="ti ti-search"></i></div><div class="card-info"><div class="card-name">Approfondimenti e Ricerche</div><span class="card-badge">16 risorse</span></div></div>
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-search"></i></div><div class="card-info"><div class="card-name">Approfondimenti e Ricerche</div><span class="card-badge">17 risorse</span></div></div>
             <ul class="card-list">
+                <li><a href="https://calibro.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Calibro</span><span class="link-desc">Strumento didattico per la crescita e l'autovalutazione</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
                 <li><a href="https://geografiamaps.neocities.org/" target="_blank">
                     <span class="link-num"></span>
                     <span class="link-text"><span class="link-name">Gite Virtuali</span><span class="link-desc">Esplora il mondo con Google Maps senza uscire da scuola</span></span>
@@ -849,7 +913,7 @@
 
         <!-- ══════ SACRA FAMIGLIA ══════ -->
         <div class="card" data-theme="scuola" data-category="scuola">
-            <div class="card-head"><div class="card-emoji"><i class="ti ti-heart-handshake"></i></div><div class="card-info"><div class="card-name">Sacra Famiglia</div><span class="card-badge">8 risorse</span></div></div>
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-heart-handshake"></i></div><div class="card-info"><div class="card-name">Sacra Famiglia</div><span class="card-badge">9 risorse</span></div></div>
             <ul class="card-list">
                 <li><a href="https://100anni.neocities.org/" target="_blank">
                     <span class="link-num"></span>
@@ -889,6 +953,11 @@
                 <li><a href="https://albo-doro-case.vercel.app/" target="_blank">
                     <span class="link-num"></span>
                     <span class="link-text"><span class="link-name">Albo d'Oro delle Case</span><span class="link-desc">Le vittorie e i traguardi delle quattro Case nel tempo</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://quadriappesi.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Quadri Appesi</span><span class="link-desc">Galleria virtuale delle opere e dei lavori della scuola</span></span>
                     <span class="link-go">→</span>
                 </a></li>
             </ul>
@@ -951,6 +1020,38 @@
                 <li><a href="https://euro-capitali.vercel.app/" target="_blank">
                     <span class="link-num"></span>
                     <span class="link-text"><span class="link-name">Euro Capitali</span><span class="link-desc">Quiz geografico sulle capitali europee: metti alla prova le tue conoscenze</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <!-- ══════ GENITORI E FAMIGLIE ══════ -->
+        <div class="card" data-theme="genitori" data-category="genitori">
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-home-heart"></i></div><div class="card-info"><div class="card-name">Genitori e Famiglie</div><span class="card-badge">5 risorse</span></div></div>
+            <ul class="card-list">
+                <li><a href="https://crescerecittadinidigitali.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Crescere Cittadini Digitali</span><span class="link-desc">Tre tappe per accompagnare la famiglia: comprendere, sperimentare, costruire</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://genitori.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Guida per Genitori</span><span class="link-desc">Il profilo digitale dello studente di oggi e il ruolo dei dispositivi a scuola</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://pattodigitale.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Patto Digitale di Famiglia</span><span class="link-desc">Costruire insieme le regole condivise sull'uso della tecnologia a casa</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://scuolaipad.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Scuola Digitale</span><span class="link-desc">Come la scuola usa l'iPad: scelte didattiche, strumenti e organizzazione</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://patentino-genitori.vercel.app/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Patentino Digitale</span><span class="link-desc">Conquista il patentino: regole e competenze digitali per genitori</span></span>
                     <span class="link-go">→</span>
                 </a></li>
             </ul>
@@ -1451,6 +1552,432 @@
         }
     </script>
 <script src="dpia-badges.js" defer></script>
+
+<!-- ============================================================
+     REGISTRO LEZIONI — modal di tracciamento (v2 con griglia classi)
+     ============================================================ -->
+<style>
+  .reg-backdrop{
+    position:fixed; inset:0;
+    background:rgba(13, 35, 26, .55);
+    backdrop-filter:blur(3px);
+    display:none; align-items:center; justify-content:center;
+    z-index:9999;
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    padding:12px;
+  }
+  .reg-backdrop.show{display:flex}
+  .reg-modal{
+    background:#fff;
+    width:min(94vw, 540px);
+    border-radius:14px;
+    padding:24px 26px 22px;
+    box-shadow:0 18px 48px rgba(13,35,26,.35);
+    border-top:4px solid #1B6D3F;
+    max-height:96vh; overflow-y:auto;
+  }
+  .reg-head{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:12px; margin-bottom:14px;
+  }
+  .reg-head .reg-eyebrow{
+    font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:#1B6D3F; font-weight:600; margin-bottom:3px;
+  }
+  .reg-head .reg-app-title{
+    font-size:20px; font-weight:600; color:#0d231a; line-height:1.2;
+    margin:0;
+  }
+  .reg-datetime{
+    text-align:right; color:#536b5f; font-size:12px; line-height:1.5;
+    padding-top:2px; flex-shrink:0;
+  }
+  .reg-datetime strong{color:#0d231a}
+
+  .reg-pickerlabel{
+    font-size:12px; color:#536b5f; margin-bottom:8px; font-weight:500;
+  }
+  .reg-cols{
+    display:grid; grid-template-columns:1fr 1fr; gap:14px;
+    margin-bottom:14px;
+  }
+  .reg-coltitle{
+    font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    font-weight:700; padding:0 0 6px 4px; margin-bottom:8px;
+    border-bottom:1.5px solid;
+  }
+  .reg-coltitle.prim{color:#a65a18; border-color:#fff1e0}
+  .reg-coltitle.sec{color:#1E4A8A; border-color:#e3eef9}
+
+  .reg-grid{display:grid; gap:6px}
+  .reg-grid.prim{grid-template-columns:1fr 1fr}
+  .reg-grid.sec{grid-template-columns:1fr 1fr 1fr}
+
+  .reg-cls{
+    color:#fff; border:2px solid transparent; border-radius:8px;
+    padding:10px 0; font-size:14px; font-weight:600;
+    font-family:inherit; cursor:pointer; transition:transform .08s, box-shadow .12s;
+    text-align:center; user-select:none;
+  }
+  .reg-cls:hover{transform:translateY(-1px)}
+  .reg-cls:active{transform:translateY(0)}
+  .reg-cls.prim{background:#EE7C00}
+  .reg-cls.sec{background:#1E4A8A}
+
+  .reg-cls.selected{
+    border:3px solid #1B6D3F;
+    box-shadow:0 0 0 2px rgba(27,109,63,.18);
+    padding:9px 0; font-weight:700;
+  }
+  .reg-cls .check{display:none; margin-left:4px}
+  .reg-cls.selected .check{display:inline}
+
+  .reg-status{
+    font-size:13px; color:#0d231a; padding:10px 14px;
+    background:#e8efe9; border-radius:8px; margin-bottom:14px;
+    border-left:3px solid #1B6D3F;
+  }
+  .reg-status.warn{
+    background:#fdf6f2; border-left-color:#c8784f; color:#0d231a;
+  }
+  .reg-status .meta{color:#536b5f; font-size:12px}
+  .reg-status.warn .meta{color:#a65a18}
+
+  .reg-actions{
+    display:flex; gap:10px; justify-content:flex-end;
+  }
+  .reg-btn{
+    padding:11px 20px; border:none; border-radius:8px;
+    font-size:14px; font-weight:600; cursor:pointer;
+    font-family:inherit; transition:all .15s;
+  }
+  .reg-btn-cancel{background:#f3f5f4; color:#536b5f}
+  .reg-btn-cancel:hover{background:#e8efe9}
+  .reg-btn-confirm{background:#1B6D3F; color:#fff}
+  .reg-btn-confirm:hover{background:#155832}
+  .reg-btn-confirm:disabled{
+    background:#c8d4cc; cursor:not-allowed;
+  }
+
+  .reg-toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    background:#1B6D3F; color:#fff; padding:12px 22px; border-radius:8px;
+    font-family:'IBM Plex Sans', system-ui, sans-serif; font-weight:500;
+    box-shadow:0 8px 24px rgba(13,35,26,.25);
+    opacity:0; transition:opacity .25s; z-index:10000; pointer-events:none;
+  }
+  .reg-toast.show{opacity:1}
+
+  @media (max-width:520px){
+    .reg-modal{padding:20px 18px}
+    .reg-cols{grid-template-columns:1fr; gap:12px}
+    .reg-head .reg-app-title{font-size:18px}
+  }
+</style>
+
+<div class="reg-backdrop" id="regBackdrop" role="dialog" aria-modal="true" aria-labelledby="regAppTitle">
+  <div class="reg-modal">
+    <div class="reg-head">
+      <div>
+        <div class="reg-eyebrow">Registra lezione</div>
+        <p class="reg-app-title" id="regAppTitle">—</p>
+      </div>
+      <div class="reg-datetime">
+        <div id="regDate">—</div>
+        <div><strong id="regTime">—</strong></div>
+      </div>
+    </div>
+
+    <div class="reg-pickerlabel">Seleziona la classe</div>
+
+    <div class="reg-cols">
+      <div>
+        <div class="reg-coltitle prim">Primaria</div>
+        <div class="reg-grid prim" id="regGridPrim"></div>
+      </div>
+      <div>
+        <div class="reg-coltitle sec">Secondaria</div>
+        <div class="reg-grid sec" id="regGridSec"></div>
+      </div>
+    </div>
+
+    <div class="reg-status" id="regStatus">
+      Seleziona una classe per continuare
+    </div>
+
+    <div class="reg-actions">
+      <button class="reg-btn reg-btn-cancel" id="regCancel">Annulla</button>
+      <button class="reg-btn reg-btn-confirm" id="regConfirm" disabled>Conferma e apri</button>
+    </div>
+  </div>
+</div>
+<div class="reg-toast" id="regToast">Registrato</div>
+
+<script>
+(function(){
+  'use strict';
+
+  // ─── GUARDIA HOSTNAME ──────────────────────────────────────────
+  // Il registro accessi si installa solo sui deploy "studenti".
+  // Modifica questo array per attivare/disattivare il registro per dominio.
+  // - acerio.vercel.app       → studenti (production)
+  // - acerionet.vercel.app    → studenti (dev/prove)
+  // - andreacerioli-ad.vercel.app → docenti (registro disattivato)
+  const HOSTNAMES_CON_REGISTRO = ['acerio.vercel.app', 'acerionet.vercel.app'];
+  if (!HOSTNAMES_CON_REGISTRO.includes(location.hostname)) return;
+  // ───────────────────────────────────────────────────────────────
+
+  const REGISTRO_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwOIxvpNEQnOr-TQTqzMycue8D8BN2Ths81ewTjAG7junkAeDhd26mBHsPlc5S3c-hE/exec';
+
+  // Orario fisso settimanale (1=Lun ... 5=Ven) — FALLBACK locale.
+  // All'avvio viene sovrascritto da quello gestito sul Sheet (vedi loadOrarioRemoto).
+  let ORARIO = {
+    1: [
+      { from:'08:00', to:'09:05', id:'SEC_1B' },
+      { from:'09:05', to:'09:55', id:'SEC_3A' },
+      { from:'09:55', to:'11:00', id:'SEC_2C' },
+      { from:'11:00', to:'11:50', id:'PRIM_2A' },
+      { from:'11:50', to:'13:00', id:'PRIM_2B' }
+    ],
+    2: [
+      { from:'08:00', to:'09:05', id:'SEC_1C' },
+      { from:'09:05', to:'09:55', id:'SEC_2A' },
+      { from:'09:55', to:'11:00', id:'SEC_2B' },
+      { from:'11:00', to:'11:50', id:'PRIM_1B' },
+      { from:'11:50', to:'13:00', id:'PRIM_1A' }
+    ],
+    3: [
+      { from:'08:00', to:'09:05', id:'PRIM_5A' },
+      { from:'09:05', to:'09:55', id:'SEC_3C' },
+      { from:'09:55', to:'11:00', id:'PRIM_5B' },
+      { from:'11:00', to:'11:50', id:'SEC_1A' },
+      { from:'11:50', to:'13:00', id:'SEC_3B' }
+    ],
+    4: [
+      { from:'08:00', to:'09:55', id:'PRIM_4A' },
+      { from:'09:55', to:'11:00', id:'PRIM_4B' }
+    ],
+    5: [
+      { from:'08:00', to:'09:55', id:'PRIM_3A' },
+      { from:'09:55', to:'11:00', id:'PRIM_3B' }
+    ]
+  };
+
+  const PRIMARIA = ['1A','1B','2A','2B','3A','3B','4A','4B','5A','5B'];
+  const SECONDARIA = ['1A','1B','1C','2A','2B','2C','3A','3B','3C'];
+  const GIORNI_LABEL = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function fmtDate(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function fmtTime(d){ return pad(d.getHours())+':'+pad(d.getMinutes()); }
+  function fmtDateLabel(d){
+    return GIORNI_LABEL[d.getDay()]+' '+pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();
+  }
+  function timeToMin(hhmm){ const [h,m] = hhmm.split(':').map(Number); return h*60+m; }
+
+  function classeFromNow(d){
+    const giorno = d.getDay();
+    const oraMin = d.getHours()*60 + d.getMinutes();
+    const slots = ORARIO[giorno];
+    if (!slots) return null;
+    for (const s of slots){
+      if (oraMin >= timeToMin(s.from) && oraMin < timeToMin(s.to)) return s.id;
+    }
+    return null;
+  }
+
+  // Carica l'orario gestito sul Sheet (pannello in registro.html) e sovrascrive
+  // il fallback locale. Se offline o errore, resta valido l'ORARIO hardcoded.
+  (function loadOrarioRemoto(){
+    try {
+      var cb = 'orarioCb_' + Date.now();
+      var s = document.createElement('script');
+      window[cb] = function(resp){
+        try { delete window[cb]; } catch(e){ window[cb] = undefined; }
+        if (s.parentNode) s.parentNode.removeChild(s);
+        if (resp && resp.ok && resp.orario && Object.keys(resp.orario).length){
+          var o = {};
+          // normalizzo le chiavi a numero (getDay() restituisce numeri)
+          Object.keys(resp.orario).forEach(function(g){ o[parseInt(g,10)] = resp.orario[g]; });
+          ORARIO = o;
+        }
+      };
+      s.src = REGISTRO_ENDPOINT + '?action=getOrario&callback=' + cb + '&_=' + Date.now();
+      s.onerror = function(){ if (s.parentNode) s.parentNode.removeChild(s); }; // tiene il fallback
+      document.body.appendChild(s);
+    } catch(e){ /* fallback locale */ }
+  })();
+
+  function classeIsInOrario(id, dayOfWeek){
+    const slots = ORARIO[dayOfWeek] || [];
+    return slots.some(s => s.id === id);
+  }
+
+  function getOrarioSlot(id, dayOfWeek){
+    const slots = ORARIO[dayOfWeek] || [];
+    return slots.find(s => s.id === id);
+  }
+
+  function classeLabel(id){
+    if (!id) return '';
+    const sec = id.startsWith('SEC_');
+    return id.split('_')[1] + ' ' + (sec ? 'Secondaria' : 'Primaria');
+  }
+
+  // Costruzione griglie classi (una sola volta)
+  function buildGrids(){
+    const gPrim = document.getElementById('regGridPrim');
+    const gSec  = document.getElementById('regGridSec');
+    gPrim.innerHTML = ''; gSec.innerHTML = '';
+    PRIMARIA.forEach(c => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'reg-cls prim';
+      b.setAttribute('data-id', 'PRIM_'+c);
+      b.innerHTML = '<span class="lbl">'+c+'</span><span class="check">✓</span>';
+      b.addEventListener('click', () => selectClasse('PRIM_'+c));
+      gPrim.appendChild(b);
+    });
+    SECONDARIA.forEach(c => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'reg-cls sec';
+      b.setAttribute('data-id', 'SEC_'+c);
+      b.innerHTML = '<span class="lbl">'+c+'</span><span class="check">✓</span>';
+      b.addEventListener('click', () => selectClasse('SEC_'+c));
+      gSec.appendChild(b);
+    });
+  }
+  buildGrids();
+
+  let pendingUrl = null;
+  let pendingTitle = null;
+  let pendingDate = null;
+  let selectedId = null;
+
+  function selectClasse(id){
+    selectedId = id;
+    document.querySelectorAll('.reg-cls').forEach(b => {
+      b.classList.toggle('selected', b.getAttribute('data-id') === id);
+    });
+    // Aggiorno status
+    const status = document.getElementById('regStatus');
+    const dow = pendingDate ? pendingDate.getDay() : new Date().getDay();
+    const inOrario = classeIsInOrario(id, dow);
+    const slot = inOrario ? getOrarioSlot(id, dow) : null;
+    if (inOrario && slot){
+      status.classList.remove('warn');
+      status.innerHTML = 'Selezionata: <strong>'+classeLabel(id)+'</strong> '+
+        '<span class="meta">(da orario di '+GIORNI_LABEL[dow]+' '+slot.from+'–'+slot.to+')</span>';
+    } else {
+      status.classList.add('warn');
+      status.innerHTML = 'Selezionata: <strong>'+classeLabel(id)+'</strong> '+
+        '<span class="meta">(diversa dall\'orario — sostituzione?)</span>';
+    }
+    document.getElementById('regConfirm').disabled = false;
+  }
+
+  function extractTitle(a){
+    const h = a.querySelector('h1,h2,h3,h4,h5,strong,b,.title,.card-title');
+    if (h && h.innerText.trim()) return h.innerText.trim();
+    const txt = (a.innerText || a.textContent || '').trim();
+    return txt.split('\n')[0].replace(/→\s*$/,'').trim() || 'Senza titolo';
+  }
+
+  function logSession(payload){
+    const qs = Object.keys(payload).map(k =>
+      encodeURIComponent(k)+'='+encodeURIComponent(payload[k]||'')
+    ).join('&');
+    const img = new Image();
+    img.src = REGISTRO_ENDPOINT + '?action=log&' + qs;
+  }
+
+  function toast(msg){
+    const t = document.getElementById('regToast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 2000);
+  }
+
+  function openModal(a, href){
+    const now = new Date();
+    pendingUrl = href;
+    pendingTitle = extractTitle(a);
+    pendingDate = now;
+
+    document.getElementById('regAppTitle').textContent = pendingTitle;
+    document.getElementById('regDate').textContent = fmtDateLabel(now);
+    document.getElementById('regTime').textContent = fmtTime(now);
+
+    // Reset selezione
+    selectedId = null;
+    document.querySelectorAll('.reg-cls').forEach(b => b.classList.remove('selected'));
+    document.getElementById('regConfirm').disabled = true;
+    document.getElementById('regStatus').classList.remove('warn');
+    document.getElementById('regStatus').innerHTML = 'Seleziona una classe per continuare';
+
+    // Pre-seleziona da orario (se applicabile)
+    const auto = classeFromNow(now);
+    if (auto) selectClasse(auto);
+
+    document.getElementById('regBackdrop').classList.add('show');
+  }
+
+  function closeModal(){
+    document.getElementById('regBackdrop').classList.remove('show');
+    pendingUrl = null; pendingTitle = null; pendingDate = null; selectedId = null;
+  }
+
+  // Intercetta i click su link a webapp esterne
+  document.body.addEventListener('click', function(e){
+    const a = e.target.closest('a');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href) return;
+    if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('javascript:')) return;
+    if (a.hasAttribute('data-no-track')) return;
+    let url;
+    try { url = new URL(href, location.href); } catch(_){ return; }
+    if (url.hostname === location.hostname) return;
+    e.preventDefault();
+    openModal(a, url.href);
+  });
+
+  // Conferma → log + apertura
+  document.getElementById('regConfirm').addEventListener('click', function(){
+    if (!pendingUrl || !selectedId) return;
+    const now = new Date();
+    let host = '';
+    try { host = new URL(pendingUrl).hostname; } catch(_){}
+
+    logSession({
+      data: fmtDate(now),
+      ora: fmtTime(now),
+      giorno: GIORNI_LABEL[now.getDay()],
+      classe_id: selectedId,
+      classe_label: classeLabel(selectedId),
+      webapp_titolo: pendingTitle,
+      webapp_url: pendingUrl,
+      webapp_host: host
+    });
+
+    const url = pendingUrl;
+    closeModal();
+    toast('Registrato — apro la webapp');
+    setTimeout(()=>window.open(url, '_blank', 'noopener'), 150);
+  });
+
+  document.getElementById('regCancel').addEventListener('click', closeModal);
+  document.getElementById('regBackdrop').addEventListener('click', function(e){
+    if (e.target.id === 'regBackdrop') closeModal();
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && document.getElementById('regBackdrop').classList.contains('show')) closeModal();
+  });
+})();
+</script>
+<!-- ============================================================
+     REGISTRO LEZIONI — fine
+     ============================================================ -->
 
 </body>
 </html>

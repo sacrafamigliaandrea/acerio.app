@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Acerio Suite — Planning & Registro</title>
+<link rel="icon" type="image/png" href="aclogo.png" />
+<link rel="apple-touch-icon" href="aclogo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --indigo:#1a535c; --violet:#6b7c3e;   /* verde portale: teal + oliva */
+  --primaria:#f97316;   /* ARANCIO = primaria */
+  --secondaria:#2563eb; /* BLU = secondaria */
+  --emerald:#059669; --rose:#e11d48;
+  --bg:#f4f5fb; --surface:#ffffff; --surface-2:#fbfbfe;
+  --fg:#0f172a; --muted:#64748b; --faint:#94a3b8;
+  --border:#e6e8f2; --border-strong:#d3d7ea;
+  --ring:#1a535c;
+  --shadow-sm:0 1px 2px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.04);
+  --shadow-md:0 4px 12px rgba(26,83,92,.10), 0 2px 4px rgba(26,83,92,.05);
+  --shadow-lg:0 18px 40px rgba(26,83,92,.18);
+  --radius:16px;
+  --grad:linear-gradient(135deg,#6b7c3e 0%,#1a535c 55%,#2d3047 100%);
+  --grad-soft:linear-gradient(135deg,#f2f5ec 0%,#eef6f7 100%);
+  --pri-tint:rgba(249,115,22,.10); --pri-bd:rgba(249,115,22,.40);
+  --sec-tint:rgba(37,99,235,.09);  --sec-bd:rgba(37,99,235,.38);
+}
+[data-theme="dark"]{
+  --bg:#0b1020; --surface:#141a2e; --surface-2:#0f1525;
+  --fg:#eef2ff; --muted:#9aa6c4; --faint:#6b7799;
+  --border:#222a44; --border-strong:#2c3556;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --shadow-md:0 6px 16px rgba(0,0,0,.45);
+  --shadow-lg:0 22px 48px rgba(0,0,0,.6);
+  --grad-soft:linear-gradient(135deg,#16241f 0%,#13242a 100%);
+  --pri-tint:rgba(249,115,22,.16); --sec-tint:rgba(37,99,235,.18);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:"Nunito",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--fg);
+  -webkit-font-smoothing:antialiased;min-height:100vh}
+h1,h2,h3,h4,.font-display{font-family:"Baloo 2","Nunito",sans-serif;letter-spacing:-.01em}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{color:var(--indigo);text-decoration:none}
+:focus-visible{outline:3px solid var(--ring);outline-offset:2px;border-radius:8px}
+
+/* ---------- LOCK SCREEN ---------- */
+.lock{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:20px;
+  background:radial-gradient(1200px 600px at 50% -10%, #ede9fe 0%, #f4f5fb 55%)}
+[data-theme="dark"] .lock{background:radial-gradient(1200px 600px at 50% -10%, #1e1b4b 0%, #0b1020 55%)}
+.lockcard{width:min(420px,100%);background:var(--surface);border:1px solid var(--border);
+  border-radius:22px;box-shadow:var(--shadow-lg);padding:30px 28px;text-align:center}
+.lockcard .lk-logo{width:62px;height:62px;border-radius:18px;background:var(--grad);margin:0 auto 16px;
+  display:grid;place-items:center;color:#fff;box-shadow:var(--shadow-md)}
+.lockcard .lk-logo svg{width:32px;height:32px}
+.lockcard h2{margin:0 0 4px;font-size:22px}
+.lockcard p{margin:0 0 20px;color:var(--muted);font-size:13.5px;line-height:1.5}
+.lockcard input[type=password]{width:100%;height:50px;border:1.5px solid var(--border);background:var(--surface-2);
+  color:var(--fg);border-radius:13px;padding:0 16px;font-size:16px;text-align:center;letter-spacing:.06em}
+.lockcard input:focus{border-color:var(--indigo)}
+.lockcard .lk-btn{width:100%;height:50px;margin-top:14px;border-radius:13px;background:var(--grad);color:#fff;
+  font-weight:700;font-size:16px;box-shadow:var(--shadow-md);transition:filter .15s}
+.lockcard .lk-btn:hover{filter:brightness(1.07)}
+.lk-err{color:var(--rose);font-size:13px;font-weight:600;min-height:18px;margin-top:10px}
+.lk-aes{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--faint);margin-top:16px;font-weight:600}
+.lk-aes svg{width:13px;height:13px}
+
+/* ---------- App shell ---------- */
+.app{max-width:1480px;margin:0 auto;padding:18px clamp(12px,3vw,28px) 64px}
+header.topbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--radius);padding:10px 16px;box-shadow:var(--shadow-sm);
+  position:sticky;top:12px;z-index:40;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  color:#fff;box-shadow:var(--shadow-md);flex:none;overflow:hidden}
+.logo svg{width:26px;height:26px}
+.logo img{width:100%;height:100%;object-fit:cover;display:block}
+.brand .t{line-height:1.1;min-width:0}
+.brand .t h1{font-size:19px;margin:0;font-weight:800}
+.brand .t p{margin:2px 0 0;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spacer{flex:1}
+.top-actions{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
+.sync-dot{width:9px;height:9px;border-radius:50%;background:var(--faint);box-shadow:0 0 0 3px rgba(148,163,184,.18)}
+.sync-dot.ok{background:var(--emerald);box-shadow:0 0 0 3px rgba(5,150,105,.18)}
+.sync-dot.busy{background:var(--primaria);box-shadow:0 0 0 3px rgba(249,115,22,.2)}
+.sync-dot.err{background:var(--rose);box-shadow:0 0 0 3px rgba(225,29,72,.2)}
+
+.btn{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 15px;border-radius:11px;
+  font-weight:600;font-size:14px;border:1px solid var(--border);background:var(--surface);color:var(--fg);
+  transition:all .16s ease;white-space:nowrap}
+.btn svg{width:17px;height:17px}
+.btn:hover{border-color:var(--border-strong);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.btn:active{transform:translateY(0)}
+.btn.primary{background:var(--grad);color:#fff;border-color:transparent;box-shadow:var(--shadow-md)}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.icon{width:42px;padding:0;justify-content:center}
+.btn.sm{height:34px;font-size:13px;padding:0 11px;border-radius:9px}
+.btn.danger{color:var(--rose);border-color:transparent}
+.btn.danger:hover{background:rgba(225,29,72,.1);border-color:rgba(225,29,72,.25)}
+
+.tabs{display:flex;gap:5px;background:var(--surface-2);border:1px solid var(--border);border-radius:13px;
+  padding:5px;flex-wrap:nowrap}
+.tab{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 15px;border-radius:10px;
+  font-weight:600;font-size:14px;color:var(--muted);transition:all .15s}
+.tab svg{width:17px;height:17px}
+.tab:hover{color:var(--fg);background:rgba(100,116,139,.08)}
+.tab.active{background:var(--grad);color:#fff;box-shadow:var(--shadow-md)}
+.tab .count{font-size:11px;background:rgba(100,116,139,.14);color:var(--muted);padding:1px 7px;border-radius:20px;font-weight:700}
+.tab.active .count{background:rgba(255,255,255,.25);color:#fff}
+.tab.ico{width:38px;padding:0;justify-content:center}
+.tab.ico .tx{display:none}
+.btn.ico{width:42px;padding:0;justify-content:center}
+.btn.ico>span{display:none}
+
+.edit-hint{background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.25);color:var(--indigo);
+  border-radius:11px;padding:8px 13px;font-size:13px;font-weight:600;margin-bottom:12px}
+
+/* ---------- Timetable ---------- */
+.grid-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);overflow:hidden}
+.grid-scroll{overflow-x:auto}
+.weeknotes-card{margin-top:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);padding:13px 16px}
+.weeknotes-card .wn-head{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:9px;font-weight:600}
+.weeknotes-card .wn-head b{color:var(--fg);font-family:"Baloo 2";font-weight:700}
+.weeknotes-card .wn-head svg{width:16px;height:16px;color:var(--indigo)}
+.wn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.wn-day{display:flex;flex-direction:column;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:8px 9px}
+.wn-day .wn-day-h{display:flex;align-items:baseline;gap:5px;margin-bottom:6px;font-size:12px;font-weight:700;color:var(--indigo)}
+.wn-day .wn-day-h .wn-day-num{color:var(--muted);font-weight:600}
+.wn-day textarea{width:100%;box-sizing:border-box;min-height:74px;resize:vertical;font-family:inherit;
+  font-size:13px;line-height:1.45;color:var(--fg);background:var(--surface);border:1px solid var(--border);
+  border-radius:9px;padding:8px 9px;outline:none}
+.wn-day textarea:focus{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(26,83,92,.12)}
+table.timetable{border-collapse:collapse;width:100%;min-width:760px}
+.timetable th,.timetable td{border:1px solid var(--border);vertical-align:top}
+.timetable thead th{background:var(--grad-soft);font-family:"Baloo 2";font-size:14.5px;font-weight:700;
+  padding:7px 8px;position:sticky;top:0;text-align:center;color:var(--fg)}
+.timetable thead th .dh{display:flex;flex-direction:column;align-items:center;gap:0}
+.timetable thead th .dh-top{display:flex;align-items:baseline;gap:6px}
+.timetable thead th .dh-name{font-family:"Baloo 2";font-size:14px;font-weight:700;color:var(--fg)}
+.timetable thead th .dh-num{font-family:"Baloo 2";font-size:16px;font-weight:800;color:var(--indigo)}
+.timetable thead th .dh-mon{font-family:"Nunito",sans-serif;font-size:10px;font-weight:600;color:var(--muted);
+  text-transform:lowercase;letter-spacing:.02em;margin-top:-1px}
+.timetable .corner{background:var(--surface-2);width:78px;padding:5px 4px}
+.timetable .corner .cnav{display:flex;flex-direction:column;align-items:center;gap:5px}
+.cnav-wk{font-family:"Baloo 2";font-size:12.5px;font-weight:700;color:var(--indigo);line-height:1;
+  border:none;background:transparent;cursor:pointer;padding:2px 4px;border-radius:7px;text-align:center;transition:.13s}
+.cnav-wk:hover{background:rgba(79,70,229,.1)}
+.cnav-wk.off{color:var(--muted);font-size:11.5px}
+.timetable td.ns-slot{padding:5px;height:104px}
+.ns-day{height:100%;min-height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  border:1.5px dashed var(--border-strong);border-radius:11px;color:var(--muted);background:var(--surface-2);text-align:center;padding:8px}
+.ns-day svg{width:22px;height:22px;opacity:.6}
+.ns-day span{font-family:"Nunito",sans-serif;font-size:12px;font-weight:700;letter-spacing:.01em}
+/* Evidenziazione del giorno corrente */
+.timetable thead th.today{background:rgba(79,70,229,.12);box-shadow:inset 0 -3px 0 var(--indigo)}
+.timetable thead th.today .dh-name,.timetable thead th.today .dh-num{color:var(--indigo)}
+.dh-today{display:inline-block;margin-top:2px;padding:1px 7px;border-radius:999px;background:var(--indigo);color:#fff;
+  font-family:"Nunito",sans-serif;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.timetable td.today-col{background:rgba(79,70,229,.05)}
+.cnav-row{display:flex;align-items:center;justify-content:center;gap:5px}
+.cnav-btn{display:inline-flex;align-items:center;justify-content:center;width:29px;height:29px;padding:0;
+  border:1px solid var(--border);background:var(--surface);color:var(--fg);border-radius:9px;cursor:pointer;
+  box-shadow:var(--shadow-sm);transition:.13s}
+.cnav-btn:hover{border-color:var(--indigo);color:var(--indigo);transform:translateY(-1px)}
+.cnav-btn svg{width:15px;height:15px}
+.timetable .timecell{background:var(--surface-2);font-weight:700;font-size:12px;color:var(--muted);
+  text-align:center;padding:8px 4px;width:78px;white-space:nowrap;line-height:1.3}
+.timetable .timecell b{display:block;color:var(--fg);font-size:13px;font-family:"Baloo 2"}
+.timetable .timecell.editing{width:96px;padding:8px 6px}
+.timetable .timecell .time-edit{display:block;width:100%;margin:4px 0 0;padding:3px 2px 3px 5px;border:1px solid var(--border-strong);
+  border-radius:7px;background:var(--surface);color:var(--fg);font-family:inherit;font-size:12px;font-weight:700;text-align:left}
+.timetable .timecell .time-edit::-webkit-calendar-picker-indicator{margin-left:0;padding:0;opacity:.55}
+.timetable .timecell .time-edit:focus-visible{outline:2px solid var(--ring);outline-offset:1px}
+.timetable .timecell .time-edit.end{color:var(--muted)}
+.timetable td.slot{padding:5px;height:104px}
+
+.lesson{position:relative;height:100%;min-height:92px;border-radius:11px;padding:8px 9px;border:1.5px solid transparent;
+  display:flex;flex-direction:column;gap:4px;cursor:pointer;transition:transform .14s,box-shadow .14s;overflow:hidden}
+.lesson:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.lesson.pri{background:var(--pri-tint);border-color:var(--pri-bd)}
+.lesson.sec{background:var(--sec-tint);border-color:var(--sec-bd)}
+.lesson.imp{background:rgba(100,116,139,.10);border-color:rgba(100,116,139,.34)}
+.lesson.imp .topic.empty{font-style:normal}
+.lesson .l-top{display:flex;align-items:center;gap:7px}
+.dot{width:13px;height:13px;border-radius:50%;flex:none;box-sizing:border-box}
+.dot.pri{background:var(--primaria);border:2px solid var(--primaria)}
+.dot.sec{background:var(--secondaria);border:2px solid var(--secondaria)}
+.dot.imp{background:#94a3b8;border:2px solid #94a3b8}
+.lesson .cls{font-weight:700;font-size:13.5px;font-family:"Baloo 2";line-height:1.1}
+.lesson .topic{font-size:11.5px;color:var(--fg);line-height:1.28;opacity:.95;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lesson .topic.empty{color:var(--faint);font-style:italic;opacity:.7}
+.lesson .l-foot{margin-top:auto;display:flex;align-items:center;gap:6px;font-size:10px;color:var(--faint);font-weight:700;flex-wrap:nowrap}
+.lesson .cat{padding:1px 7px;border-radius:6px;background:rgba(100,116,139,.12);text-transform:uppercase;letter-spacing:.03em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lesson.done{opacity:.85}
+.lesson.suspended{background:repeating-linear-gradient(135deg,rgba(148,163,184,.10),rgba(148,163,184,.10) 7px,rgba(148,163,184,.18) 7px,rgba(148,163,184,.18) 14px);border-color:rgba(148,163,184,.45);border-style:dashed}
+.lesson.suspended .cls{text-decoration:line-through;text-decoration-color:rgba(100,116,139,.6)}
+.lesson.suspended .topic{color:var(--faint);font-style:italic;opacity:.8}
+.lesson .susp-badge{position:absolute;top:6px;right:6px;display:none;align-items:center;gap:3px;font-size:9px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.03em;color:#b45309;background:rgba(217,119,6,.16);padding:2px 6px;border-radius:6px}
+.lesson.suspended .susp-badge{display:inline-flex}
+.lesson.suspended .done-badge{display:none}
+[data-theme=dark] .lesson.suspended .susp-badge{color:#fbbf24;background:rgba(217,119,6,.22)}
+.lesson .done-badge{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;
+  background:var(--emerald);color:#fff;display:none;place-items:center}
+.lesson.done .done-badge{display:grid}
+.lesson.done .topic{text-decoration:line-through;text-decoration-color:rgba(5,150,105,.5)}
+.lesson .l-acts{display:flex;gap:4px;margin-left:auto;flex:none}
+.lesson .l-act{width:22px;height:22px;flex:none;padding:0;border:1px solid rgba(100,116,139,.34);border-radius:7px;
+  display:grid;place-items:center;cursor:pointer;color:var(--muted);background:var(--surface);transition:all .12s}
+.lesson .l-act:hover{color:var(--fg);border-color:var(--border-strong);transform:translateY(-1px)}
+.lesson .l-act svg{width:12px;height:12px;pointer-events:none}
+.lesson .l-act.on{color:#fff;border-color:transparent;background:#d97706}
+.lesson .l-note-edit{margin-top:5px}
+.lesson .l-note-edit textarea{width:100%;box-sizing:border-box;font-family:inherit;font-size:11px;line-height:1.32;
+  color:var(--fg);background:var(--surface);border:1px solid var(--border-strong);border-radius:7px;padding:5px 6px;resize:none;min-height:40px;outline:none}
+.lesson .l-note-edit textarea:focus{border-color:var(--indigo);box-shadow:0 0 0 2px rgba(79,70,229,.18)}
+.lesson .l-note{padding:1px 7px;border-radius:6px;background:rgba(217,119,6,.14);color:#b45309;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+[data-theme=dark] .lesson .l-note{color:#fbbf24;background:rgba(217,119,6,.20)}
+.lesson .l-reg{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:10px;font-weight:700;line-height:1.2;
+  padding:2px 6px;border-radius:6px;background:rgba(100,116,139,.12);color:var(--muted);border:1px solid transparent}
+.lesson .l-reg svg{width:11px;height:11px;flex:none}
+.lesson .l-reg .l-reg-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lesson .l-reg .l-reg-n{flex:none;padding:0 5px;border-radius:20px;background:rgba(100,116,139,.18);font-size:9px}
+.lesson .l-reg.match{background:rgba(5,150,105,.14);color:#047857;border-color:rgba(5,150,105,.30)}
+.lesson .l-reg.match .l-reg-n{background:rgba(5,150,105,.22)}
+[data-theme=dark] .lesson .l-reg.match{color:#34d399;background:rgba(5,150,105,.20)}
+.slot-empty{height:100%;min-height:70px;border:1.5px dashed var(--border-strong);border-radius:11px;
+  display:grid;place-items:center;color:var(--faint);transition:all .14s}
+.slot-empty:hover{border-color:var(--indigo);color:var(--indigo);background:rgba(79,70,229,.05)}
+.slot-empty svg{width:18px;height:18px;opacity:.6}
+.editmode .lesson::after,.editmode .slot-empty::after{content:"";position:absolute;inset:0;border-radius:11px;
+  box-shadow:inset 0 0 0 2px rgba(79,70,229,.45);pointer-events:none}
+.editmode .lesson,.editmode .slot-empty{position:relative}
+.lesson[draggable=true]{cursor:grab}
+.lesson.dragging{opacity:.4}
+.slot.drop-hl{outline:2px dashed var(--indigo);outline-offset:-4px}
+
+.section-head{display:flex;align-items:center;gap:12px;margin:6px 2px 14px;flex-wrap:wrap}
+.section-head h2{margin:0;font-size:21px}
+.section-head p{margin:0;color:var(--muted);font-size:13.5px}
+
+/* ---------- Registro view ---------- */
+.reg-thresh{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
+.reg-thresh label b{color:var(--fg)}
+.reg-thresh input[type=range]{width:170px;accent-color:var(--secondaria)}
+.reg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.reg-card{background:var(--surface);border:1px solid var(--border);border-left-width:5px;border-radius:14px;
+  padding:13px 14px;box-shadow:var(--shadow-sm)}
+.reg-card.pri{border-left-color:var(--primaria)}
+.reg-card.sec{border-left-color:var(--secondaria)}
+.reg-card-head{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.reg-card-head b{font-size:15px}
+.reg-dot{width:9px;height:9px;border-radius:50%;flex:none}
+.reg-card.pri .reg-dot{background:var(--primaria)}
+.reg-card.sec .reg-dot{background:var(--secondaria)}
+.reg-card-tot{margin-left:auto;font-size:11px;color:var(--faint);font-weight:600}
+.reg-applist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.reg-app{display:flex;align-items:center;gap:9px}
+.reg-rank{flex:none;width:20px;height:20px;border-radius:6px;display:grid;place-items:center;
+  background:var(--bg);font-size:11px;font-weight:800;color:var(--muted)}
+.reg-app-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.reg-app-title{font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.reg-bar{height:5px;border-radius:20px;background:var(--bg);overflow:hidden}
+.reg-bar-fill{display:block;height:100%;border-radius:20px;background:var(--grad)}
+.reg-count{flex:none;font-size:13px;font-weight:800;color:var(--fg);min-width:22px;text-align:right;
+  font-variant-numeric:tabular-nums}
+.reg-none,.reg-empty{color:var(--faint);font-size:12.5px;padding:6px 2px}
+.reg-empty{grid-column:1/-1;text-align:center;padding:34px}
+.reg-below{margin-top:9px;font-size:11px;color:var(--faint);font-weight:600}
+.reg-syncmsg{margin:0 2px 12px;font-size:12.5px;font-weight:600;min-height:18px}
+.reg-syncmsg.busy{color:var(--muted)}
+.reg-syncmsg.ok{color:var(--emerald)}
+.reg-syncmsg.err{color:var(--rose)}
+/* Registro: KPI · heatmap copertura · cronologia */
+.reg-sub{margin-top:24px}
+.reg-h3{font-family:"Baloo 2";font-size:16px;font-weight:700;margin:0 0 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.reg-h3-hint{font-family:"Nunito",sans-serif;font-size:11.5px;color:var(--faint);font-weight:500}
+.reg-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:4px}
+.reg-kpi .k{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow-sm)}
+.reg-kpi .k .v{font-size:26px;font-weight:800;color:var(--fg);line-height:1;font-variant-numeric:tabular-nums}
+.reg-kpi .k .v small{font-size:15px;color:var(--faint);font-weight:700}
+.reg-kpi .k .l{margin-top:6px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700}
+.reg-heat-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:var(--shadow-sm)}
+.reg-heat{border-collapse:separate;border-spacing:3px;font-size:11.5px}
+.reg-heat th{font-weight:600;color:var(--muted);padding:4px 6px;text-align:center;white-space:nowrap}
+.reg-heat th.rl{text-align:left;color:var(--fg);min-width:84px;padding-right:10px}
+.reg-heat td{width:44px;height:30px;border-radius:7px;text-align:center;vertical-align:middle;font-weight:700;cursor:pointer;font-variant-numeric:tabular-nums;transition:transform .1s}
+.reg-heat td:hover{transform:scale(1.08)}
+.reg-heat td.lv0{background:var(--bg);color:transparent}
+.reg-heat td.lv1{background:#cfe9da;color:#14532d}
+.reg-heat td.lv2{background:#86c9a4;color:#0c3d24}
+.reg-heat td.lv3{background:#3f9f6b;color:#fff}
+.reg-heat td.lv4{background:#1f7a47;color:#fff}
+.reg-heat td.lv5{background:#0f5a30;color:#fff}
+.reg-heat-legend{margin-top:11px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+.reg-heat-legend i{width:13px;height:13px;border-radius:4px;display:inline-block;vertical-align:middle;margin-right:4px}
+.reg-filters{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:12px}
+.reg-filters select,.reg-filters input{height:38px;padding:0 11px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);color:var(--fg);font-family:inherit;font-size:13.5px}
+.reg-filters input[type=search]{min-width:180px;flex:1}
+.reg-filters select:focus,.reg-filters input:focus{outline:none;border-color:var(--secondaria)}
+.reg-logwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-sm)}
+.reg-log{width:100%;border-collapse:collapse;font-size:13.5px}
+.reg-log th{text-align:left;padding:11px 12px;color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;border-bottom:2px solid var(--border);position:sticky;top:0;background:var(--surface);white-space:nowrap}
+.reg-log td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;white-space:nowrap}
+.reg-log td.app{white-space:normal}
+.reg-log tr:hover td{background:var(--surface-2)}
+.reg-log a{color:var(--secondaria);text-decoration:none;font-weight:600}
+.reg-log a:hover{text-decoration:underline}
+.reg-pill{display:inline-block;padding:2px 9px;border-radius:11px;font-size:11.5px;font-weight:700}
+.reg-pill.pri{background:rgba(249,115,22,.14);color:var(--primaria)}
+.reg-pill.sec{background:rgba(37,99,235,.14);color:var(--secondaria)}
+.reg-logmore{padding:13px;text-align:center}
+
+.cls-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:14px}
+.cls-card{background:var(--surface);border:1px solid var(--border);border-left-width:5px;border-radius:14px;
+  padding:14px;box-shadow:var(--shadow-sm);transition:transform .15s,box-shadow .15s}
+.cls-card.pri{border-left-color:var(--primaria)}
+.cls-card.sec{border-left-color:var(--secondaria)}
+.cls-card.imp{border-left-color:#94a3b8}
+.pill.imp{background:rgba(100,116,139,.16);color:#475569}
+[data-theme=dark] .pill.imp{background:rgba(148,163,184,.18);color:#cbd5e1}
+.cls-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.cls-card .cc-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.cls-card .cc-name{font-family:"Baloo 2";font-weight:700;font-size:16px;flex:1;min-width:0;border:none;background:transparent;color:var(--fg);padding:2px}
+.cls-card select{width:100%;height:38px;border:1px solid var(--border);background:var(--surface-2);color:var(--fg);
+  border-radius:9px;padding:0 10px;font-family:inherit;font-size:13.5px}
+.cc-meta{display:flex;gap:6px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;display:inline-flex;align-items:center;gap:4px}
+.pill.slots{background:rgba(13,148,136,.12);color:#0d9488}
+.pill.lessons{background:rgba(79,70,229,.1);color:var(--indigo)}
+
+/* ---------- Topics catalog ---------- */
+.topic-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.search-box{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;background:var(--surface);
+  border:1px solid var(--border);border-radius:11px;padding:0 12px;box-shadow:var(--shadow-sm)}
+.search-box svg{width:17px;height:17px;color:var(--faint);flex:none}
+.search-box input{flex:1;height:42px;border:none;background:transparent;color:var(--fg);font-size:14px;font-family:inherit}
+.search-box input:focus{outline:none}
+.topic-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.topic-item{display:flex;align-items:flex-start;gap:10px;background:var(--surface);border:1px solid var(--border);
+  border-radius:11px;padding:11px 13px;box-shadow:var(--shadow-sm)}
+.topic-item .ti-num{font-size:11px;font-weight:700;color:var(--faint);width:28px;flex:none;line-height:1.5}
+.topic-item .ti-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.topic-item .ti-head{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.topic-item .ti-name{font-weight:700;font-size:14px;min-width:0;line-height:1.25}
+.topic-item .ti-cat{align-self:flex-start;max-width:100%;font-size:10px;font-weight:700;color:var(--indigo);
+  background:rgba(79,70,229,.1);padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topic-item .ti-desc{font-size:12px;color:var(--muted);font-weight:500;line-height:1.35}
+.topic-item .ti-link{display:inline-flex;align-items:center;gap:5px;width:fit-content;max-width:100%;
+  font-size:11px;font-weight:700;color:var(--indigo);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topic-item .ti-link:hover{text-decoration:underline}
+.topic-item .ti-link svg{width:12px;height:12px;flex:none}
+.topic-item .ti-del{color:var(--faint);flex:none}
+.topic-item .ti-del:hover{color:var(--rose)}
+
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:18px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;
+  box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+.stat .si{position:absolute;right:-6px;top:-6px;opacity:.08}
+.stat .si svg{width:74px;height:74px}
+.stat .val{font-family:"Baloo 2";font-size:30px;font-weight:800;line-height:1}
+.stat .lab{color:var(--muted);font-size:13px;font-weight:600;margin-top:4px}
+.prog-table{width:100%;border-collapse:collapse}
+.prog-table th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);
+  padding:8px 10px;border-bottom:2px solid var(--border)}
+.prog-table td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:13.5px}
+.prog-table .pname{display:flex;align-items:center;gap:8px;font-weight:600}
+.mini-bar{height:8px;border-radius:20px;background:var(--border);overflow:hidden;min-width:120px}
+.mini-fill{height:100%;border-radius:20px}
+
+/* ---------- Modal ---------- */
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(3px);display:none;
+  align-items:center;justify-content:center;z-index:100;padding:16px}
+.overlay.open{display:flex;animation:fade .18s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:min(560px,100%);
+  max-height:90vh;overflow:auto;box-shadow:var(--shadow-lg);animation:pop .22s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes pop{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:none}}
+.modal .m-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.modal .m-head h3{margin:0;font-size:18px;flex:1}
+.modal .m-body{padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.field label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.02em}
+.field input,.field textarea,.field select{width:100%;border:1px solid var(--border);background:var(--surface-2);
+  color:var(--fg);border-radius:11px;padding:11px 13px;font-family:inherit;font-size:14.5px;resize:vertical}
+.field textarea{min-height:120px;font-family:ui-monospace,Menlo,monospace;font-size:13px}
+#lmNotes{min-height:62px;font-family:inherit;font-size:14px}
+.checkrow.warn input{accent-color:#d97706}
+.field .hint{font-size:11.5px;color:var(--faint);margin-top:5px;line-height:1.4}
+.modal .m-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center}
+.checkrow{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--border);
+  border-radius:11px;padding:11px 13px;cursor:pointer;font-weight:600;font-size:14px}
+.checkrow input{width:20px;height:20px;accent-color:var(--emerald)}
+.pick-list,.assign-list{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow:auto;margin-top:4px}
+.assign-opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);
+  border-radius:11px;cursor:pointer;font-weight:600;transition:all .12s;font-size:14px}
+.assign-opt:hover{border-color:var(--indigo);background:rgba(79,70,229,.05)}
+.assign-opt .ao-lvl{margin-left:auto;font-size:10px;text-transform:uppercase;font-weight:700;padding:2px 8px;border-radius:6px}
+.assign-opt .ao-dot{width:13px;height:13px;border-radius:50%;flex:none;box-sizing:border-box}
+.pick-opt{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid var(--border);
+  border-radius:11px;cursor:pointer;transition:all .12s}
+.pick-opt:hover{border-color:var(--indigo);background:rgba(79,70,229,.05)}
+.pick-opt.sel{border-color:var(--indigo);background:rgba(79,70,229,.08)}
+.pick-opt .po-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pick-opt .po-name{font-weight:700;font-size:14px;flex:1 1 60%;min-width:0}
+.pick-opt .po-cat{flex:none;max-width:100%;font-size:10px;text-transform:uppercase;font-weight:700;padding:2px 8px;
+  border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pick-opt .po-desc{font-size:12px;color:var(--muted);font-weight:500;line-height:1.38}
+.pick-opt .po-link{display:inline-flex;align-items:center;gap:5px;width:fit-content;max-width:100%;
+  font-size:11.5px;font-weight:700;color:var(--indigo);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick-opt .po-link:hover{text-decoration:underline}
+.pick-opt .po-link svg{width:13px;height:13px;flex:none}
+
+.bdg-primaria{background:rgba(249,115,22,.16);color:#c2410c}
+.bdg-secondaria{background:rgba(37,99,235,.16);color:#1d4ed8}
+[data-theme="dark"] .bdg-primaria{color:#fdba74}
+[data-theme="dark"] .bdg-secondaria{color:#93c5fd}
+
+.empty-state{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty-state svg{width:54px;height:54px;opacity:.3;margin-bottom:12px}
+.empty-state .btn{margin-top:14px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--fg);
+  color:var(--bg);padding:12px 20px;border-radius:12px;font-weight:600;font-size:14px;box-shadow:var(--shadow-lg);
+  opacity:0;pointer-events:none;transition:all .25s;z-index:200}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.hidden{display:none!important}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:0 2px 12px;align-items:center}
+.legend .lg{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+
+@media (max-width:640px){
+  .brand .t p{display:none}.tab span.tx{display:none}.tab{padding:0 13px}
+}
+@media print{
+  header.topbar,.tabs,.top-actions,.cnav,.legend .no-print{display:none!important}
+  body{background:#fff}.app{padding:0}.grid-card{box-shadow:none;border:1px solid #ccc}.lesson{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ LOCK SCREEN ============ -->
+<div class="lock" id="lockScreen">
+  <div class="lockcard">
+    <div class="lk-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <h2 id="lockTitle">Acerio Suite</h2>
+    <p id="lockDesc">Inserisci la password per decifrare i tuoi dati.</p>
+    <form id="lockForm">
+      <input type="password" id="lockPwd" placeholder="Password" autocomplete="current-password" />
+      <input type="password" id="lockPwd2" class="hidden" placeholder="Ripeti la password" autocomplete="new-password" />
+      <button type="submit" class="lk-btn" id="lockBtn">Sblocca</button>
+      <div class="lk-err" id="lockErr"></div>
+    </form>
+    <div class="lk-aes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Cifratura AES-256-GCM · PBKDF2 210k
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div class="app hidden" id="appRoot">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo"><img src="aclogo.png" alt="Acerio" /></div>
+      <div class="t"><h1>Acerio Suite</h1><p id="sub-line">Planning · Registro</p></div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-view="week" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="tx">Settimana</span></button>
+      <button class="tab" data-view="classes" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="tx">Classi</span><span class="count" id="clsCount">0</span></button>
+      <button class="tab" data-view="topics" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="tx">Argomenti</span><span class="count" id="topCount">0</span></button>
+      <button class="tab ico" data-view="progress" role="tab" title="Avanzamento" aria-label="Avanzamento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg><span class="tx">Avanzamento</span></button>
+      <button class="tab" data-view="registro" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="tx">Registro</span><span class="count" id="regCount">0</span></button>
+    </nav>
+    <div class="spacer"></div>
+    <div class="top-actions">
+      <button class="btn" id="todayBtn" title="Vai a oggi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="16" r="2.2" fill="currentColor" stroke="none"/></svg><span>Oggi</span></button>
+      <button class="btn ico" id="editToggle" title="Modifica orario" aria-label="Modifica orario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg><span id="editToggleLabel">Modifica orario</span></button>
+      <span class="sync-dot" id="syncDot" title="Stato sincronizzazione"></span>
+      <button class="btn icon" id="menuBtn" title="Impostazioni" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- WEEK -->
+  <section id="view-week">
+    <div class="edit-hint no-print" id="editHint" style="display:none">Modifica orario attiva — trascina le classi tra le celle oppure clicca per assegnare</div>
+    <div class="grid-card"><div class="grid-scroll"><table class="timetable" id="timetable"></table></div></div>
+    <div class="weeknotes-card">
+      <div class="wn-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>
+        <span>Note personali · <b id="wnWeek">Settimana 1</b></span>
+      </div>
+      <div class="wn-grid" id="wnGrid"></div>
+    </div>
+  </section>
+
+  <!-- CLASSES -->
+  <section id="view-classes" class="hidden">
+    <div class="section-head">
+      <div><h2>Le mie classi</h2><p>Rinomina e imposta il livello. Il colore della card distingue solo Primaria (arancio) da Secondaria (blu).</p></div>
+      <div class="spacer"></div>
+      <button class="btn" id="addClassBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Aggiungi classe</button>
+    </div>
+    <div class="cls-grid" id="clsGrid"></div>
+  </section>
+
+  <!-- TOPICS -->
+  <section id="view-topics" class="hidden">
+    <div class="section-head">
+      <div><h2>Catalogo argomenti</h2><p>Le web app del tuo portale. Scegli qui l'argomento di ogni lezione.</p></div>
+      <div class="spacer"></div>
+      <button class="btn" id="importTopicsBtn" title="Rilegge l'elenco delle web app da index.html (stesso portale) e aggiorna il catalogo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Aggiorna da portale</button>
+      <button class="btn primary" id="addTopicBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Aggiungi</button>
+    </div>
+    <div class="topic-toolbar">
+      <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="topicSearch" placeholder="Cerca tra le web app…" /></div>
+    </div>
+    <div class="topic-list" id="topicList"></div>
+  </section>
+
+  <!-- PROGRESS -->
+  <section id="view-progress" class="hidden">
+    <div class="section-head"><div><h2>Avanzamento annuale</h2><p>Lezioni pianificate e svolte sulle 33 settimane.</p></div></div>
+    <div class="stat-row" id="statRow"></div>
+    <div class="grid-card" style="padding:6px 4px 4px"><table class="prog-table" id="progTable"></table></div>
+  </section>
+
+  <!-- REGISTRO -->
+  <section id="view-registro" class="hidden">
+    <div class="section-head">
+      <div><h2>Registro accessi</h2><p>Quali web app hanno aperto gli studenti, raggruppate per classe. Dati in tempo reale dal portale.</p></div>
+      <div class="spacer"></div>
+      <div class="reg-thresh"><label for="regThresh">Soglia minima aperture: <b id="regThreshVal">3</b></label>
+        <input type="range" id="regThresh" min="1" max="20" value="3" /></div>
+      <button class="btn" id="regSyncOrario" title="Invia l'orario del Planning al Registro per attribuire le aperture alla classe giusta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Sincronizza orario</button>
+      <button class="btn" id="regRefresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Aggiorna</button>
+    </div>
+    <div class="reg-syncmsg" id="regSyncMsg"></div>
+
+    <div class="reg-kpi" id="regKpi"></div>
+
+    <div class="reg-sub">
+      <h3 class="reg-h3">Copertura classi <span class="reg-h3-hint">ultime 8 settimane · clicca una cella per filtrare la cronologia</span></h3>
+      <div class="reg-heat-wrap" id="regHeatWrap"></div>
+    </div>
+
+    <div class="reg-sub">
+      <h3 class="reg-h3">Aperture per classe <span class="reg-h3-hint">le web app più usate dagli studenti</span></h3>
+      <div class="reg-grid" id="regGrid"></div>
+    </div>
+
+    <div class="reg-sub">
+      <h3 class="reg-h3">Cronologia <span class="reg-h3-hint" id="regCronCount"></span></h3>
+      <div class="reg-filters">
+        <select id="regFClasse"><option value="">Tutte le classi</option></select>
+        <select id="regFLivello">
+          <option value="">Primaria + Secondaria</option>
+          <option value="PRIM">Solo Primaria</option>
+          <option value="SEC">Solo Secondaria</option>
+        </select>
+        <input type="date" id="regFDa" title="Da" />
+        <input type="date" id="regFA" title="A" />
+        <input type="search" id="regFCerca" placeholder="Cerca web app…" />
+      </div>
+      <div id="regCronWrap"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ LESSON MODAL ============ -->
+<div class="overlay" id="lessonOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="m-head"><span class="dot" id="lmDot"></span><h3 id="lmTitle">Lezione</h3>
+      <button class="btn icon sm" id="lmClose" aria-label="Chiudi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="m-body">
+      <div class="field"><label>Argomento (web app del portale)</label>
+        <div class="search-box" style="box-shadow:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="lmSearch" placeholder="Cerca o scegli una web app…" /></div>
+        <div class="pick-list" id="lmPick"></div>
+        <div class="hint" id="lmNoTopics" style="display:none">Nessun argomento in catalogo. Vai su <b>Argomenti</b> e importa le tue web app.</div>
+      </div>
+      <div class="field"><label>Note</label><textarea id="lmNotes" rows="2" placeholder="Materiali, compiti, cose da ricordare…"></textarea></div>
+      <label class="checkrow"><input type="checkbox" id="lmDone" /> Lezione svolta</label>
+      <label class="checkrow warn"><input type="checkbox" id="lmSuspended" /> Lezione sospesa (festività, assenza, nessuna lezione)</label>
+    </div>
+    <div class="m-foot"><button class="btn danger sm" id="lmClear">Svuota</button><div class="spacer" style="flex:1"></div>
+      <button class="btn sm" id="lmCancel">Annulla</button><button class="btn primary sm" id="lmSave">Salva</button></div>
+  </div>
+</div>
+
+<!-- ============ ASSIGN MODAL ============ -->
+<div class="overlay" id="assignOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="m-head"><h3 id="asTitle">Assegna classe</h3>
+      <button class="btn icon sm" id="asClose" aria-label="Chiudi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="m-body"><div class="assign-list" id="assignList"></div></div>
+    <div class="m-foot"><button class="btn danger sm" id="asClear">Lascia vuota</button><div class="spacer" style="flex:1"></div><button class="btn sm" id="asCancel">Annulla</button></div>
+  </div>
+</div>
+
+<!-- ============ SETTINGS MODAL ============ -->
+<div class="overlay" id="setOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="m-head"><h3>Impostazioni & Dati</h3>
+      <button class="btn icon sm" id="setClose" aria-label="Chiudi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="m-body">
+      <div class="field"><label>Inizio anno (lunedì settimana 1)</label><input id="setStart" type="date" /><div class="hint">Le date delle 33 settimane si calcolano da qui.</div></div>
+      <div class="field"><label>Giorni della settimana</label><select id="setDays"><option value="5">Lun – Ven (5)</option><option value="6">Lun – Sab (6)</option></select></div>
+      <div class="field"><label>Ore / spazi al giorno</label><input id="setPeriods" type="number" min="1" max="10" /></div>
+      <div class="field" style="border-top:1px solid var(--border);padding-top:14px"><label>Sincronizzazione cloud (Google Sheet)</label>
+        <input id="setSyncUrl" type="url" placeholder="URL Apps Script …/exec" />
+        <div class="hint">Vuoto = solo questo dispositivo (cifrato in locale). Configurazione in <b>Code.gs</b>.</div>
+      </div>
+      <div class="field" style="border-top:1px solid var(--border);padding-top:14px"><label>Accesso esclusivo (uso personale)</label>
+        <button class="btn sm" id="genGateBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Genera codice accesso esclusivo</button>
+        <div class="hint">Crea una riga da incollare in <b>index.html</b> (variabile <code>OWNER_GATE</code>): dopo la pubblicazione la pagina chiederà sempre la <b>tua</b> password e nessuno potrà registrarne una propria. Usa una password robusta.</div>
+        <textarea id="gateOut" class="hidden" readonly rows="3" style="width:100%;margin-top:8px;font-family:ui-monospace,Menlo,monospace;font-size:11px;border:1px solid var(--border);background:var(--surface-2);color:var(--fg);border-radius:9px;padding:8px;resize:vertical"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:14px">
+        <button class="btn sm" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Esporta (cifrato)</button>
+        <button class="btn sm" id="importBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>Importa file</button>
+        <input type="file" id="importFile" accept="application/json" class="hidden" />
+        <button class="btn danger sm" id="resetBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Azzera tutto</button>
+      </div>
+    </div>
+    <div class="m-foot"><div class="spacer" style="flex:1"></div><button class="btn primary sm" id="setSave">Salva</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ======================= CONSTANTS ======================= */
+const WEEKS = 33;
+const DAY_NAMES = ["Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
+const MONTHS = ["gen","feb","mar","apr","mag","giu","lug","ago","set","ott","nov","dic"];
+const MONTHS_FULL = ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
+const META_KEY = "acerio-meta";      // {syncUrl, theme} plaintext
+const BLOB_KEY = "acerio-blob";      // {v,salt,iter,ct} envelope, AES-256-GCM
+// Backend condiviso (Google Sheet + Apps Script) usato dai tre portali: di default
+// la Suite sincronizza qui. Si può sovrascrivere inserendo un'altra URL nel campo "…/exec".
+const DEFAULT_SYNC_URL = "https://script.google.com/macros/s/AKfycbyBxrxcFF3n3hxF9FDdaNz0FiEzWOWBvruG76umJ5Bk-WOwrqqUcDHvgeOf04mwuGaZ/exec";
+// Token condiviso col backend: deve combaciare con SYNC_TOKEN dentro Code.gs.
+// Non è un segreto crittografico (vive nel client) ma blocca i save/load anonimi.
+const SYNC_TOKEN = "sk_acerio_sync_7Qx2Lp9Vd4Rn8Tz";
+const PBKDF2_ITER = 210000;
+
+/* === ACCESSO ESCLUSIVO (uso personale del proprietario) ====================
+   Lascia null per consentire la creazione della password (primo uso).
+   Per rendere la pagina ad accesso esclusivo (nessuno può registrarsi):
+     1) apri l'app e crea/sblocca con la TUA password;
+     2) menu ⋮ ▸ Impostazioni ▸ "Genera codice accesso esclusivo", copia la riga;
+     3) incolla qui sotto al posto di null e ripubblica il file.
+   Quando è impostato, la pagina chiede SEMPRE la tua password e NON mostra mai
+   la schermata "Crea password". Il codice è innocuo da pubblicare: senza la
+   password non apre nulla (serve solo a verificare che sia la tua).            */
+const OWNER_GATE = {"salt":"q3Z+vVBqh4k777OmVPFmtg==","check":"ysEi1n72bw44n9b1WVFYyXkIYfuIBBE4knxZf+WDhyKWVH5bjQmSjw=="};
+const GATE_MARKER = "ACERIO-OWNER";
+
+/* ======================= CRYPTO (AES-256-GCM) ======================= */
+const enc = new TextEncoder(), dec = new TextDecoder();
+function b64(buf){let s="";const b=new Uint8Array(buf);for(let i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s);}
+function unb64(str){const s=atob(str);const b=new Uint8Array(s.length);for(let i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b;}
+async function deriveKey(password, salt){
+  const mat = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    {name:"PBKDF2", salt, iterations:PBKDF2_ITER, hash:"SHA-256"},
+    mat, {name:"AES-GCM", length:256}, false, ["encrypt","decrypt"]);
+}
+async function encryptEnvelope(obj){
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({name:"AES-GCM", iv}, cryptoKey, enc.encode(JSON.stringify(obj)));
+  const out = new Uint8Array(12 + ct.byteLength); out.set(iv,0); out.set(new Uint8Array(ct),12);
+  return JSON.stringify({v:1, salt:b64(cryptoSalt), iter:PBKDF2_ITER, ct:b64(out)});
+}
+async function decryptEnvelope(envStr){
+  const env = JSON.parse(envStr);
+  const raw = unb64(env.ct); const iv = raw.slice(0,12); const data = raw.slice(12);
+  const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv}, cryptoKey, data);
+  return JSON.parse(dec.decode(pt));
+}
+// Gate del proprietario: cifra/verifica un marker noto con la chiave dell'utente
+async function makeOwnerGate(){
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({name:"AES-GCM", iv}, cryptoKey, enc.encode(GATE_MARKER));
+  const out = new Uint8Array(12 + ct.byteLength); out.set(iv,0); out.set(new Uint8Array(ct),12);
+  return {salt:b64(cryptoSalt), check:b64(out)};
+}
+async function verifyOwnerGate(key){
+  try{
+    const raw = unb64(OWNER_GATE.check); const iv = raw.slice(0,12); const data = raw.slice(12);
+    const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv}, key, data);
+    return dec.decode(pt) === GATE_MARKER;
+  }catch(e){ return false; }
+}
+let cryptoKey = null, cryptoSalt = null;
+
+/* ======================= STATE ======================= */
+// 19 classi reali: 10 primaria + 9 secondaria. Stesse sigle (1A, 2B…) in
+// entrambi i livelli: le distingue il colore (arancio=primaria, blu=secondaria).
+function defaultClasses(){
+  return [
+    {id:"p1a",name:"1A",level:"primaria"},{id:"p1b",name:"1B",level:"primaria"},
+    {id:"p2a",name:"2A",level:"primaria"},{id:"p2b",name:"2B",level:"primaria"},
+    {id:"p3a",name:"3A",level:"primaria"},{id:"p3b",name:"3B",level:"primaria"},
+    {id:"p4a",name:"4A",level:"primaria"},{id:"p4b",name:"4B",level:"primaria"},
+    {id:"p5a",name:"5A",level:"primaria"},{id:"p5b",name:"5B",level:"primaria"},
+    {id:"s1a",name:"1A",level:"secondaria"},{id:"s1b",name:"1B",level:"secondaria"},{id:"s1c",name:"1C",level:"secondaria"},
+    {id:"s2a",name:"2A",level:"secondaria"},{id:"s2b",name:"2B",level:"secondaria"},{id:"s2c",name:"2C",level:"secondaria"},
+    {id:"s3a",name:"3A",level:"secondaria"},{id:"s3b",name:"3B",level:"secondaria"},{id:"s3c",name:"3C",level:"secondaria"},
+    {id:"imSec",name:"SEC DOC",level:"impegno"},{id:"imLab",name:"LAB",level:"impegno"},{id:"imStaff",name:"Staff",level:"impegno"}
+  ];
+}
+// Orario base (anno appena concluso) — giorni 0=Lun…4=Ven; ore 0=8:15 1=9:05 2=9:55 3=11:00 4=11:50 5=15:00 (fascia pomeridiana)
+function defaultSlots(){
+  const S=[
+    [0,0,"s1b"],[0,1,"s3a"],[0,2,"s2c"],[0,3,"p2a"],[0,4,"p2b"],
+    [1,0,"s1c"],[1,1,"s2a"],[1,2,"s2b"],[1,3,"p1b"],[1,4,"p1a"],[1,5,"imSec"],
+    [2,0,"p5a"],[2,1,"s3c"],[2,2,"p5b"],[2,3,"s1a"],[2,4,"s3b"],
+    [3,0,"p4a"],[3,2,"p4b"],[3,3,"imStaff"],[3,5,"imLab"],
+    [4,0,"s3a"],[4,2,"p3b"]
+  ];
+  return S.map(x=>({id:"s_"+x[0]+"_"+x[1],day:x[0],period:x[1],classId:x[2]}));
+}
+// Catalogo argomenti: web app del portale (estratte da acerio.vercel.app)
+const SEED_APPS=[{"name":"TI ASCOLTO!","cat":"Sondaggi","url":"https://sondaggiostudenti.vercel.app/","desc":""},{"name":"FINE ANNO","cat":"Sondaggi","url":"https://feedback-fine-anno-scolastico.vercel.app/","desc":""},{"name":"L'Occhio Critico","cat":"Cittadinanza Digitale","url":"https://guglielmoildentone.neocities.org/","desc":"Essere o apparire? Attività su giudizio, aspetto e pensiero critico"},{"name":"Riconosci la Manipolazione","cat":"Cittadinanza Digitale","url":"https://manipolazione.neocities.org/","desc":"Come i media e il web influenzano opinioni e comportamenti"},{"name":"Social sotto la Lente","cat":"Cittadinanza Digitale","url":"https://socialschool.neocities.org/","desc":"Instagram e TikTok: cosa succede davvero dietro lo schermo"},{"name":"Sei un Piccione?","cat":"Cittadinanza Digitale","url":"https://comportamentismo.neocities.org/","desc":"Come i social ci trasformano in piccioni da laboratorio — e come riconoscerlo"},{"name":"Quanto consuma l'AI?","cat":"Cittadinanza Digitale","url":"https://aiconsumi.vercel.app/","desc":"L'impatto ambientale delle tue azioni digitali: ogni prompt, ogni video, ogni ricerca ha un costo"},{"name":"Il Sicofante Digitale","cat":"Cittadinanza Digitale","url":"https://sicofante.vercel.app/","desc":"Quando l'AI e i social ti dicono solo quello che vuoi sentire: riconosci la sycophancy"},{"name":"Famiglia Accorti","cat":"Cittadinanza Digitale","url":"https://famiglia-accorti.vercel.app/","desc":"Guida interattiva alla sicurezza digitale in famiglia"},{"name":"Navigare Sicuri","cat":"Cittadinanza Digitale","url":"https://socialguide.neocities.org/","desc":"Attività e risorse per il Safer Internet Day"},{"name":"Pizzeria Google","cat":"Cittadinanza Digitale","url":"https://pizzeriagoogle.neocities.org/","desc":"Scopri come i tuoi dati diventano il \"menù\" di Internet"},{"name":"Generatore di Password","cat":"Cittadinanza Digitale","url":"https://securepassword.neocities.org/","desc":"Crea password sicure e scopri come proteggere i tuoi account"},{"name":"Stop Cyberbullismo","cat":"Cittadinanza Digitale","url":"https://cyberbullismo.neocities.org/","desc":"Riconoscere, prevenire e reagire al bullismo online"},{"name":"Indagine Digitale 2026","cat":"Cittadinanza Digitale","url":"https://missionedigitale.neocities.org/","desc":"Otto missioni investigative per esplorare il mondo digitale"},{"name":"CyberEscape","cat":"Cittadinanza Digitale","url":"https://cyberescape.neocities.org/","desc":"Simulatore attacchi informatici Scuola-Casa"},{"name":"Il Voto che Ruba","cat":"Cittadinanza Digitale","url":"https://truffa-ballerina.vercel.app/","desc":"Smonta una truffa WhatsApp: 50 messaggi da analizzare e smascherare"},{"name":"Cyber Sentinel","cat":"Cittadinanza Digitale","url":"https://attacchinformatici.neocities.org/","desc":"Monitor minacce globali e academy di cybersecurity con profilo metacognitivo"},{"name":"Commissariato Digitale","cat":"Cittadinanza Digitale","url":"https://polizia-postale.vercel.app/","desc":"Simulazione Polizia Postale: guida ai pericoli digitali"},{"name":"I Mattoncini del Testo","cat":"Lab. Scrittura","url":"https://mattoncini.neocities.org/","desc":"Costruire frasi e paragrafi un pezzo alla volta"},{"name":"Impara dall'Errore","cat":"Lab. Scrittura","url":"https://errore.neocities.org/","desc":"Riconoscere e correggere gli errori per scrivere meglio"},{"name":"Fatto o Opinione?","cat":"Lab. Scrittura","url":"https://fattopinione.vercel.app/","desc":"Distingui fatti verificabili da opinioni personali in un gioco a livelli"},{"name":"Le 3 Forme del Testo","cat":"Lab. Scrittura","url":"https://scrivere.neocities.org/","desc":"Descrivere, narrare e argomentare: strutture a confronto"},{"name":"Testo Descrittivo","cat":"Lab. Scrittura","url":"https://laboratorioscrittura2.neocities.org/","desc":"Le cuffiette: esercizio guidato di descrizione oggettiva e soggettiva"},{"name":"Scrivere con le Immagini","cat":"Lab. Scrittura","url":"https://immagine.neocities.org/","desc":"Dalla lettura visiva alla produzione testuale"},{"name":"La Bottega dell'Argomentazione","cat":"Lab. Scrittura","url":"https://insegnareapensare.vercel.app/","desc":"7 mosse strategiche per costruire ragionamenti solidi — classi 4ª e 5ª"},{"name":"Testo Argomentativo","cat":"Lab. Scrittura","url":"https://laboratorioscrittura.neocities.org/","desc":"Lo sharenting come tema per imparare ad argomentare"},{"name":"ArgoMentor","cat":"Lab. Scrittura","url":"https://argomentor.vercel.app/","desc":"Impara a sostenere le tue idee: guida al testo argomentativo"},{"name":"Scrivere dall'Ascolto","cat":"Lab. Scrittura","url":"https://ascolto.neocities.org/","desc":"Stimoli sonori come punto di partenza per la scrittura creativa"},{"name":"Mental Coaching","cat":"Lab. Scrittura","url":"https://mentalcoach.neocities.org/","desc":"Tecniche di scrittura per allenare il pensiero"},{"name":"Video Shorts","cat":"Lab. Scrittura","url":"https://shorts-video-acerio.vercel.app/","desc":"Laboratorio di editing e narrazione video breve"},{"name":"Debate in Classe","cat":"Lab. Scrittura","url":"https://schooldebate.neocities.org/","desc":"Struttura e regole per il dibattito argomentativo"},{"name":"Bottega","cat":"Lab. Scrittura","url":"https://laboscrittura.vercel.app/","desc":"Scrivi come un artigiano: impara dai modelli, in silenzio e con concentrazione"},{"name":"ScriviMeglio","cat":"Lab. Scrittura","url":"https://tracciatema.neocities.org/","desc":"Costruisci la scaletta del tuo testo e scarica il PDF"},{"name":"Harry Potter e la Pietra Filosofale","cat":"Biblioteca Digitale","url":"https://harrypotter-1.vercel.app/","desc":"Audiolettura interattiva: segui il narratore parola per parola, con segnalibro"},{"name":"Harry Potter e la Camera dei Segreti","cat":"Biblioteca Digitale","url":"https://harrypotter-2.vercel.app/","desc":"Audiolettura interattiva: il secondo capitolo della saga, parola per parola"},{"name":"Ventimila Leghe sotto i Mari","cat":"Biblioteca Digitale","url":"https://ventimila-leghe.vercel.app/","desc":"Audiolettura interattiva: il viaggio del capitano Nemo, parola per parola"},{"name":"Pennuti Spennati","cat":"Biblioteca Digitale","url":"https://pennutispennati.vercel.app/","desc":"Cortometraggio Pixar con attività di osservazione e metacognizione"},{"name":"L'Agnello Rimbalzello","cat":"Biblioteca Digitale","url":"https://agnellorimbalzello.vercel.app/","desc":"Cortometraggio Pixar: il video si ferma 5 volte, tu rispondi e costruisci il tuo diario"},{"name":"La Mossa di Geri","cat":"Biblioteca Digitale","url":"https://gerisgame.vercel.app/","desc":"Cortometraggio Pixar senza parole: Geri gioca a scacchi, tu osservi e rispondi"},{"name":"Le Nuvole di Gus","cat":"Biblioteca Digitale","url":"https://parzialmentenuvoloso.vercel.app/","desc":"Cortometraggio Pixar senza parole: le nuvole creano i cuccioli, tu esplori il significato"},{"name":"Il Cigno Appiccica","cat":"Biblioteca Digitale","url":"https://cignoappiccica.vercel.app/","desc":"Fiaba sonora: ascolta e completa le parole mancanti — esercizio di ascolto attivo"},{"name":"I Tre Porcellini","cat":"Biblioteca Digitale","url":"https://treporcellini.vercel.app/","desc":"Fiaba interattiva con tre livelli di difficoltà: ascolta, leggi, gioca"},{"name":"Il Pifferaio Magico","cat":"Biblioteca Digitale","url":"https://pifferaio.vercel.app/","desc":"Fiaba interattiva di Hamelin: ascolta e indovina le parole mancanti"},{"name":"Il Drago e il Leprotto","cat":"Biblioteca Digitale","url":"https://dragoleprotto.vercel.app/","desc":"Guarda la fiaba, poi metti alla prova il tuo ascolto con il dettato"},{"name":"Le Avventure di Pinocchio","cat":"Biblioteca Digitale","url":"https://pinocchio-mauve.vercel.app/","desc":"Audiolettura interattiva del romanzo di Collodi, capitolo per capitolo"},{"name":"Uno, Nessuno e Centomila","cat":"Biblioteca Digitale","url":"https://unonessunocentomila.vercel.app/","desc":"Audiolettura interattiva del romanzo di Pirandello"},{"name":"Vocabolario d'Autore","cat":"Biblioteca Digitale","url":"https://dizionario-musicale.vercel.app/","desc":"Le canzoni d'autore italiane che ti regalano parole: ascolta in cuffia e impara"},{"name":"Il Mito di Ciparisso","cat":"Biblioteca Digitale","url":"https://ciparisso.vercel.app/","desc":"Un mito antico raccontato da Enrico Galiano: ascolta, rifletti, scopri"},{"name":"Lost in Translation","cat":"Biblioteca Digitale","url":"https://lost-in-translation-phi.vercel.app/","desc":"English idioms from real songs: impara le espressioni inglesi attraverso la musica"},{"name":"La Macchina per Fare i Compiti","cat":"Biblioteca Digitale","url":"https://la-macchina-per-fare-i-compiti.vercel.app/","desc":"Lettura interattiva ispirata a Gianni Rodari: la macchina che fa i compiti al posto tuo"},{"name":"Il Barone Rampante","cat":"Biblioteca Digitale","url":"https://braone-rampante.vercel.app/","desc":"Audiolettura interattiva del romanzo di Italo Calvino, capitolo per capitolo"},{"name":"Rosso Malpelo","cat":"Biblioteca Digitale","url":"https://rosso-malpelo.vercel.app/","desc":"Audiolettura interattiva della novella di Giovanni Verga, parola per parola"},{"name":"Fake Hunter","cat":"Informatica & Tech","url":"https://fakehunter.neocities.org/","desc":"Caccia alle bufale: impara a smascherare le fake news"},{"name":"Truffe & Phishing","cat":"Informatica & Tech","url":"https://truffe.neocities.org/","desc":"Scam, phishing e inganni digitali: come difendersi in rete"},{"name":"Stampa 3D","cat":"Informatica & Tech","url":"https://stampa3d.neocities.org/","desc":"Dalla modellazione alla stampa: introduzione alla prototipazione"},{"name":"Scorciatoie Mac","cat":"Informatica & Tech","url":"https://keyboardmac.neocities.org/","desc":"I comandi rapidi da tastiera per lavorare più velocemente"},{"name":"Glossario Digitale","cat":"Informatica & Tech","url":"https://glossarioinfo.neocities.org/","desc":"Le parole chiave del mondo informatico dalla A alla Z"},{"name":"Sfida di Videoscrittura","cat":"Informatica & Tech","url":"https://typegame.neocities.org/","desc":"Gioco interattivo per imparare a scrivere al computer"},{"name":"Allenamento Tastiera","cat":"Informatica & Tech","url":"https://tastiera.neocities.org/","desc":"Esercizi pratici per digitare con velocità e precisione"},{"name":"La Scala Digitale","cat":"Informatica & Tech","url":"https://pesodigitale.neocities.org/","desc":"KB, MB, GB: misura i file, gestisci lo spazio e simula la velocità di rete"},{"name":"Bar della Scuola","cat":"Informatica & Tech","url":"https://barscuola.neocities.org/","desc":"Compito autentico — matematica: gestisci la cassa e calcola il resto"},{"name":"Algoritmi e Reti Neurali","cat":"Informatica & Tech","url":"https://genalfa.neocities.org/","desc":"La Gen Alfa e il nuovo digitale"},{"name":"Guarda Due Volte","cat":"Informatica & Tech","url":"https://escapecity.vercel.app/","desc":"Laboratorio di lettura lenta: un'immagine, otto zone nascoste, una frase da scoprire"},{"name":"L'Indirizzo Digitale","cat":"Informatica & Tech","url":"https://indirizzo-url.vercel.app/","desc":"Come funziona Internet? Scopri il WWW, i browser, i server e il linguaggio del web"},{"name":"La Bottega delle App","cat":"Informatica & Tech","url":"https://bottega-delle-app.vercel.app/","desc":"Si entra, si prova, si impara facendo: gli strumenti digitali come mestiere"},{"name":"FamilyDash","cat":"Informatica & Tech","url":"https://family-dash-two.vercel.app/","desc":"Un mese, giorno per giorno: quattro settimane nella vita di una famiglia"},{"name":"Mystery Drop","cat":"Informatica & Tech","url":"https://dopamina-loop.vercel.app/","desc":"Una partita veloce che svela il meccanismo del loop della dopamina"},{"name":"Cyber Security","cat":"Informatica & Tech","url":"https://cyber-security-ex9b.vercel.app/","desc":"Minacce digitali, difese e buone pratiche per navigare in sicurezza"},{"name":"Cybersicurezza Figli & Genitori","cat":"Informatica & Tech","url":"https://cybersicurezza-figli-genitori.vercel.app/","desc":"La sicurezza digitale si impara in famiglia: percorso per genitori e figli insieme"},{"name":"ControCorrente","cat":"Coding","url":"https://controcorrente-lilac.vercel.app/","desc":"Sfide di logica e pensiero computazionale controintuitive"},{"name":"Rocca Cifrata","cat":"Coding","url":"https://roccacifrata.vercel.app/","desc":"Crittografia per giovani menti: cifra e decifra messaggi segreti"},{"name":"Il Fontaniere","cat":"Coding","url":"https://fontaniere-coding.vercel.app/","desc":"Collega i tubi e porta l'acqua a destinazione: logica e sequenze"},{"name":"Basket Coding","cat":"Coding","url":"https://basket-sacrafamiglia.vercel.app/","desc":"Programma i tiri e segna canestro: coordinate, angoli e istruzioni"},{"name":"Pollice Verde","cat":"Coding","url":"https://pollice-verde-rho.vercel.app/","desc":"Coltiva il tuo orto digitale con cicli e condizioni di crescita"},{"name":"Fontana Algoritmica","cat":"Coding","url":"https://fontana-algoritmica.vercel.app/","desc":"Guida il flusso dell'acqua con algoritmi, cicli e condizioni"},{"name":"Acquedotto Mini","cat":"Coding","url":"https://acquedotto-mini.vercel.app/index.html","desc":"Esperimento con il codice binario: porta l'acqua a destinazione tra 0 e 1"},{"name":"Droni Algoritmici","cat":"Coding","url":"https://droni-algoritmici.vercel.app/","desc":"Programma il volo dei droni con sequenze, cicli e coordinate"},{"name":"Identità Digitale","cat":"Lezioni","url":"https://identit-digitale.vercel.app/","desc":"Chi siamo online: reputazione, tracce e cittadinanza digitale"},{"name":"Anti-Alibi","cat":"Lezioni","url":"https://anti-alibi.vercel.app/","desc":"Smontare le scuse: responsabilità e scelte consapevoli"},{"name":"iPad e Carta","cat":"Lezioni","url":"https://ipad-carta.vercel.app/","desc":"Quando usare il digitale e quando la carta: scegliere lo strumento giusto"},{"name":"Excel Basic","cat":"Lezioni","url":"https://excel-basic-lesson.vercel.app/","desc":"Primi passi nei fogli di calcolo: celle, formule e tabelle"},{"name":"Magnifica Humanitas","cat":"Lezioni","url":"https://magnifica-humanitas-nu.vercel.app/","desc":"Il valore dell'umano nell'epoca delle macchine"},{"name":"AI, il Nuovo Mondo","cat":"Lezioni","url":"https://ai-nuovo-mondo.vercel.app/","desc":"Capire l'intelligenza artificiale: opportunità, limiti e responsabilità"},{"name":"Attacchi Hacker 2026","cat":"Lezioni","url":"https://attacchi-hacker-2026.vercel.app/","desc":"Come riconoscere e difendersi dalle minacce informatiche più recenti"},{"name":"Steve Jobs Lab","cat":"Lezioni","url":"https://steve-jobs-lab.vercel.app/","desc":"Innovazione, creatività e visione: lezioni dalla storia di Steve Jobs"},{"name":"Usa la Testa","cat":"Lezioni","url":"https://usa-la-testa.vercel.app/","desc":"Allena il pensiero critico e impara a ragionare prima di agire"},{"name":"Glossario iPad","cat":"Lezioni","url":"https://glossario-ipad26.vercel.app/","desc":"Le parole chiave del mondo iPad e del digitale a scuola, dalla A alla Z"},{"name":"Calibro","cat":"Approfondimenti e Ricerche","url":"https://calibro.neocities.org/","desc":"Strumento didattico per la crescita e l'autovalutazione"},{"name":"Gite Virtuali","cat":"Approfondimenti e Ricerche","url":"https://geografiamaps.neocities.org/","desc":"Esplora il mondo con Google Maps senza uscire da scuola"},{"name":"Ciro il Dinosauro","cat":"Approfondimenti e Ricerche","url":"https://sacrafamiglialabinfo.neocities.org/","desc":"Alla scoperta del primo cucciolo di dinosauro italiano"},{"name":"Il Mondo dei Dinosauri","cat":"Approfondimenti e Ricerche","url":"https://dinosauri.neocities.org/","desc":"Laboratorio Biomeccanico Virtuale"},{"name":"Il Corpo Umano","cat":"Approfondimenti e Ricerche","url":"https://apparati.neocities.org/","desc":"Viaggio interattivo tra gli apparati e i sistemi del corpo"},{"name":"Trasformiamo l'Errore in Opportunità","cat":"Approfondimenti e Ricerche","url":"https://errore.neocities.org/","desc":"Percorso interdisciplinare sull'errore come strumento di crescita"},{"name":"Debate sull'Errore","cat":"Approfondimenti e Ricerche","url":"https://debaterrore.neocities.org/","desc":"Dibattito strutturato: l'errore è davvero un'opportunità?"},{"name":"Infografiche con Notebook LM","cat":"Approfondimenti e Ricerche","url":"https://notebooklmstyle.neocities.org/","desc":"Come scegliere gli stili per le tue infografiche"},{"name":"Arena del Pensiero","cat":"Approfondimenti e Ricerche","url":"https://teamdebate.neocities.org/","desc":"Il debate di squadra in classe"},{"name":"Canto III — Divina Commedia","cat":"Approfondimenti e Ricerche","url":"https://labinfo.my.canva.site/canto3","desc":"Approfondimento multimediale sul terzo canto"},{"name":"I Geni della Tecnologia","cat":"Approfondimenti e Ricerche","url":"https://garagevalley.neocities.org/","desc":"Come le loro idee hanno rivoluzionato il mondo"},{"name":"Laboratorio Scientifico","cat":"Approfondimenti e Ricerche","url":"https://labscienze.vercel.app/","desc":"Esplora, sperimenta, scopri — dalla 3ª Primaria alla 3ª Secondaria"},{"name":"Sintesi Proteica","cat":"Approfondimenti e Ricerche","url":"https://sintesiproteica.vercel.app/","desc":"Dal DNA alle proteine: il viaggio della sintesi proteica"},{"name":"Il Viaggio dell'Uomo","cat":"Approfondimenti e Ricerche","url":"https://homoavdventure.vercel.app/","desc":"Dalle origini alla storia: il percorso dell'umanità"},{"name":"Pizzeria delle Frazioni","cat":"Approfondimenti e Ricerche","url":"https://pizzeria-sacrafamiglia-iepo.vercel.app/","desc":"Diventa pizzaiolo e impara le frazioni preparando pizze"},{"name":"AI Video","cat":"Approfondimenti e Ricerche","url":"https://ai-video-azure.vercel.app/","desc":"Quando l'intelligenza artificiale crea video: capire, riconoscere, valutare"},{"name":"Viaggio nella Storia","cat":"Approfondimenti e Ricerche","url":"https://storia-new.vercel.app/","desc":"Percorso interattivo attraverso epoche ed eventi storici"},{"name":"Missione INVALSI 2026","cat":"Esame di Stato","url":"https://invalsi.neocities.org/","desc":"Tutto per prepararsi alle prove nazionali di aprile"},{"name":"Guida all'Esame","cat":"Esame di Stato","url":"https://esame.neocities.org/","desc":"Risorse e indicazioni per prepararsi all'esame di terza media"},{"name":"Costruisci la tua Tesina","cat":"Esame di Stato","url":"https://farelatesina.vercel.app/","desc":"Percorso guidato: 9 slide, una alla volta, con post-it che ti dicono cosa fare"},{"name":"Pontremoli — Tesina d'Esame","cat":"Esame di Stato","url":"https://pontremoli.neocities.org/","desc":"Percorso interdisciplinare per la tesina conclusiva del primo ciclo"},{"name":"Il Lab del Gancio","cat":"Esame di Stato","url":"https://gancioxcolloquio.vercel.app/","desc":"Prepara i primi 90 secondi del tuo colloquio orale"},{"name":"100 Anni di Storia in Musica","cat":"Sacra Famiglia","url":"https://100anni.neocities.org/","desc":"Un secolo di vita e missione della Sacra Famiglia, in musica"},{"name":"Il Gioco delle Case","cat":"Sacra Famiglia","url":"https://sfida.neocities.org/","desc":"Il Gioco delle Case della Sacra Famiglia"},{"name":"Autovalutazione Lezione","cat":"Sacra Famiglia","url":"https://autovalutazione.neocities.org/","desc":"Strumento per riflettere sulla qualità della propria lezione"},{"name":"Le Mascotte delle Case","cat":"Sacra Famiglia","url":"https://sacrafamiglia.neocities.org/","desc":"Le mascotte delle Case della Sacra Famiglia"},{"name":"S. Paola Elisabetta","cat":"Sacra Famiglia","url":"https://santapaola.neocities.org/","desc":"Festa e ricorrenza della fondatrice"},{"name":"Quizzone S. Paola","cat":"Sacra Famiglia","url":"https://quizzonespaola.neocities.org/","desc":"Quanto conosci Santa Paola? Mettiti alla prova!"},{"name":"Consegna alle Case","cat":"Sacra Famiglia","url":"https://randomecase.neocities.org/","desc":"Assegnazione casuale delle consegne per i lavori di gruppo in classe, con timer facoltativo"},{"name":"Albo d'Oro delle Case","cat":"Sacra Famiglia","url":"https://albo-doro-case.vercel.app/","desc":"Le vittorie e i traguardi delle quattro Case nel tempo"},{"name":"Quadri Appesi","cat":"Sacra Famiglia","url":"https://quadriappesi.vercel.app/","desc":"Galleria virtuale delle opere e dei lavori della scuola"},{"name":"Studio Musicale","cat":"Sport e Giochi","url":"https://studiomusicale.neocities.org/","desc":"Esplora strumenti, note e ritmi in modo interattivo"},{"name":"Cool Runnings","cat":"Sport e Giochi","url":"https://giamaica.neocities.org/","desc":"La storia incredibile della squadra di bob giamaicana"},{"name":"Milano Cortina","cat":"Sport e Giochi","url":"https://labinfo.my.canva.site/c17sxqtedy2jyaw7","desc":"Le Olimpiadi Tecnologiche"},{"name":"Tech & Olimpiadi","cat":"Sport e Giochi","url":"https://olimpictech.neocities.org/","desc":"Come la tecnologia ha cambiato lo sport olimpico"},{"name":"Milano-Cortina 2026","cat":"Sport e Giochi","url":"https://milanocortina.neocities.org/","desc":"I geni italiani protagonisti delle Olimpiadi invernali"},{"name":"Gestione Tornei","cat":"Sport e Giochi","url":"https://sacrafamigliatornei.neocities.org/","desc":"Organizza e gestisci i tornei sportivi scolastici"},{"name":"Word Games","cat":"Sport e Giochi","url":"https://sacrafamigliagames.neocities.org/","desc":"Giochi di parole per divertirsi e arricchire il lessico"},{"name":"Profemon","cat":"Sport e Giochi","url":"https://profemon.neocities.org/","desc":"Il gioco di carte cooperativo della scuola: schierate i prof e superate le sfide!"},{"name":"Storia del Calcio","cat":"Sport e Giochi","url":"https://calcio-one.vercel.app/","desc":"Un viaggio nel calcio dal 2000 al 2025"},{"name":"Master Chef","cat":"Sport e Giochi","url":"https://masterchef-iota.vercel.app/","desc":"Ricette italiane: un viaggio tra sapori e tradizioni"},{"name":"Euro Capitali","cat":"Sport e Giochi","url":"https://euro-capitali.vercel.app/","desc":"Quiz geografico sulle capitali europee: metti alla prova le tue conoscenze"},{"name":"Crescere Cittadini Digitali","cat":"Genitori e Famiglie","url":"https://crescerecittadinidigitali.neocities.org/","desc":"Tre tappe per accompagnare la famiglia: comprendere, sperimentare, costruire"},{"name":"Guida per Genitori","cat":"Genitori e Famiglie","url":"https://genitori.neocities.org/","desc":"Il profilo digitale dello studente di oggi e il ruolo dei dispositivi a scuola"},{"name":"Patto Digitale di Famiglia","cat":"Genitori e Famiglie","url":"https://pattodigitale.neocities.org/","desc":"Costruire insieme le regole condivise sull'uso della tecnologia a casa"},{"name":"Scuola Digitale","cat":"Genitori e Famiglie","url":"https://scuolaipad.neocities.org/","desc":"Come la scuola usa l'iPad: scelte didattiche, strumenti e organizzazione"},{"name":"Patentino Digitale","cat":"Genitori e Famiglie","url":"https://patentino-genitori.vercel.app/","desc":"Conquista il patentino: regole e competenze digitali per genitori"}];
+function defaultState(){
+  return {start:"2026-09-14",days:5,periods:6,
+    times:["08:15","09:05","09:55","11:00","11:50","15:00"],
+    timeEnds:["09:05","09:55","10:45","11:50","12:40","16:00"],
+    classes:defaultClasses(), slots:defaultSlots(),
+    apps:SEED_APPS.map((a,i)=>({id:"a"+(i+1),name:a.name,cat:a.cat,url:a.url||"",desc:a.desc||""})),
+    lessons:{}, weekNotes:{}, theme:"light"};
+}
+let state = defaultState();
+let meta = loadMeta();
+function loadMeta(){try{const m=Object.assign({syncUrl:"",theme:"light"},JSON.parse(localStorage.getItem(META_KEY)||"{}"));if(!m.syncUrl)m.syncUrl=DEFAULT_SYNC_URL;return m;}catch(e){return {syncUrl:DEFAULT_SYNC_URL,theme:"light"};}}
+function saveMeta(){localStorage.setItem(META_KEY, JSON.stringify(meta));}
+
+let currentWeek=0, editMode=false, activeView="week";
+let pendingSlot=null, assignTarget=null, lmSelectedApp=null;
+
+/* ======================= PERSISTENCE ======================= */
+let saveTimer=null;
+function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(persist,400);}
+async function persist(){
+  try{
+    const env = await encryptEnvelope(state);
+    localStorage.setItem(BLOB_KEY, env);
+    if(meta.syncUrl){ setSync("busy"); await remoteSave(env); setSync("ok"); }
+  }catch(e){ setSync("err"); console.error(e); }
+}
+async function remoteCall(payload){
+  const res = await fetch(meta.syncUrl, {method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(Object.assign({token:SYNC_TOKEN}, payload))});
+  return res.json();
+}
+async function remoteSave(env){ const r=await remoteCall({action:"save",data:env}); if(!r.ok) throw new Error(r.error||"save"); }
+async function remoteLoad(){ const r=await remoteCall({action:"load"}); if(!r.ok) throw new Error(r.error||"load"); return r.data||""; }
+function setSync(s){const d=$("#syncDot");if(!d)return;d.className="sync-dot"+(s?(" "+s):"");
+  d.title={ok:"Sincronizzato sul Google Sheet",busy:"Salvataggio…",err:"Errore sincronizzazione",local:"Solo questo dispositivo"}[s]||"";}
+
+/* ======================= HELPERS ======================= */
+const $ = s=>document.querySelector(s);
+const cls = id=>state.classes.find(c=>c.id===id);
+const app = id=>state.apps.find(a=>a.id===id);
+function lessonKey(w,sid){return w+"|"+sid;}
+function getLesson(w,sid){return state.lessons[lessonKey(w,sid)]||null;}
+function slotAt(d,p){return state.slots.find(s=>s.day===d&&s.period===p)||null;}
+function slotById(id){return state.slots.find(s=>s.id===id);}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}
+function weekMonday(w){const b=new Date(state.start+"T00:00:00");const d=new Date(b);d.setDate(b.getDate()+w*7);return d;}
+// Calendario perpetuo: il numero di settimana può essere qualsiasi intero.
+// Le settimane 0..WEEKS-1 sono "scolastiche" (mostrano l'orario e le lezioni);
+// fuori da questo intervallo è periodo non scolastico (giorni senza classi).
+function isSchoolWeek(w){return w>=0 && w<WEEKS;}
+// Offset (in settimane) della settimana corrente rispetto alla settimana 1
+// dell'anno scolastico: negativo prima dell'inizio, ≥WEEKS dopo la fine.
+function weekOfToday(){
+  const startMon=new Date(state.start+"T00:00:00");
+  const tdMon=regStartOfWeek(new Date());
+  return Math.round((tdMon-startMon)/(7*86400000));
+}
+function fmtRange(w){const m=weekMonday(w);const e=new Date(m);e.setDate(m.getDate()+(state.days-1));
+  return m.getDate()+" "+MONTHS[m.getMonth()]+" – "+e.getDate()+" "+MONTHS[e.getMonth()]+" "+e.getFullYear();}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2200);}
+function lv(c){return c?(c.level==="primaria"?"pri":c.level==="secondaria"?"sec":"imp"):"";}
+function isTeaching(c){return c&&(c.level==="primaria"||c.level==="secondaria");}
+function teachingClasses(){return state.classes.filter(isTeaching);}
+
+/* ======================= REGISTRO (aperture studenti) ======================= */
+// Stesso endpoint pubblico del Registro: legge le aperture delle web app per classe.
+const REGISTRO_ENDPOINT="https://script.google.com/macros/s/AKfycbwOIxvpNEQnOr-TQTqzMycue8D8BN2Ths81ewTjAG7junkAeDhd26mBHsPlc5S3c-hE/exec";
+let regRows=null, regLoading=false;
+function regNormUrl(u){return String(u||"").trim().toLowerCase().replace(/[?#].*$/,"").replace(/\/+$/,"").replace(/^https?:\/\//,"").replace(/^www\./,"");}
+function regCleanTitle(t){return String(t||"").replace(/\s*[A-Z]$/,"").trim();}
+function loadRegistro(){
+  if(regLoading||regRows!==null)return;
+  regLoading=true;
+  const cb="plRc_"+Date.now();
+  const s=document.createElement("script");
+  window[cb]=function(resp){
+    try{delete window[cb];}catch(e){window[cb]=undefined;}
+    if(s.parentNode)s.parentNode.removeChild(s);
+    regLoading=false;
+    regRows=(resp&&resp.rows)?resp.rows:[];
+    if(activeView==="week")renderTimetable();
+    if(activeView==="registro")renderRegistro();
+  };
+  s.src=REGISTRO_ENDPOINT+"?action=list&callback="+cb+"&_="+Date.now();
+  s.onerror=function(){ if(s.parentNode)s.parentNode.removeChild(s); regLoading=false; regRows=[]; };
+  document.body.appendChild(s);
+}
+function regClassId(c){return (c.level==="primaria"?"PRIM_":"SEC_")+c.name;}
+// App più aperta dagli studenti per una classe nella settimana visualizzata.
+function topAppForClassWeek(c,w){
+  if(!regRows||!regRows.length||!isTeaching(c))return null;
+  const cid=regClassId(c);
+  const start=weekMonday(w); start.setHours(0,0,0,0);
+  const end=new Date(start); end.setDate(start.getDate()+state.days);
+  const counts={};
+  for(let i=0;i<regRows.length;i++){
+    const r=regRows[i];
+    if((r.classe_id||"")!==cid)continue;
+    const d=new Date(r.data); if(isNaN(d))continue;
+    if(d<start||d>=end)continue;
+    const key=regNormUrl(r.webapp_url); if(!key)continue;
+    if(!counts[key])counts[key]={count:0,url:r.webapp_url||"",title:regCleanTitle(r.webapp_titolo)};
+    counts[key].count++;
+  }
+  let best=null;
+  for(const k in counts){ if(!best||counts[k].count>best.count)best=counts[k]; }
+  return best; // {count,url,title} oppure null
+}
+// Aggrega tutte le aperture per classe (intero dataset) → mappa classe_id → [{title,url,count}]
+function aggregateRegistro(){
+  const map={};
+  if(!regRows)return map;
+  for(let i=0;i<regRows.length;i++){
+    const r=regRows[i];
+    const cid=r.classe_id||""; if(!cid)continue;
+    const key=regNormUrl(r.webapp_url); if(!key)continue;
+    if(!map[cid])map[cid]={};
+    if(!map[cid][key])map[cid][key]={title:regCleanTitle(r.webapp_titolo),url:r.webapp_url||"",count:0};
+    map[cid][key].count++;
+  }
+  const out={};
+  for(const cid in map){
+    out[cid]=Object.keys(map[cid]).map(k=>map[cid][k]).sort((a,b)=>b.count-a.count);
+  }
+  return out;
+}
+function renderRegistro(){
+  const grid=$("#regGrid"); if(!grid)return;
+  if(regRows===null){
+    loadRegistro();
+    grid.innerHTML="<div class='reg-empty'>Caricamento dati dal portale…</div>";
+    return;
+  }
+  if(!regRows.length){
+    grid.innerHTML="<div class='reg-empty'>Nessun dato disponibile dal portale.</div>";
+    const kpi=$("#regKpi"); if(kpi)kpi.innerHTML="";
+    const hw=$("#regHeatWrap"); if(hw)hw.innerHTML="";
+    const cw=$("#regCronWrap"); if(cw)cw.innerHTML="";
+    return;
+  }
+  ensureRegDates();
+  renderRegGrid();
+  renderRegKpi();
+  renderRegHeat();
+  initRegCronFilters();
+  renderRegCron();
+}
+// Parse una sola volta il timestamp di ogni riga (con fallback su data).
+function ensureRegDates(){
+  if(!regRows||regRows._dated)return;
+  regRows.forEach(r=>{
+    const raw=r.timestamp||r.data;
+    const d=raw?new Date(raw):null;
+    r._ts=(d&&!isNaN(d))?d:null;
+  });
+  try{Object.defineProperty(regRows,"_dated",{value:true,enumerable:false,configurable:true});}catch(e){regRows._dated=true;}
+}
+function regStartOfWeek(d){
+  const x=new Date(d); x.setHours(0,0,0,0);
+  const dow=x.getDay(); x.setDate(x.getDate()+(dow===0?-6:1-dow));
+  return x;
+}
+function regWeekLabel(d){const p=n=>String(n).padStart(2,"0");return p(d.getDate())+"/"+p(d.getMonth()+1);}
+function formatDataIt(s){const m=String(s||"").match(/^(\d{4})-(\d{2})-(\d{2})/);return m?(m[3]+"/"+m[2]+"/"+m[1]):String(s||"");}
+function renderRegKpi(){
+  const kpi=$("#regKpi"); if(!kpi)return;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const wk=regStartOfWeek(today);
+  let sett=0,oggi=0; const coperte=new Set();
+  for(let i=0;i<regRows.length;i++){
+    const r=regRows[i]; if(!r._ts)continue;
+    if(r._ts>=wk){sett++; if(r.classe_id)coperte.add(r.classe_id);}
+    if(r._ts>=today)oggi++;
+  }
+  const nClassi=teachingClasses().length||19;
+  kpi.innerHTML=
+    "<div class='k'><div class='v'>"+regRows.length+"</div><div class='l'>Sessioni totali</div></div>"+
+    "<div class='k'><div class='v'>"+sett+"</div><div class='l'>Questa settimana</div></div>"+
+    "<div class='k'><div class='v'>"+coperte.size+"<small>/"+nClassi+"</small></div><div class='l'>Classi coperte (sett.)</div></div>"+
+    "<div class='k'><div class='v'>"+oggi+"</div><div class='l'>Oggi</div></div>";
+}
+function renderRegHeat(){
+  const wrap=$("#regHeatWrap"); if(!wrap)return;
+  const classes=teachingClasses();
+  const today=new Date(); const weeks=[];
+  for(let i=7;i>=0;i--){const d=new Date(today); d.setDate(today.getDate()-i*7); weeks.push(regStartOfWeek(d));}
+  const map={};
+  classes.forEach(c=>map[regClassId(c)]=weeks.map(()=>0));
+  for(let i=0;i<regRows.length;i++){
+    const r=regRows[i]; if(!r._ts||!r.classe_id||!map[r.classe_id])continue;
+    const ts=r._ts.getTime();
+    for(let w=0;w<weeks.length;w++){
+      const start=weeks[w].getTime();
+      const end=(w<weeks.length-1)?weeks[w+1].getTime():ts+1;
+      if(ts>=start&&ts<end){map[r.classe_id][w]++;break;}
+    }
+  }
+  const lvl=n=>n===0?"lv0":n>=5?"lv5":"lv"+n;
+  let html="<table class='reg-heat'><thead><tr><th class='rl'></th>";
+  weeks.forEach(w=>{html+="<th>"+regWeekLabel(w)+"</th>";});
+  html+="</tr></thead><tbody>";
+  classes.forEach(c=>{
+    const cid=regClassId(c);
+    html+="<tr><th class='rl'>"+esc(c.name)+"</th>";
+    map[cid].forEach((n,w)=>{
+      const tip=esc(c.name)+" · settimana del "+regWeekLabel(weeks[w])+": "+n+" session"+(n===1?"e":"i");
+      html+="<td class='"+lvl(n)+"' title='"+tip+"' data-classe='"+cid+"'>"+(n||"")+"</td>";
+    });
+    html+="</tr>";
+  });
+  html+="</tbody></table>"+
+    "<div class='reg-heat-legend'><span>Sessioni per settimana</span>"+
+    "<span><i style='background:var(--bg)'></i>0</span>"+
+    "<span><i style='background:#cfe9da'></i>1</span>"+
+    "<span><i style='background:#86c9a4'></i>2</span>"+
+    "<span><i style='background:#3f9f6b'></i>3</span>"+
+    "<span><i style='background:#1f7a47'></i>4</span>"+
+    "<span><i style='background:#0f5a30'></i>5+</span></div>";
+  wrap.innerHTML=html;
+  wrap.querySelectorAll("td[data-classe]").forEach(td=>{
+    td.onclick=()=>{
+      const sel=$("#regFClasse"); if(sel){sel.value=td.getAttribute("data-classe");}
+      renderRegCron();
+      const cw=$("#regCronWrap"); if(cw)cw.scrollIntoView({behavior:"smooth",block:"start"});
+    };
+  });
+}
+let regCronFiltersReady=false, regCronLimit=200;
+function initRegCronFilters(){
+  if(regCronFiltersReady)return;
+  const sel=$("#regFClasse"); if(!sel)return;
+  teachingClasses().forEach(c=>{
+    const o=document.createElement("option");
+    o.value=regClassId(c); o.textContent=c.name+(c.level==="primaria"?" · Prim":" · Sec");
+    sel.appendChild(o);
+  });
+  ["regFClasse","regFLivello","regFDa","regFA","regFCerca"].forEach(id=>{
+    const el=$("#"+id); if(!el)return;
+    el.addEventListener("input",()=>{regCronLimit=200;renderRegCron();});
+    el.addEventListener("change",()=>{regCronLimit=200;renderRegCron();});
+  });
+  regCronFiltersReady=true;
+}
+function renderRegCron(){
+  const wrap=$("#regCronWrap"); if(!wrap)return;
+  const fC=($("#regFClasse")||{}).value||"", fL=($("#regFLivello")||{}).value||"";
+  const fDa=($("#regFDa")||{}).value||"", fA=($("#regFA")||{}).value||"";
+  const q=(($("#regFCerca")||{}).value||"").trim().toLowerCase();
+  const filtered=regRows.filter(r=>{
+    if(fC&&r.classe_id!==fC)return false;
+    if(fL&&!String(r.classe_id||"").startsWith(fL+"_"))return false;
+    if(fDa&&r.data&&r.data<fDa)return false;
+    if(fA&&r.data&&r.data>fA)return false;
+    if(q){const blob=((r.webapp_titolo||"")+" "+(r.webapp_host||"")+" "+(r.classe_label||"")).toLowerCase(); if(blob.indexOf(q)<0)return false;}
+    return true;
+  }).sort((a,b)=>((b._ts&&b._ts.getTime())||0)-((a._ts&&a._ts.getTime())||0));
+  const cc=$("#regCronCount"); if(cc)cc.textContent=filtered.length+" su "+regRows.length+" totali";
+  if(!filtered.length){wrap.innerHTML="<div class='reg-empty'>Nessuna sessione corrisponde ai filtri.</div>";return;}
+  const shown=filtered.slice(0,regCronLimit);
+  let html="<div class='reg-logwrap'><table class='reg-log'><thead><tr><th>Data</th><th>Ora</th><th>Classe</th><th>Web App</th><th>Host</th></tr></thead><tbody>";
+  shown.forEach(r=>{
+    const pill=String(r.classe_id||"").startsWith("PRIM_")?"pri":"sec";
+    const url=r.webapp_url||"#";
+    html+="<tr><td>"+esc(r.giorno||"")+" "+esc(formatDataIt(r.data))+"</td><td>"+esc(r.ora||"")+"</td>"+
+      "<td><span class='reg-pill "+pill+"'>"+esc(r.classe_label||"")+"</span></td>"+
+      "<td class='app'><a href='"+esc(url)+"' target='_blank' rel='noopener'>"+esc(regCleanTitle(r.webapp_titolo)||"(senza titolo)")+"</a></td>"+
+      "<td style='color:var(--muted)'>"+esc(r.webapp_host||"")+"</td></tr>";
+  });
+  html+="</tbody></table></div>";
+  if(filtered.length>shown.length){
+    html+="<div class='reg-logmore'><button class='btn' id='regCronMore'>Mostra altre "+Math.min(200,filtered.length-shown.length)+" (di "+(filtered.length-shown.length)+")</button></div>";
+  }
+  wrap.innerHTML=html;
+  const more=$("#regCronMore"); if(more)more.onclick=()=>{regCronLimit+=200;renderRegCron();};
+}
+function renderRegGrid(){
+  const grid=$("#regGrid"); if(!grid)return;
+  const thresh=Math.max(1,+($("#regThresh")&&$("#regThresh").value)||3);
+  const agg=aggregateRegistro();
+  const classes=teachingClasses();
+  let totalApps=0;
+  let html="";
+  classes.forEach(c=>{
+    const cid=regClassId(c);
+    const apps=(agg[cid]||[]);
+    const above=apps.filter(a=>a.count>=thresh);
+    const below=apps.length-above.length;
+    totalApps+=above.length;
+    const k=lv(c);
+    let rows="";
+    if(above.length){
+      const max=above[0].count;
+      above.forEach((a,idx)=>{
+        const pct=Math.max(6,Math.round(a.count/max*100));
+        rows+="<li class='reg-app'><span class='reg-rank'>"+(idx+1)+"</span>"
+          +"<span class='reg-app-main'><span class='reg-app-title'>"+esc(a.title||"(senza titolo)")+"</span>"
+          +"<span class='reg-bar'><span class='reg-bar-fill' style='width:"+pct+"%'></span></span></span>"
+          +"<span class='reg-count'>"+a.count+"</span></li>";
+      });
+    }else{
+      rows="<li class='reg-none'>Nessuna app sopra la soglia.</li>";
+    }
+    const note=below>0?"<div class='reg-below'>+"+below+" sotto soglia</div>":"";
+    html+="<div class='reg-card "+k+"'><div class='reg-card-head'><span class='reg-dot'></span>"
+      +"<b>"+esc(c.name)+"</b><span class='reg-card-tot'>"+apps.length+" app</span></div>"
+      +"<ul class='reg-applist'>"+rows+"</ul>"+note+"</div>";
+  });
+  grid.innerHTML=html||"<div class='reg-empty'>Nessuna classe attiva.</div>";
+  const rc=$("#regCount"); if(rc)rc.textContent=totalApps;
+}
+/* ---- Orario unico: invio dell'orario del Planning al Registro ---- */
+const ORARIO_TOKEN="CAMBIA_QUESTO_TOKEN_2026"; // deve combaciare con quello dell'Apps Script del Registro
+function buildOrarioPayload(){
+  const o={"1":[],"2":[],"3":[],"4":[],"5":[]};
+  state.slots.forEach(s=>{
+    if(s.day<0||s.day>4)return;               // solo Lun-Ven
+    const c=cls(s.classId); if(!isTeaching(c))return; // ignora impegni/riunioni
+    const from=state.times[s.period], to=state.timeEnds[s.period];
+    if(!from||!to)return;
+    o[String(s.day+1)].push({from:from,to:to,id:regClassId(c)});
+  });
+  for(const g in o)o[g].sort((a,b)=>a.from.localeCompare(b.from));
+  return o;
+}
+function syncOrario(){
+  const btn=$("#regSyncOrario"), msg=$("#regSyncMsg");
+  if(btn)btn.disabled=true;
+  if(msg){msg.className="reg-syncmsg busy";msg.textContent="Invio orario al Registro…";}
+  const payload=encodeURIComponent(JSON.stringify(buildOrarioPayload()));
+  const cb="orSet_"+Date.now();
+  const s=document.createElement("script");
+  window[cb]=function(resp){
+    try{delete window[cb];}catch(e){window[cb]=undefined;}
+    if(s.parentNode)s.parentNode.removeChild(s);
+    if(btn)btn.disabled=false;
+    if(resp&&resp.ok){if(msg){msg.className="reg-syncmsg ok";msg.textContent="Orario sincronizzato sul Registro ✓";}}
+    else{if(msg){msg.className="reg-syncmsg err";msg.textContent="Errore: "+((resp&&resp.error)||"salvataggio fallito");}}
+  };
+  s.src=REGISTRO_ENDPOINT+"?action=setOrario&token="+encodeURIComponent(ORARIO_TOKEN)+"&payload="+payload+"&callback="+cb+"&_="+Date.now();
+  s.onerror=function(){if(s.parentNode)s.parentNode.removeChild(s);if(btn)btn.disabled=false;if(msg){msg.className="reg-syncmsg err";msg.textContent="Impossibile contattare il Registro";}};
+  document.body.appendChild(s);
+}
+
+/* ======================= THEME ======================= */
+function applyTheme(){
+  meta.theme="light";
+  document.documentElement.setAttribute("data-theme","light");
+}
+
+/* ======================= TIMETABLE ======================= */
+function renderTimetable(){
+  const t=$("#timetable"),days=state.days,periods=state.periods;
+  const mon=weekMonday(currentWeek);
+  const TODAY=new Date();TODAY.setHours(0,0,0,0);
+  const dayIsToday=d=>{const x=new Date(mon);x.setDate(mon.getDate()+d);x.setHours(0,0,0,0);return x.getTime()===TODAY.getTime();};
+  const inSchool=isSchoolWeek(currentWeek);
+  const wkLabel=inSchool?("Sett. "+(currentWeek+1)):(mon.getDate()+" "+MONTHS[mon.getMonth()]);
+  let html="<thead><tr><th class='corner'><div class='cnav'>"
+    +"<button type='button' class='cnav-wk"+(inSchool?"":" off")+"' id='todayJump' title='Vai alla settimana corrente'>"+wkLabel+"</button>"
+    +"<div class='cnav-row'>"
+    +"<button class='cnav-btn' id='prevWeek' aria-label='Settimana precedente'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='m15 18-6-6 6-6'/></svg></button>"
+    +"<button class='cnav-btn' id='nextWeek' aria-label='Settimana successiva'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='m9 18 6-6-6-6'/></svg></button>"
+    +"</div></div></th>";
+  for(let d=0;d<days;d++){
+    const dt=new Date(mon);dt.setDate(mon.getDate()+d);
+    const tg=dayIsToday(d);
+    html+="<th"+(tg?" class='today'":"")+"><div class='dh'><div class='dh-top'><span class='dh-name'>"+DAY_NAMES[d]+"</span><span class='dh-num'>"+dt.getDate()+"</span></div><span class='dh-mon'>"+MONTHS_FULL[dt.getMonth()]+"</span>"+(tg?"<span class='dh-today'>oggi</span>":"")+"</div></th>";
+  }
+  html+="</tr></thead><tbody>";
+  // Periodo non scolastico: nessun orario, mostra i giorni "senza classi/lezioni".
+  if(!inSchool){
+    html+="<tr><td class='timecell ns-corner'></td>";
+    for(let d=0;d<days;d++){
+      html+="<td class='slot ns-slot"+(dayIsToday(d)?" today-col":"")+"'><div class='ns-day'>"
+        +"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='17' rx='3'/><path d='M3 9h18M8 2v4M16 2v4'/><path d='m9.5 14.5 5 0'/></svg>"
+        +"<span>Nessuna lezione</span></div></td>";
+    }
+    html+="</tr>";
+    t.innerHTML=html+"</tbody>";
+    t.classList.toggle("editmode",editMode);
+    bindCells();
+    return;
+  }
+  for(let p=0;p<periods;p++){
+    const t1=state.times[p]||("Ora "+(p+1));
+    const t2=(state.timeEnds&&state.timeEnds[p])||state.times[p+1]||"";
+    if(editMode){
+      html+="<tr><td class='timecell editing'><b>"+(p+1)+"ª</b>"
+        +"<input type='time' class='time-edit start' data-period='"+p+"' data-which='start' value='"+esc(t1)+"' aria-label='Inizio "+(p+1)+"ª ora'>"
+        +"<input type='time' class='time-edit end' data-period='"+p+"' data-which='end' value='"+esc(t2)+"' aria-label='Fine "+(p+1)+"ª ora'>"
+        +"</td>";
+    } else {
+      html+="<tr><td class='timecell'><b>"+(p+1)+"ª</b>"+t1+(t2?"<br>"+t2:"")+"</td>";
+    }
+    for(let d=0;d<days;d++){
+      const s=slotAt(d,p);
+      html+="<td class='slot"+(dayIsToday(d)?" today-col":"")+"' data-day='"+d+"' data-period='"+p+"'>";
+      if(s){const c=cls(s.classId);
+        if(c){const k=lv(c);
+          if(k==="imp"){
+            html+="<div class='lesson imp' data-slot='"+s.id+"' data-imp='1' draggable='false'>"
+              +"<div class='l-top'><span class='dot imp'></span><span class='cls'>"+esc(c.name)+"</span></div>"
+              +"<div class='topic'>Impegno / riunione</div>"
+              +"</div>";
+          } else {
+          const l=getLesson(currentWeek,s.id);
+          const a=l&&l.appId?app(l.appId):null;
+          const topic=a?a.name:(l&&l.appName?l.appName:"");
+          const catLabel=a&&a.cat?a.cat:"";
+          const susp=!!(l&&l.suspended);
+          const noteTag=l&&l.notes?"<span class='l-note' title='"+esc(l.notes)+"'>"+esc(l.notes)+"</span>":"";
+          const acts=editMode?"":("<span class='l-acts'>"
+            +"<button class='l-act"+(l&&l.notes?" on":"")+"' data-act='note' title='Nota'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 20h9'/><path d='M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z'/></svg></button>"
+            +"<button class='l-act"+(susp?" on":"")+"' data-act='susp' title='"+(susp?"Riattiva lezione":"Sospendi lezione")+"'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='6' y='4' width='4' height='16' rx='1'/><rect x='14' y='4' width='4' height='16' rx='1'/></svg></button>"
+            +"</span>");
+          const leftFoot=(!susp&&catLabel?"<span class='cat'>"+esc(catLabel)+"</span>":"")+noteTag;
+          const foot=(leftFoot||acts)?("<div class='l-foot'>"+leftFoot+acts+"</div>"):"";
+          const top=susp?null:topAppForClassWeek(c,currentWeek);
+          let regLine="";
+          if(top){
+            const match=a&&a.url&&regNormUrl(a.url)===regNormUrl(top.url);
+            const icon=match
+              ?"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>"
+              :"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M22 12h-4l-3 9L9 3l-3 9H2'/></svg>";
+            regLine="<div class='l-reg"+(match?" match":"")+"' title='"+esc(match?"Registrato = pianificato":"Più aperta dagli studenti")+": "+esc(top.title||top.url)+" · "+top.count+" aperture'>"
+              +icon+"<span class='l-reg-name'>"+esc(top.title||top.url)+"</span><span class='l-reg-n'>"+top.count+"</span></div>";
+          }
+          html+="<div class='lesson "+k+(susp?" suspended":(l&&l.done?" done":""))+"' data-slot='"+s.id+"' draggable='false'>"
+            +"<div class='done-badge'><svg viewBox='0 0 24 24' width='11' height='11' fill='none' stroke='#fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg></div>"
+            +"<span class='susp-badge'>Sospesa</span>"
+            +"<div class='l-top'><span class='dot "+k+"'></span><span class='cls'>"+esc(c.name)+"</span></div>"
+            +(susp?"<div class='topic'>Lezione sospesa</div>":"<div class='topic"+(topic?"":" empty")+"'>"+(topic?esc(topic):"Scegli web app…")+"</div>")
+            +regLine
+            +foot
+            +"</div>";
+          }
+        }
+      } else {
+        html+="<div class='slot-empty' data-day='"+d+"' data-period='"+p+"'>"
+          +(editMode?"<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M12 5v14M5 12h14'/></svg>":"")+"</div>";
+      }
+      html+="</td>";
+    }
+    html+="</tr>";
+  }
+  t.innerHTML=html+"</tbody>";
+  t.classList.toggle("editmode",editMode);
+  bindCells();
+}
+function bindCells(){
+  const t=$("#timetable");
+  const pw=t.querySelector("#prevWeek"),nw=t.querySelector("#nextWeek");
+  // Calendario perpetuo: navigazione libera, senza limiti all'anno scolastico.
+  if(pw)pw.onclick=()=>{currentWeek--;renderWeek();};
+  if(nw)nw.onclick=()=>{currentWeek++;renderWeek();};
+  const tj=t.querySelector("#todayJump");
+  if(tj)tj.onclick=()=>{currentWeek=weekOfToday();renderWeek();};
+  t.querySelectorAll(".lesson").forEach(el=>{
+    el.onclick=()=>{const sid=el.dataset.slot; if(editMode)openAssign(slotById(sid)); else if(!el.dataset.imp)openLesson(sid);};
+    el.querySelectorAll(".l-act").forEach(b=>{
+      b.onclick=e=>{e.stopPropagation();const sid=el.dataset.slot;
+        if(b.dataset.act==="susp")toggleSuspend(sid);
+        else if(b.dataset.act==="note")startNoteEdit(sid,el);};
+    });
+    el.setAttribute("draggable", editMode?"true":"false");
+    if(editMode){
+      el.ondragstart=e=>{e.dataTransfer.setData("text/plain",el.dataset.slot);el.classList.add("dragging");};
+      el.ondragend=()=>el.classList.remove("dragging");
+    }
+  });
+  if(editMode){
+    t.querySelectorAll(".time-edit").forEach(inp=>{
+      inp.onchange=()=>{
+        const p=+inp.dataset.period, v=inp.value;
+        if(inp.dataset.which==="start"){state.times[p]=v;}
+        else{state.timeEnds=state.timeEnds||[];state.timeEnds[p]=v;}
+        scheduleSave();
+      };
+    });
+    t.querySelectorAll("td.slot").forEach(td=>{
+      td.ondragover=e=>{e.preventDefault();td.classList.add("drop-hl");};
+      td.ondragleave=()=>td.classList.remove("drop-hl");
+      td.ondrop=e=>{e.preventDefault();td.classList.remove("drop-hl");
+        const fromSid=e.dataTransfer.getData("text/plain");moveSlot(fromSid,+td.dataset.day,+td.dataset.period);};
+    });
+  }
+  t.querySelectorAll(".slot-empty").forEach(el=>{
+    if(editMode) el.onclick=()=>openAssignNew(+el.dataset.day,+el.dataset.period);
+    else el.style.cursor="default";
+  });
+}
+function moveSlot(fromSid,day,period){
+  const from=slotById(fromSid);if(!from)return;
+  const target=slotAt(day,period);
+  if(target&&target.id!==from.id){ // swap
+    const tmp=target.day,tmp2=target.period;target.day=from.day;target.period=from.period;from.day=tmp;from.period=tmp2;
+  } else { from.day=day;from.period=period; }
+  scheduleSave();renderTimetable();
+}
+
+/* ======================= EDIT MODE ======================= */
+$("#todayBtn").onclick=()=>{currentWeek=weekOfToday();renderWeek();
+  $("#view-week").scrollIntoView({behavior:"smooth",block:"start"});};
+$("#editToggle").onclick=()=>{editMode=!editMode;
+  $("#editToggleLabel").textContent=editMode?"Fine modifica":"Modifica orario";
+  $("#editToggle").title=editMode?"Fine modifica":"Modifica orario";
+  $("#editToggle").classList.toggle("primary",editMode);
+  $("#editHint").style.display=editMode?"block":"none";renderTimetable();};
+
+/* ============ AZIONI RAPIDE SULLA CARD (nota / sospensione) ============ */
+function blankLesson(){return {appId:null,appName:"",notes:"",done:false,suspended:false};}
+function cleanupLesson(k,l){
+  if(!l.appId&&!l.notes&&!l.done&&!l.suspended)delete state.lessons[k];
+  else state.lessons[k]=l;
+}
+function toggleSuspend(sid){
+  const k=lessonKey(currentWeek,sid);
+  const l=Object.assign(blankLesson(),state.lessons[k]||{});
+  l.suspended=!l.suspended;
+  if(l.suspended)l.done=false;
+  cleanupLesson(k,l);
+  scheduleSave();renderWeek();
+  toast(l.suspended?"Lezione sospesa":"Lezione riattivata");
+}
+function startNoteEdit(sid,el){
+  const exist=el.querySelector(".l-note-edit");
+  if(exist){exist.querySelector("textarea").focus();return;}
+  const k=lessonKey(currentWeek,sid);
+  const cur=(state.lessons[k]&&state.lessons[k].notes)||"";
+  // nascondi l'eventuale pill nota mentre si modifica
+  const pill=el.querySelector(".l-note");if(pill)pill.style.display="none";
+  const box=document.createElement("div");
+  box.className="l-note-edit";
+  box.innerHTML="<textarea rows='2' maxlength='400' placeholder='Scrivi una nota… (Invio per salvare)'></textarea>";
+  el.appendChild(box);
+  const ta=box.querySelector("textarea");
+  ta.value=cur;ta.focus();ta.setSelectionRange(cur.length,cur.length);
+  let done=false;
+  const commit=()=>{if(done)return;done=true;
+    const l=Object.assign(blankLesson(),state.lessons[k]||{});
+    l.notes=ta.value.trim();
+    cleanupLesson(k,l);
+    scheduleSave();renderWeek();toast(l.notes?"Nota salvata":"Nota rimossa");};
+  ta.onclick=e=>e.stopPropagation();
+  ta.onkeydown=e=>{e.stopPropagation();
+    if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();commit();}
+    else if(e.key==="Escape"){e.preventDefault();done=true;renderWeek();}};
+  ta.onblur=commit;
+}
+
+/* ======================= LESSON MODAL ======================= */
+function openLesson(sid){
+  const s=slotById(sid);if(!s)return;const c=cls(s.classId);if(!c)return;
+  pendingSlot=sid;const l=getLesson(currentWeek,sid)||{};
+  lmSelectedApp=l.appId||null;
+  $("#lmDot").className="dot "+lv(c);
+  $("#lmTitle").textContent=c.name+" · Sett. "+(currentWeek+1);
+  $("#lmNotes").value=l.notes||"";$("#lmDone").checked=!!l.done;$("#lmSuspended").checked=!!l.suspended;
+  $("#lmSearch").value="";renderPick("");
+  $("#lmNoTopics").style.display=state.apps.length?"none":"block";
+  openOverlay("#lessonOverlay");setTimeout(()=>$("#lmSearch").focus(),60);
+}
+function renderPick(q){
+  q=(q||"").toLowerCase().trim();
+  const list=$("#lmPick");list.innerHTML="";
+  const items=state.apps.filter(a=>!q||a.name.toLowerCase().includes(q)||(a.cat||"").toLowerCase().includes(q)).slice(0,60);
+  const linkSvg="<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/><path d='M15 3h6v6'/><path d='M10 14 21 3'/></svg>";
+  items.forEach(a=>{
+    const d=document.createElement("div");d.className="pick-opt"+(a.id===lmSelectedApp?" sel":"");
+    let h="<div class='po-head'><span class='po-name'>"+esc(a.name)+"</span>"
+      +(a.cat?"<span class='po-cat' style='background:rgba(79,70,229,.1);color:var(--indigo)'>"+esc(a.cat)+"</span>":"")+"</div>";
+    if(a.desc) h+="<div class='po-desc'>"+esc(a.desc)+"</div>";
+    if(a.url) h+="<a class='po-link' href='"+esc(a.url)+"' target='_blank' rel='noopener' title='"+esc(a.url)+"'>"+linkSvg+esc(a.url.replace(/^https?:\/\//,"").replace(/\/$/,""))+"</a>";
+    d.innerHTML=h;
+    d.onclick=(e)=>{if(e.target.closest(".po-link"))return;lmSelectedApp=(lmSelectedApp===a.id?null:a.id);renderPick($("#lmSearch").value);};
+    list.appendChild(d);
+  });
+  if(!items.length&&state.apps.length){const e=document.createElement("div");e.style.cssText="color:var(--faint);font-size:13px;padding:8px";e.textContent="Nessun risultato.";list.appendChild(e);}
+}
+$("#lmSearch").oninput=e=>renderPick(e.target.value);
+$("#lmSuspended").onchange=e=>{if(e.target.checked)$("#lmDone").checked=false;};
+$("#lmDone").onchange=e=>{if(e.target.checked)$("#lmSuspended").checked=false;};
+$("#lmSave").onclick=()=>{
+  const k=lessonKey(currentWeek,pendingSlot);
+  const a=lmSelectedApp?app(lmSelectedApp):null;
+  const suspended=$("#lmSuspended").checked;
+  const obj={appId:lmSelectedApp||null,appName:a?a.name:"",notes:$("#lmNotes").value.trim(),done:suspended?false:$("#lmDone").checked,suspended:suspended};
+  if(!obj.appId&&!obj.notes&&!obj.done&&!obj.suspended)delete state.lessons[k];else state.lessons[k]=obj;
+  scheduleSave();closeOverlay("#lessonOverlay");renderWeek();toast(suspended?"Lezione sospesa":"Lezione salvata");
+};
+$("#lmClear").onclick=()=>{delete state.lessons[lessonKey(currentWeek,pendingSlot)];scheduleSave();closeOverlay("#lessonOverlay");renderWeek();toast("Lezione svuotata");};
+$("#lmClose").onclick=$("#lmCancel").onclick=()=>closeOverlay("#lessonOverlay");
+
+/* ======================= ASSIGN MODAL ======================= */
+function openAssign(s){assignTarget={slotId:s.id,day:s.day,period:s.period};renderAssign();}
+function openAssignNew(d,p){assignTarget={slotId:null,day:d,period:p};renderAssign();}
+function renderAssign(){
+  $("#asTitle").textContent=DAY_NAMES[assignTarget.day]+" · "+(assignTarget.period+1)+"ª ora";
+  const list=$("#assignList");list.innerHTML="";
+  const dotStyle={pri:"background:var(--primaria);border:2px solid var(--primaria)",sec:"background:transparent;border:2.5px solid var(--secondaria)",imp:"background:#94a3b8;border:2px solid #94a3b8"};
+  const lvLabel={pri:"PRI",sec:"SEC",imp:"IMP"};
+  state.classes.forEach(c=>{const k=lv(c);
+    const div=document.createElement("div");div.className="assign-opt";
+    div.innerHTML="<span class='ao-dot "+k+"' style='"+dotStyle[k]+"'></span>"+esc(c.name)
+      +"<span class='ao-lvl bdg-"+c.level+"'>"+lvLabel[k]+"</span>";
+    div.onclick=()=>assignClass(c.id);list.appendChild(div);});
+  openOverlay("#assignOverlay");
+}
+function assignClass(classId){
+  const {slotId,day,period}=assignTarget;
+  if(slotId)slotById(slotId).classId=classId;
+  else state.slots.push({id:"s_"+day+"_"+period+"_"+Date.now(),day,period,classId});
+  scheduleSave();closeOverlay("#assignOverlay");renderTimetable();toast("Classe assegnata");
+}
+$("#asClear").onclick=()=>{const {slotId}=assignTarget;
+  if(slotId){state.slots=state.slots.filter(s=>s.id!==slotId);
+    Object.keys(state.lessons).forEach(k=>{if(k.endsWith("|"+slotId))delete state.lessons[k];});scheduleSave();}
+  closeOverlay("#assignOverlay");renderTimetable();toast("Cella svuotata");};
+$("#asClose").onclick=$("#asCancel").onclick=()=>closeOverlay("#assignOverlay");
+
+/* ======================= CLASSES ======================= */
+function renderClasses(){
+  $("#clsCount").textContent=teachingClasses().length;
+  const g=$("#clsGrid");g.innerHTML="";
+  state.classes.forEach(c=>{const k=lv(c);
+    const nSlots=state.slots.filter(s=>s.classId===c.id).length;
+    const nLes=Object.keys(state.lessons).filter(key=>{const s=slotById(key.split("|")[1]);return s&&s.classId===c.id&&state.lessons[key].appId;}).length;
+    const card=document.createElement("div");card.className="cls-card "+k;
+    const slotsPill=k==="imp"?"<span class='pill imp'>"+nSlots+" ore/sett.</span>":"<span class='pill slots'>"+nSlots+" ore/sett.</span><span class='pill lessons'>"+nLes+" lezioni</span>";
+    card.innerHTML="<div class='cc-head'><span class='dot "+k+"'></span>"
+      +"<input class='cc-name' value='"+esc(c.name)+"' data-f='name' aria-label='Nome classe'/>"
+      +"<button class='btn icon sm' data-del title='Elimina'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6'/></svg></button></div>"
+      +"<select data-f='level'><option value='primaria'"+(c.level==="primaria"?" selected":"")+">Primaria (arancio)</option><option value='secondaria'"+(c.level==="secondaria"?" selected":"")+">Secondaria (blu)</option><option value='impegno'"+(c.level==="impegno"?" selected":"")+">Impegno / Riunione (grigio)</option></select>"
+      +"<div class='cc-meta'>"+slotsPill+"</div>";
+    card.querySelectorAll("[data-f]").forEach(inp=>{inp.onchange=()=>{c[inp.dataset.f]=inp.value;scheduleSave();renderClasses();};});
+    card.querySelector("[data-del]").onclick=()=>{
+      if(!confirm("Eliminare \""+c.name+"\"? Verranno rimosse anche le sue ore e lezioni."))return;
+      state.classes=state.classes.filter(x=>x.id!==c.id);
+      const rm=state.slots.filter(s=>s.classId===c.id).map(s=>s.id);
+      state.slots=state.slots.filter(s=>s.classId!==c.id);
+      Object.keys(state.lessons).forEach(key=>{if(rm.includes(key.split("|")[1]))delete state.lessons[key];});
+      scheduleSave();renderClasses();toast("Classe eliminata");};
+    g.appendChild(card);
+  });
+}
+$("#addClassBtn").onclick=()=>{state.classes.push({id:"c"+Date.now(),name:"Nuova classe",level:"primaria"});scheduleSave();renderClasses();toast("Classe aggiunta");};
+
+/* ======================= TOPICS ======================= */
+function renderTopics(q){
+  $("#topCount").textContent=state.apps.length;
+  q=(q||"").toLowerCase().trim();
+  const list=$("#topicList");list.innerHTML="";
+  const items=state.apps.map((a,i)=>({a,i})).filter(o=>!q||o.a.name.toLowerCase().includes(q)||(o.a.cat||"").toLowerCase().includes(q));
+  if(!state.apps.length){
+    list.innerHTML="<div class='empty-state' style='grid-column:1/-1'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='7' height='7' rx='1'/><rect x='14' y='3' width='7' height='7' rx='1'/><rect x='3' y='14' width='7' height='7' rx='1'/><rect x='14' y='14' width='7' height='7' rx='1'/></svg><div>Nessuna web app in catalogo.<br>Aggiorna l'elenco leggendolo dal portale (index.html).</div><button class='btn primary' onclick=\"document.getElementById('importTopicsBtn').click()\">Aggiorna da portale</button></div>";
+    return;
+  }
+  items.forEach(({a,i})=>{
+    const it=document.createElement("div");it.className="topic-item";
+    const tLink="<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/><path d='M15 3h6v6'/><path d='M10 14 21 3'/></svg>";
+    it.innerHTML="<span class='ti-num'>"+(i+1)+"</span>"
+      +"<div class='ti-body'><div class='ti-head'>"
+      +(a.cat?"<span class='ti-cat'>"+esc(a.cat)+"</span>":"")
+      +"<span class='ti-name'>"+esc(a.name)+"</span></div>"
+      +(a.desc?"<div class='ti-desc'>"+esc(a.desc)+"</div>":"")
+      +(a.url?"<a class='ti-link' href='"+esc(a.url)+"' target='_blank' rel='noopener' title='"+esc(a.url)+"'>"+tLink+esc(a.url.replace(/^https?:\/\//,"").replace(/\/$/,""))+"</a>":"")
+      +"</div>"
+      +"<button class='btn icon sm ti-del' title='Elimina'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M18 6 6 18M6 6l12 12'/></svg></button>";
+    it.querySelector(".ti-del").onclick=()=>{state.apps=state.apps.filter(x=>x.id!==a.id);scheduleSave();renderTopics($("#topicSearch").value);};
+    list.appendChild(it);
+  });
+}
+$("#topicSearch").oninput=e=>renderTopics(e.target.value);
+$("#addTopicBtn").onclick=()=>{const n=prompt("Nome della web app:");if(!n)return;
+  const cat=prompt("Categoria (facoltativa):")||"";
+  const url=prompt("URL (facoltativo):")||"";
+  const desc=prompt("Descrizione (facoltativa):")||"";
+  state.apps.push({id:"a"+Date.now(),name:n.trim(),cat:cat.trim(),url:url.trim(),desc:desc.trim()});scheduleSave();renderTopics("");toast("Argomento aggiunto");};
+// Catalogo argomenti = specchio di index.html (stesso portale/repo). L'aggiornamento
+// rilegge i link delle web app dalle .card di index.html e sincronizza state.apps.
+function parseIndexCatalog(html){
+  const doc=new DOMParser().parseFromString(html,"text/html");
+  const out=[];
+  doc.querySelectorAll(".card").forEach(card=>{
+    const cat=(((card.querySelector(".card-name")||{}).textContent)||card.getAttribute("data-category")||"").trim();
+    card.querySelectorAll(".card-list a[href]").forEach(a=>{
+      const name=(((a.querySelector(".link-name")||{}).textContent)||"").trim();
+      const desc=(((a.querySelector(".link-desc")||{}).textContent)||"").trim();
+      const url=(a.getAttribute("href")||"").trim();
+      if(name)out.push({name,cat,url,desc});
+    });
+  });
+  return out;
+}
+async function importFromIndex(){
+  const btn=$("#importTopicsBtn"); if(btn)btn.disabled=true;
+  try{
+    const res=await fetch("index.html",{cache:"no-store"});
+    if(!res.ok)throw new Error("HTTP "+res.status);
+    const found=parseIndexCatalog(await res.text());
+    if(!found.length){toast("Nessuna web app trovata in index.html");return;}
+    const byUrl={}; state.apps.forEach(a=>{const k=regNormUrl(a.url); if(k)byUrl[k]=a;});
+    let nuove=0,agg=0;
+    found.forEach(f=>{
+      const k=regNormUrl(f.url), ex=k?byUrl[k]:null;
+      if(ex){ex.name=f.name;ex.cat=f.cat;ex.url=f.url;ex.desc=f.desc;agg++;}
+      else{const na={id:"a"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),name:f.name,cat:f.cat,url:f.url,desc:f.desc};
+        state.apps.push(na); if(k)byUrl[k]=na; nuove++;}
+    });
+    scheduleSave();renderTopics($("#topicSearch")?$("#topicSearch").value:"");
+    toast(found.length+" web app dal portale · "+nuove+" nuove, "+agg+" aggiornate");
+  }catch(e){
+    toast("Impossibile leggere index.html ("+e.message+")");
+  }finally{ if(btn)btn.disabled=false; }
+}
+$("#importTopicsBtn").onclick=importFromIndex;
+
+/* ======================= PROGRESS ======================= */
+function renderProgress(){
+  let planned=0,done=0;
+  Object.values(state.lessons).forEach(l=>{if(l.suspended)return;if(l.appId)planned++;if(l.done)done++;});
+  const stats=[
+    ["#1a535c",teachingClasses().length,"Classi",'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>'],
+    ["#0d9488",state.apps.length,"Web app",'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>'],
+    ["#f97316",planned,"Lezioni pianificate",'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>'],
+    ["#059669",done,"Lezioni svolte",'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>']
+  ];
+  $("#statRow").innerHTML=stats.map(s=>"<div class='stat'><div class='si'><svg viewBox='0 0 24 24' fill='none' stroke='"+s[0]+"' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>"+s[3]+"</svg></div><div class='val' style='color:"+s[0]+"'>"+s[1]+"</div><div class='lab'>"+s[2]+"</div></div>").join("");
+  let rows="<thead><tr><th>Classe</th><th>Ore/sett.</th><th>Pianificate</th><th>Svolte</th><th style='width:200px'>Avanzamento</th></tr></thead><tbody>";
+  teachingClasses().forEach(c=>{const k=lv(c);
+    const ids=state.slots.filter(s=>s.classId===c.id).map(s=>s.id);
+    const cap=ids.length*WEEKS;let p=0,d=0,sus=0;
+    Object.keys(state.lessons).forEach(key=>{const sid=key.split("|")[1];if(ids.includes(sid)){const l=state.lessons[key];if(l.suspended){sus++;return;}if(l.appId)p++;if(l.done)d++;}});
+    const eff=Math.max(0,cap-sus);const pct=eff?Math.round(p/eff*100):0;const col=k==="pri"?"var(--primaria)":"var(--secondaria)";
+    rows+="<tr><td><span class='pname'><span class='dot "+k+"'></span>"+esc(c.name)+"</span></td><td>"+ids.length+(sus?" <span style='color:var(--muted);font-weight:600'>(−"+sus+")</span>":"")+"</td><td>"+p+"</td><td>"+d+"</td>"
+      +"<td><div style='display:flex;align-items:center;gap:8px'><div class='mini-bar'><div class='mini-fill' style='width:"+pct+"%;background:"+col+"'></div></div><span style='font-size:12px;color:var(--muted);font-weight:600'>"+pct+"%</span></div></td></tr>";});
+  $("#progTable").innerHTML=rows+"</tbody>";
+}
+
+/* ======================= VIEWS ======================= */
+function weekNotesObj(w){
+  state.weekNotes=state.weekNotes||{};
+  let v=state.weekNotes[w];
+  if(typeof v==="string"){ v=v.trim()?{0:v}:{}; state.weekNotes[w]=v; }   // migra il vecchio formato (1 nota/settimana)
+  else if(!v||typeof v!=="object"){ v={}; state.weekNotes[w]=v; }
+  return v;
+}
+function renderWeekNotes(){
+  const grid=$("#wnGrid");if(!grid)return;
+  const notes=weekNotesObj(currentWeek);
+  const mon=weekMonday(currentWeek);
+  let html="";
+  for(let d=0;d<state.days;d++){
+    const dt=new Date(mon);dt.setDate(mon.getDate()+d);
+    html+="<div class='wn-day'><div class='wn-day-h'><span>"+DAY_NAMES[d]+"</span><span class='wn-day-num'>"+dt.getDate()+" "+MONTHS_FULL[dt.getMonth()]+"</span></div>"
+      +"<textarea data-day='"+d+"' placeholder='Note di "+DAY_NAMES[d]+"…'>"+esc(notes[d]||"")+"</textarea></div>";
+  }
+  grid.innerHTML=html;
+  grid.querySelectorAll("textarea").forEach(ta=>{
+    ta.oninput=()=>{const d=ta.dataset.day,o=weekNotesObj(currentWeek),v=ta.value;
+      if(v.trim())o[d]=v;else delete o[d];
+      if(!Object.keys(o).length)delete state.weekNotes[currentWeek];
+      scheduleSave();};
+  });
+  $("#wnWeek").textContent=isSchoolWeek(currentWeek)?("Settimana "+(currentWeek+1)):fmtRange(currentWeek);
+}
+function renderWeek(){renderTimetable();renderWeekNotes();}
+function switchView(v){activeView=v;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.view===v));
+  ["week","classes","topics","progress","registro"].forEach(x=>$("#view-"+x).classList.toggle("hidden",x!==v));
+  $("#editToggle").style.display=v==="week"?"":"none";
+  $("#todayBtn").style.display=v==="week"?"":"none";
+  if(v==="week")renderWeek();if(v==="classes")renderClasses();if(v==="topics")renderTopics("");if(v==="progress")renderProgress();if(v==="registro")renderRegistro();}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>switchView(t.dataset.view));
+(function(){const sl=$("#regThresh");if(sl)sl.oninput=e=>{const v=$("#regThreshVal");if(v)v.textContent=e.target.value;renderRegGrid();};
+ const rf=$("#regRefresh");if(rf)rf.onclick=()=>{regRows=null;renderRegistro();};
+ const so=$("#regSyncOrario");if(so)so.onclick=syncOrario;})();
+
+/* ======================= OVERLAYS ======================= */
+function openOverlay(s){$(s).classList.add("open");}
+function closeOverlay(s){$(s).classList.remove("open");}
+document.querySelectorAll(".overlay").forEach(o=>o.addEventListener("mousedown",e=>{if(e.target===o)o.classList.remove("open");}));
+document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".overlay.open").forEach(o=>o.classList.remove("open"));});
+
+/* ======================= SETTINGS ======================= */
+$("#menuBtn").onclick=()=>{$("#setStart").value=state.start;$("#setDays").value=state.days;$("#setPeriods").value=state.periods;$("#setSyncUrl").value=meta.syncUrl||"";openOverlay("#setOverlay");};
+$("#setClose").onclick=()=>closeOverlay("#setOverlay");
+$("#setSave").onclick=async()=>{
+  state.start=$("#setStart").value||state.start;
+  state.days=Math.min(6,Math.max(1,+$("#setDays").value||5));
+  state.periods=Math.min(10,Math.max(1,+$("#setPeriods").value||6));
+  const newUrl=$("#setSyncUrl").value.trim();
+  meta.syncUrl=newUrl;saveMeta();setSync(newUrl?"ok":"local");
+  scheduleSave();closeOverlay("#setOverlay");updateSub();renderWeek();toast("Impostazioni salvate");
+};
+$("#genGateBtn").onclick=async()=>{
+  if(!cryptoKey){toast("Sblocca prima con la tua password");return;}
+  const g=await makeOwnerGate();
+  const line="const OWNER_GATE = "+JSON.stringify(g)+";";
+  const ta=$("#gateOut");ta.classList.remove("hidden");ta.value=line;ta.focus();ta.select();
+  try{await navigator.clipboard.writeText(line);toast("Codice copiato — incollalo in index.html");}
+  catch(e){toast("Codice generato — selezionalo e copialo");}
+};
+$("#exportBtn").onclick=()=>{const env=localStorage.getItem(BLOB_KEY)||"";const blob=new Blob([env],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="acerio-planning-cifrato-"+new Date().toISOString().slice(0,10)+".json";a.click();toast("Backup cifrato esportato");};
+$("#importBtn").onclick=()=>$("#importFile").click();
+$("#importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=async()=>{try{state=Object.assign(defaultState(),await decryptEnvelope(r.result));await persist();applyTheme();updateSub();switchView("week");closeOverlay("#setOverlay");toast("Dati importati");}catch(err){alert("File non valido o password diversa da quella attuale.");}};
+  r.readAsText(f);};
+$("#resetBtn").onclick=()=>{if(confirm("Azzerare TUTTI i dati su questo dispositivo? (Il backup cifrato e il Google Sheet non vengono toccati finché non salvi di nuovo.)")){
+  localStorage.removeItem(BLOB_KEY);location.reload();}};
+function updateSub(){const y=new Date(state.start).getFullYear();$("#sub-line").textContent="Planning · Registro · A.S. "+y+"/"+(y+1)+" · "+WEEKS+" settimane";}
+
+/* ======================= LOCK / BOOT ======================= */
+let lockMode="unlock"; // or "setup"
+function bootLock(){
+  applyTheme();
+  const hasBlob = !!localStorage.getItem(BLOB_KEY);
+  if(OWNER_GATE){
+    lockMode="unlock";
+    $("#lockTitle").textContent="Acerio Suite";
+    $("#lockDesc").textContent="Accesso riservato al proprietario. Inserisci la tua password.";
+    $("#lockBtn").textContent="Sblocca"; $("#lockPwd2").classList.add("hidden");
+  } else if(hasBlob || meta.syncUrl){
+    lockMode="unlock";
+    $("#lockTitle").textContent="Acerio Suite";
+    $("#lockDesc").textContent="Inserisci la password per decifrare i tuoi dati.";
+    $("#lockBtn").textContent="Sblocca"; $("#lockPwd2").classList.add("hidden");
+  } else {
+    lockMode="setup";
+    $("#lockTitle").textContent="Crea la tua password";
+    $("#lockDesc").textContent="Proteggi il planning con una password. Servirà ogni volta per decifrare i dati: non è recuperabile, custodiscila bene.";
+    $("#lockBtn").textContent="Crea e inizia"; $("#lockPwd2").classList.remove("hidden");
+  }
+  setTimeout(()=>$("#lockPwd").focus(),100);
+}
+$("#lockForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const err=$("#lockErr");err.textContent="";
+  const pwd=$("#lockPwd").value;
+  if(pwd.length<4){err.textContent="Password troppo corta (min 4 caratteri).";return;}
+  $("#lockBtn").disabled=true;$("#lockBtn").textContent="Attendere…";
+  try{
+    if(lockMode==="setup"){
+      if(pwd!==$("#lockPwd2").value){err.textContent="Le password non coincidono.";return;}
+      cryptoSalt=crypto.getRandomValues(new Uint8Array(16));
+      cryptoKey=await deriveKey(pwd,cryptoSalt);
+      state=defaultState();state.theme=meta.theme;
+      await persist();
+      enterApp();
+    } else {
+      // load envelope (remote first if configured)
+      let env=null;
+      if(meta.syncUrl){ try{ setSync("busy"); env=await remoteLoad(); }catch(_){ env=null; } }
+      if(!env) env=localStorage.getItem(BLOB_KEY);
+      // ACCESSO ESCLUSIVO: verifica la password contro il gate del proprietario
+      if(OWNER_GATE){
+        // 1) verifica proprietario col salt del gate (solo controllo accesso)
+        const gateKey=await deriveKey(pwd, unb64(OWNER_GATE.salt));
+        if(!(await verifyOwnerGate(gateKey))){
+          err.textContent="Password errata.";return;
+        }
+        // 2) decifra i dati col salt del BLOB stesso (può differire dal gate)
+        let loaded=false;
+        if(env){
+          try{
+            const parsed=JSON.parse(env);
+            cryptoSalt=unb64(parsed.salt);
+            cryptoKey=await deriveKey(pwd,cryptoSalt);
+            state=Object.assign(defaultState(), await decryptEnvelope(env));
+            localStorage.setItem(BLOB_KEY,env);
+            if(state.theme){meta.theme=state.theme;saveMeta();}
+            loaded=true;
+          }catch(_){
+            // I dati salvati sono cifrati con una password diversa da questa.
+            if(!confirm("Esistono dati salvati cifrati con una password diversa: non possono essere aperti con questa.\n\nVuoi ricominciare da zero con QUESTA password? I dati precedenti verranno sostituiti definitivamente.")){
+              err.textContent="Accesso annullato. Inserisci la password con cui hai cifrato i dati.";
+              cryptoKey=null;cryptoSalt=null;return;
+            }
+          }
+        }
+        if(!loaded){
+          cryptoSalt=unb64(OWNER_GATE.salt);
+          cryptoKey=await deriveKey(pwd,cryptoSalt);
+          state=defaultState();state.theme=meta.theme;await persist();
+        }
+        enterApp();return;
+      }
+      if(!env){ // nothing remote and nothing local -> treat as setup
+        cryptoSalt=crypto.getRandomValues(new Uint8Array(16));cryptoKey=await deriveKey(pwd,cryptoSalt);
+        state=defaultState();state.theme=meta.theme;await persist();enterApp();return;
+      }
+      const parsed=JSON.parse(env);
+      cryptoSalt=unb64(parsed.salt);
+      cryptoKey=await deriveKey(pwd,cryptoSalt);
+      state=Object.assign(defaultState(), await decryptEnvelope(env));
+      localStorage.setItem(BLOB_KEY,env);
+      if(state.theme){meta.theme=state.theme;saveMeta();}
+      enterApp();
+    }
+  }catch(ex){
+    console.error(ex);
+    err.textContent="Password errata o dati non decifrabili.";
+    cryptoKey=null;cryptoSalt=null;
+  }finally{
+    $("#lockBtn").disabled=false;
+    $("#lockBtn").textContent=lockMode==="setup"?"Crea e inizia":"Sblocca";
+  }
+});
+// Backfill url/desc su cataloghi salvati prima dell'aggiornamento (match per nome col seed)
+function enrichApps(){
+  if(!state.apps||!state.apps.length)return;
+  const byName={};SEED_APPS.forEach(s=>{byName[s.name.toLowerCase()]=s;});
+  let changed=false;
+  state.apps.forEach(a=>{
+    if(a.url===undefined||a.desc===undefined){const s=byName[(a.name||"").toLowerCase()];
+      if(s){if(a.url===undefined)a.url=s.url||"";if(a.desc===undefined)a.desc=s.desc||"";}
+      else{if(a.url===undefined)a.url="";if(a.desc===undefined)a.desc="";}
+      changed=true;}
+  });
+  if(changed)scheduleSave();
+}
+function enterApp(){
+  enrichApps();
+  $("#lockScreen").classList.add("hidden");
+  $("#appRoot").classList.remove("hidden");
+  applyTheme();updateSub();setSync(meta.syncUrl?"ok":"local");
+  currentWeek=weekOfToday(); // calendario perpetuo: parte dalla settimana reale di oggi
+  switchView("week");
+  loadRegistro();
+}
+
+/* boot */
+if(!window.crypto||!window.crypto.subtle){
+  document.body.innerHTML="<div style='max-width:520px;margin:80px auto;font-family:Nunito,sans-serif;text-align:center;padding:20px'><h2>Browser non compatibile</h2><p>La cifratura AES-256-GCM richiede una connessione sicura (HTTPS) o l'apertura del file in locale su un browser moderno (Chrome, Edge, Safari, Firefox).</p></div>";
+} else { bootLock(); }
+</script>
+
+<!-- ===== Hook shell unificato (attivo solo dentro iframe) ===== -->
+<script>
+(function(){
+  if (window.parent === window) return; // standalone: nessun hook
+  var SHELL = '*';
+  function $id(id){ return document.getElementById(id); }
+  function locked(){ var l=$id('lockScreen'); return l && !l.classList.contains('hidden'); }
+  function tell(type, extra){ try{ window.parent.postMessage(Object.assign({source:'planning', type:type}, extra||{}), SHELL); }catch(e){} }
+
+  function doUnlock(pw){
+    if (!locked()){ tell('unlockResult', {ok:true}); return; }
+    var p = $id('lockPwd'), p2 = $id('lockPwd2'), form = $id('lockForm');
+    if (!p || !form){ tell('unlockResult', {ok:false}); return; }
+    p.value = pw;
+    if (p2 && !p2.classList.contains('hidden')) p2.value = pw; // modalità setup
+    if (form.requestSubmit) form.requestSubmit(); else form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true}));
+    var tries = 0;
+    var iv = setInterval(function(){
+      tries++;
+      if (!locked()){ clearInterval(iv); tell('unlockResult', {ok:true}); }
+      else if (tries > 40){ clearInterval(iv); tell('unlockResult', {ok:false}); } // ~6s
+    }, 150);
+  }
+
+  window.addEventListener('message', function(e){
+    var d = e.data || {};
+    if (d.type === 'unlock' && typeof d.pw === 'string'){ doUnlock(d.pw); }
+    else if (d.type === 'nav' && d.view){
+      var t = document.querySelector('.tab[data-view="'+String(d.view).replace(/"/g,'')+'"]');
+      if (t) t.click();
+    }
+    else if (d.type === 'ping'){ tell('pong', {locked: locked()}); }
+  });
+
+  // segnala al parent che l'app è pronta (lock visibile o già sbloccata)
+  function ready(){ tell('ready', {locked: locked()}); }
+  if (document.readyState === 'complete') ready();
+  else window.addEventListener('load', ready);
+})();
+</script>
+</body>
+</html>
