@@ -2,8 +2,8 @@
  * dpia-badges.js
  * Bollini di conformità GDPR/AI Act per il portale Acerio (acerio.vercel.app)
  * 
- * Generato automaticamente da DPIA Studio il 2026-06-16 — aggiornato il 2026-06-19
- * 134 app interne + 0 servizi terzi
+ * Generato automaticamente da DPIA Studio il 2026-06-16 — aggiornato il 2026-06-25
+ * 142 app interne + 0 servizi terzi
  * 
  * Ogni link nel portale che corrisponde a un'app classificata riceve un piccolo
  * badge colorato accanto al nome, indicante il cluster di rischio.
@@ -556,6 +556,38 @@
   "https://braone-rampante.vercel.app": {
     "cluster": "D",
     "name": "Il Barone Rampante"
+  },
+  "https://harrypotter-1.vercel.app": {
+    "cluster": "D",
+    "name": "Harry Potter e la Pietra Filosofale"
+  },
+  "https://rosso-malpelo.vercel.app": {
+    "cluster": "D",
+    "name": "Rosso Malpelo"
+  },
+  "https://sintesiproteica.vercel.app": {
+    "cluster": "D",
+    "name": "Sintesi Proteica"
+  },
+  "https://cavi-e-porte.vercel.app": {
+    "cluster": "D",
+    "name": "Cavi e Porte"
+  },
+  "https://coding-lesson-five.vercel.app": {
+    "cluster": "D",
+    "name": "Primi Passi nel Coding"
+  },
+  "https://ipad-regolamento.vercel.app": {
+    "cluster": "D",
+    "name": "Regolamento iPad"
+  },
+  "https://ipad-tutorial.vercel.app": {
+    "cluster": "D",
+    "name": "Tutorial iPad"
+  },
+  "https://patentino-genitori.vercel.app": {
+    "cluster": "D",
+    "name": "Patentino Digitale"
   }
 };
   
