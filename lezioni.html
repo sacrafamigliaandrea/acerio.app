@@ -154,7 +154,7 @@ footer .totals b{color:var(--greenD)}
   display:inline-flex;align-items:center;gap:10px;
   font-family:var(--head);font-weight:700;font-size:1rem;
   color:#3a2a00;background:linear-gradient(135deg,var(--gold2),var(--gold));
-  border:none;border-radius:13px;padding:13px 20px;cursor:pointer;
+  border:2px solid rgba(255,255,255,.92);border-radius:13px;padding:12px 20px;cursor:pointer;
   box-shadow:0 4px 16px rgba(184,134,11,.35);transition:.15s;min-height:48px;
 }
 .finish-btn:hover,.finish-btn:focus-visible{transform:translateY(-2px);box-shadow:0 7px 22px rgba(184,134,11,.45);outline:none}
@@ -188,24 +188,20 @@ footer .totals b{color:var(--greenD)}
 .modal-close:hover,.modal-close:focus-visible{background:rgba(255,255,255,.28);outline:none}
 .modal-close svg{width:20px;height:20px}
 .modal-body{padding:22px 26px}
-.auto-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;perspective:1200px}
-/* tessere che girano: 4 varianti casuali per un effetto autonomo */
-@keyframes flipA{from{transform:rotateY(-135deg) rotateZ(-7deg);opacity:0}55%{opacity:1}to{transform:none;opacity:1}}
-@keyframes flipB{from{transform:rotateY(135deg) rotateZ(7deg);opacity:0}55%{opacity:1}to{transform:none;opacity:1}}
-@keyframes flipC{from{transform:rotateX(125deg) rotateZ(5deg);opacity:0}55%{opacity:1}to{transform:none;opacity:1}}
-@keyframes flipD{from{transform:rotateY(-200deg) rotateZ(10deg);opacity:0}50%{opacity:1}to{transform:none;opacity:1}}
+.auto-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;perspective:1400px}
 .auto-card{
   display:flex;flex-direction:column;gap:6px;text-align:left;
   background:var(--card);border:1px solid var(--brd);border-radius:14px;
   padding:14px 15px;cursor:pointer;transition:.15s;min-height:118px;
   border-top:3px solid var(--card-accent,var(--green));
-  transform-origin:center;backface-visibility:hidden;
-  animation:flipA .58s cubic-bezier(.2,.75,.3,1) backwards;
+  transform-origin:center;will-change:transform;
 }
-.auto-card.fvB{animation-name:flipB}
-.auto-card.fvC{animation-name:flipC}
-.auto-card.fvD{animation-name:flipD}
-@media(prefers-reduced-motion:reduce){.auto-card{animation:none}}
+/* mentre le tessere girano (roulette) i clic sono bloccati */
+.auto-grid.spinning .auto-card{pointer-events:none;cursor:default}
+/* quando si fermano: piccolo invito a scegliere */
+@keyframes settle{0%{box-shadow:0 0 0 0 rgba(184,134,11,.0)}40%{box-shadow:0 0 0 4px rgba(184,134,11,.30)}100%{box-shadow:0 0 0 0 rgba(184,134,11,.0)}}
+.auto-card.stopped{animation:settle .55s ease-out}
+@media(prefers-reduced-motion:reduce){.auto-card.stopped{animation:none}}
 .auto-card:hover,.auto-card:focus-visible{
   border-color:var(--green);box-shadow:0 6px 18px rgba(27,107,58,.14);
   transform:translateY(-2px);outline:none;
@@ -460,7 +456,7 @@ function renderTotals(){
 renderNav(); renderLessons(); renderTotals();
 
 /* ── Esplora in autonomia (modal) ── */
-const AUTONOMY = [{"name":"Harry Potter e la Pietra Filosofale","cat":"Biblioteca Digitale","url":"https://harrypotter-1.vercel.app/","desc":"Audiolettura interattiva: segui il narratore parola per parola, con segnalibro"},{"name":"Harry Potter e la Camera dei Segreti","cat":"Biblioteca Digitale","url":"https://harrypotter-2.vercel.app/","desc":"Audiolettura interattiva: il secondo capitolo della saga, parola per parola"},{"name":"Ventimila Leghe sotto i Mari","cat":"Biblioteca Digitale","url":"https://ventimila-leghe.vercel.app/","desc":"Audiolettura interattiva: il viaggio del capitano Nemo, parola per parola"},{"name":"Pennuti Spennati","cat":"Biblioteca Digitale","url":"https://pennutispennati.vercel.app/","desc":"Cortometraggio Pixar con attività di osservazione e metacognizione"},{"name":"L'Agnello Rimbalzello","cat":"Biblioteca Digitale","url":"https://agnellorimbalzello.vercel.app/","desc":"Cortometraggio Pixar: il video si ferma 5 volte, tu rispondi e costruisci il tuo diario"},{"name":"La Mossa di Geri","cat":"Biblioteca Digitale","url":"https://gerisgame.vercel.app/","desc":"Cortometraggio Pixar senza parole: Geri gioca a scacchi, tu osservi e rispondi"},{"name":"Le Nuvole di Gus","cat":"Biblioteca Digitale","url":"https://parzialmentenuvoloso.vercel.app/","desc":"Cortometraggio Pixar senza parole: le nuvole creano i cuccioli, tu esplori il significato"},{"name":"Il Cigno Appiccica","cat":"Biblioteca Digitale","url":"https://cignoappiccica.vercel.app/","desc":"Fiaba sonora: ascolta e completa le parole mancanti — esercizio di ascolto attivo"},{"name":"I Tre Porcellini","cat":"Biblioteca Digitale","url":"https://treporcellini.vercel.app/","desc":"Fiaba interattiva con tre livelli di difficoltà: ascolta, leggi, gioca"},{"name":"Il Pifferaio Magico","cat":"Biblioteca Digitale","url":"https://pifferaio.vercel.app/","desc":"Fiaba interattiva di Hamelin: ascolta e indovina le parole mancanti"},{"name":"Il Drago e il Leprotto","cat":"Biblioteca Digitale","url":"https://dragoleprotto.vercel.app/","desc":"Guarda la fiaba, poi metti alla prova il tuo ascolto con il dettato"},{"name":"Le Avventure di Pinocchio","cat":"Biblioteca Digitale","url":"https://pinocchio-mauve.vercel.app/","desc":"Audiolettura interattiva del romanzo di Collodi, capitolo per capitolo"},{"name":"Uno, Nessuno e Centomila","cat":"Biblioteca Digitale","url":"https://unonessunocentomila.vercel.app/","desc":"Audiolettura interattiva del romanzo di Pirandello"},{"name":"Vocabolario d'Autore","cat":"Biblioteca Digitale","url":"https://dizionario-musicale.vercel.app/","desc":"Le canzoni d'autore italiane che ti regalano parole: ascolta in cuffia e impara"},{"name":"Il Mito di Ciparisso","cat":"Biblioteca Digitale","url":"https://ciparisso.vercel.app/","desc":"Un mito antico raccontato da Enrico Galiano: ascolta, rifletti, scopri"},{"name":"Lost in Translation","cat":"Biblioteca Digitale","url":"https://lost-in-translation-phi.vercel.app/","desc":"English idioms from real songs: impara le espressioni inglesi attraverso la musica"},{"name":"La Macchina per Fare i Compiti","cat":"Biblioteca Digitale","url":"https://la-macchina-per-fare-i-compiti.vercel.app/","desc":"Lettura interattiva ispirata a Gianni Rodari: la macchina che fa i compiti al posto tuo"},{"name":"Il Barone Rampante","cat":"Biblioteca Digitale","url":"https://braone-rampante.vercel.app/","desc":"Audiolettura interattiva del romanzo di Italo Calvino, capitolo per capitolo"},{"name":"Rosso Malpelo","cat":"Biblioteca Digitale","url":"https://rosso-malpelo.vercel.app/","desc":"Audiolettura interattiva della novella di Giovanni Verga, parola per parola"},{"name":"Calibro","cat":"Approfondimenti e Ricerche","url":"https://calibro.neocities.org/","desc":"Strumento didattico per la crescita e l'autovalutazione"},{"name":"Gite Virtuali","cat":"Approfondimenti e Ricerche","url":"https://geografiamaps.neocities.org/","desc":"Esplora il mondo con Google Maps senza uscire da scuola"},{"name":"Ciro il Dinosauro","cat":"Approfondimenti e Ricerche","url":"https://sacrafamiglialabinfo.neocities.org/","desc":"Alla scoperta del primo cucciolo di dinosauro italiano"},{"name":"Il Mondo dei Dinosauri","cat":"Approfondimenti e Ricerche","url":"https://dinosauri.neocities.org/","desc":"Laboratorio Biomeccanico Virtuale"},{"name":"Il Corpo Umano","cat":"Approfondimenti e Ricerche","url":"https://apparati.neocities.org/","desc":"Viaggio interattivo tra gli apparati e i sistemi del corpo"},{"name":"Trasformiamo l'Errore in Opportunità","cat":"Approfondimenti e Ricerche","url":"https://errore.neocities.org/","desc":"Percorso interdisciplinare sull'errore come strumento di crescita"},{"name":"Debate sull'Errore","cat":"Approfondimenti e Ricerche","url":"https://debaterrore.neocities.org/","desc":"Dibattito strutturato: l'errore è davvero un'opportunità?"},{"name":"Infografiche con Notebook LM","cat":"Approfondimenti e Ricerche","url":"https://notebooklmstyle.neocities.org/","desc":"Come scegliere gli stili per le tue infografiche"},{"name":"Arena del Pensiero","cat":"Approfondimenti e Ricerche","url":"https://teamdebate.neocities.org/","desc":"Il debate di squadra in classe"},{"name":"Canto III — Divina Commedia","cat":"Approfondimenti e Ricerche","url":"https://labinfo.my.canva.site/canto3","desc":"Approfondimento multimediale sul terzo canto"},{"name":"Laboratorio Scientifico","cat":"Approfondimenti e Ricerche","url":"https://labscienze.vercel.app/","desc":"Esplora, sperimenta, scopri — dalla 3ª Primaria alla 3ª Secondaria"},{"name":"Sintesi Proteica","cat":"Approfondimenti e Ricerche","url":"https://sintesiproteica.vercel.app/","desc":"Dal DNA alle proteine: il viaggio della sintesi proteica"},{"name":"Il Viaggio dell'Uomo","cat":"Approfondimenti e Ricerche","url":"https://homoavdventure.vercel.app/","desc":"Dalle origini alla storia: il percorso dell'umanità"},{"name":"Viaggio nella Storia","cat":"Approfondimenti e Ricerche","url":"https://storia-new.vercel.app/","desc":"Percorso interattivo attraverso epoche ed eventi storici"},{"name":"100 Anni di Storia in Musica","cat":"Sacra Famiglia","url":"https://100anni.neocities.org/","desc":"Un secolo di vita e missione della Sacra Famiglia, in musica"},{"name":"Il Gioco delle Case","cat":"Sacra Famiglia","url":"https://sfida.neocities.org/","desc":"Il Gioco delle Case della Sacra Famiglia"},{"name":"Le Mascotte delle Case","cat":"Sacra Famiglia","url":"https://sacrafamiglia.neocities.org/","desc":"Le mascotte delle Case della Sacra Famiglia"},{"name":"S. Paola Elisabetta","cat":"Sacra Famiglia","url":"https://santapaola.neocities.org/","desc":"Festa e ricorrenza della fondatrice"},{"name":"Quizzone S. Paola","cat":"Sacra Famiglia","url":"https://quizzonespaola.neocities.org/","desc":"Quanto conosci Santa Paola? Mettiti alla prova!"},{"name":"Quadri Appesi","cat":"Sacra Famiglia","url":"https://quadriappesi.vercel.app/","desc":"Galleria virtuale delle opere e dei lavori della scuola"},{"name":"Studio Musicale","cat":"Sport e Giochi","url":"https://studiomusicale.neocities.org/","desc":"Esplora strumenti, note e ritmi in modo interattivo"},{"name":"Cool Runnings","cat":"Sport e Giochi","url":"https://giamaica.neocities.org/","desc":"La storia incredibile della squadra di bob giamaicana"},{"name":"Milano Cortina","cat":"Sport e Giochi","url":"https://labinfo.my.canva.site/c17sxqtedy2jyaw7","desc":"Le Olimpiadi Tecnologiche"},{"name":"Milano-Cortina 2026","cat":"Sport e Giochi","url":"https://milanocortina.neocities.org/","desc":"I geni italiani protagonisti delle Olimpiadi invernali"},{"name":"Word Games","cat":"Sport e Giochi","url":"https://sacrafamigliagames.neocities.org/","desc":"Giochi di parole per divertirsi e arricchire il lessico"},{"name":"Profemon","cat":"Sport e Giochi","url":"https://profemon.neocities.org/","desc":"Il gioco di carte cooperativo della scuola: schierate i prof e superate le sfide!"},{"name":"Storia del Calcio","cat":"Sport e Giochi","url":"https://calcio-one.vercel.app/","desc":"Un viaggio nel calcio dal 2000 al 2025"},{"name":"Master Chef","cat":"Sport e Giochi","url":"https://masterchef-iota.vercel.app/","desc":"Ricette italiane: un viaggio tra sapori e tradizioni"},{"name":"Euro Capitali","cat":"Sport e Giochi","url":"https://euro-capitali.vercel.app/","desc":"Quiz geografico sulle capitali europee: metti alla prova le tue conoscenze"}];
+const AUTONOMY = [{"name":"Harry Potter e la Pietra Filosofale","cat":"Biblioteca Digitale","url":"https://harrypotter-1.vercel.app/","desc":"Entra a Hogwarts: ogni parola si illumina mentre ascolti il narratore. Riprendi sempre dal tuo segnalibro."},{"name":"Harry Potter e la Camera dei Segreti","cat":"Biblioteca Digitale","url":"https://harrypotter-2.vercel.app/","desc":"Cosa si nasconde nella Camera dei Segreti? Ascolta e segui parola per parola il secondo capitolo della saga."},{"name":"Ventimila Leghe sotto i Mari","cat":"Biblioteca Digitale","url":"https://ventimila-leghe.vercel.app/","desc":"Sali a bordo del Nautilus con il capitano Nemo: ascolta il viaggio negli abissi, parola per parola."},{"name":"Pennuti Spennati","cat":"Biblioteca Digitale","url":"https://pennutispennati.vercel.app/","desc":"Un corto Pixar esilarante: osserva i dettagli e scopri cosa racconta davvero su gruppo e diversità."},{"name":"L'Agnello Rimbalzello","cat":"Biblioteca Digitale","url":"https://agnellorimbalzello.vercel.app/","desc":"Il video si ferma 5 volte: tocca a te rispondere e costruire, scena dopo scena, il tuo diario."},{"name":"La Mossa di Geri","cat":"Biblioteca Digitale","url":"https://gerisgame.vercel.app/","desc":"Corto Pixar senza parole: Geri gioca a scacchi... contro se stesso? Osserva e scopri il trucco."},{"name":"Le Nuvole di Gus","cat":"Biblioteca Digitale","url":"https://parzialmentenuvoloso.vercel.app/","desc":"Senza una parola, le nuvole creano i cuccioli del mondo. Cosa significa? Esplora il messaggio nascosto."},{"name":"Il Cigno Appiccica","cat":"Biblioteca Digitale","url":"https://cignoappiccica.vercel.app/","desc":"Riesci a cogliere ogni parola? Ascolta la fiaba e completa quelle che mancano: orecchie all'erta!"},{"name":"I Tre Porcellini","cat":"Biblioteca Digitale","url":"https://treporcellini.vercel.app/","desc":"La fiaba che conosci, ma in tre livelli di sfida: ascolta, leggi e gioca scegliendo quanto osare."},{"name":"Il Pifferaio Magico","cat":"Biblioteca Digitale","url":"https://pifferaio.vercel.app/","desc":"La melodia che incantò Hamelin: ascolta e indovina le parole mancanti prima che spariscano."},{"name":"Il Drago e il Leprotto","cat":"Biblioteca Digitale","url":"https://dragoleprotto.vercel.app/","desc":"Guarda la fiaba, poi sfida il tuo orecchio con il dettato: quante parole riesci a catturare?"},{"name":"Le Avventure di Pinocchio","cat":"Biblioteca Digitale","url":"https://pinocchio-mauve.vercel.app/","desc":"Dal burattino al bambino vero: ascolta il romanzo di Collodi, capitolo dopo capitolo."},{"name":"Uno, Nessuno e Centomila","cat":"Biblioteca Digitale","url":"https://unonessunocentomila.vercel.app/","desc":"Chi sei davvero per gli altri? Lasciati spiazzare dal romanzo di Pirandello, in audiolettura."},{"name":"Vocabolario d'Autore","cat":"Biblioteca Digitale","url":"https://dizionario-musicale.vercel.app/","desc":"Metti le cuffie: le grandi canzoni italiane ti regalano parole nuove. Quante ne scoprirai?"},{"name":"Il Mito di Ciparisso","cat":"Biblioteca Digitale","url":"https://ciparisso.vercel.app/","desc":"Un mito antico raccontato da Enrico Galiano: ascolta, lasciati toccare e scopri il finale."},{"name":"Lost in Translation","cat":"Biblioteca Digitale","url":"https://lost-in-translation-phi.vercel.app/","desc":"Scopri i modi di dire inglesi nascosti nelle canzoni vere: che cosa significano davvero?"},{"name":"La Macchina per Fare i Compiti","cat":"Biblioteca Digitale","url":"https://la-macchina-per-fare-i-compiti.vercel.app/","desc":"E se una macchina facesse i compiti al posto tuo? Una storia alla Rodari tutta da scoprire."},{"name":"Il Barone Rampante","cat":"Biblioteca Digitale","url":"https://braone-rampante.vercel.app/","desc":"Un ragazzo sale su un albero e non scende più: ascolta il capolavoro di Calvino, capitolo per capitolo."},{"name":"Rosso Malpelo","cat":"Biblioteca Digitale","url":"https://rosso-malpelo.vercel.app/","desc":"La storia dura e indimenticabile firmata Verga: ascolta parola per parola e lasciati colpire."},{"name":"Calibro","cat":"Approfondimenti e Ricerche","url":"https://calibro.neocities.org/","desc":"Quanto sei cresciuto davvero? Uno strumento per misurarti e raccontare i tuoi progressi."},{"name":"Gite Virtuali","cat":"Approfondimenti e Ricerche","url":"https://geografiamaps.neocities.org/","desc":"Viaggia in ogni angolo del mondo con Google Maps senza alzarti dal banco. Dove vai oggi?"},{"name":"Ciro il Dinosauro","cat":"Approfondimenti e Ricerche","url":"https://sacrafamiglialabinfo.neocities.org/","desc":"Conosci Ciro, il primo cucciolo di dinosauro trovato in Italia? Scopri la sua storia incredibile."},{"name":"Il Mondo dei Dinosauri","cat":"Approfondimenti e Ricerche","url":"https://dinosauri.neocities.org/","desc":"Entra nel laboratorio biomeccanico: come correvano e cacciavano davvero i dinosauri?"},{"name":"Il Corpo Umano","cat":"Approfondimenti e Ricerche","url":"https://apparati.neocities.org/","desc":"Un viaggio dentro di te: esplora apparati e sistemi e scopri come funziona la tua macchina perfetta."},{"name":"Trasformiamo l'Errore in Opportunità","cat":"Approfondimenti e Ricerche","url":"https://errore.neocities.org/","desc":"E se sbagliare fosse il modo migliore per imparare? Un percorso per cambiare idea sull'errore."},{"name":"Debate sull'Errore","cat":"Approfondimenti e Ricerche","url":"https://debaterrore.neocities.org/","desc":"L'errore è davvero un'opportunità? Scegli la tua posizione e preparati a difenderla."},{"name":"Infografiche con Notebook LM","cat":"Approfondimenti e Ricerche","url":"https://notebooklmstyle.neocities.org/","desc":"Vuoi infografiche che colpiscono? Scopri come scegliere lo stile giusto per le tue idee."},{"name":"Arena del Pensiero","cat":"Approfondimenti e Ricerche","url":"https://teamdebate.neocities.org/","desc":"Sfida le idee, non le persone: scopri come funziona il debate di squadra in classe."},{"name":"Canto III — Divina Commedia","cat":"Approfondimenti e Ricerche","url":"https://labinfo.my.canva.site/canto3","desc":"«Lasciate ogne speranza»: varca la porta dell'Inferno con un viaggio multimediale nel terzo canto."},{"name":"Laboratorio Scientifico","cat":"Approfondimenti e Ricerche","url":"https://labscienze.vercel.app/","desc":"Esplora, sperimenta, scopri: esperimenti per ogni età, dalla primaria alle medie."},{"name":"Sintesi Proteica","cat":"Approfondimenti e Ricerche","url":"https://sintesiproteica.vercel.app/","desc":"Dal DNA alle proteine: segui il viaggio microscopico che costruisce ogni parte di te."},{"name":"Il Viaggio dell'Uomo","cat":"Approfondimenti e Ricerche","url":"https://homoavdventure.vercel.app/","desc":"Dalle origini ai giorni nostri: ripercorri il lungo cammino dell'umanità, tappa dopo tappa."},{"name":"Viaggio nella Storia","cat":"Approfondimenti e Ricerche","url":"https://storia-new.vercel.app/","desc":"Salta tra epoche ed eventi in un percorso interattivo: quale momento esplori per primo?"},{"name":"100 Anni di Storia in Musica","cat":"Sacra Famiglia","url":"https://100anni.neocities.org/","desc":"Cento anni della Sacra Famiglia raccontati in musica: un secolo di storie tutto da ascoltare."},{"name":"Il Gioco delle Case","cat":"Sacra Famiglia","url":"https://sfida.neocities.org/","desc":"A quale Casa appartieni? Entra nel Gioco delle Case della Sacra Famiglia e scoprilo."},{"name":"Le Mascotte delle Case","cat":"Sacra Famiglia","url":"https://sacrafamiglia.neocities.org/","desc":"Ogni Casa ha la sua mascotte: scopri chi rappresenta la tua e perché."},{"name":"S. Paola Elisabetta","cat":"Sacra Famiglia","url":"https://santapaola.neocities.org/","desc":"Chi era la fondatrice della scuola? Scopri storia e festa di Santa Paola Elisabetta."},{"name":"Quizzone S. Paola","cat":"Sacra Famiglia","url":"https://quizzonespaola.neocities.org/","desc":"Quanto conosci davvero Santa Paola? Mettiti alla prova con il Quizzone!"},{"name":"Quadri Appesi","cat":"Sacra Famiglia","url":"https://quadriappesi.vercel.app/","desc":"Entra nella galleria virtuale e ammira opere e lavori nati tra i banchi della scuola."},{"name":"Studio Musicale","cat":"Sport e Giochi","url":"https://studiomusicale.neocities.org/","desc":"Strumenti, note e ritmi a portata di clic: gioca con la musica e prova a comporre la tua."},{"name":"Cool Runnings","cat":"Sport e Giochi","url":"https://giamaica.neocities.org/","desc":"Una squadra di bob... ai tropici? La storia vera e incredibile dei giamaicani alle Olimpiadi."},{"name":"Milano Cortina","cat":"Sport e Giochi","url":"https://labinfo.my.canva.site/c17sxqtedy2jyaw7","desc":"Le Olimpiadi diventano tecnologia: scopri le innovazioni dei Giochi di Milano-Cortina."},{"name":"Milano-Cortina 2026","cat":"Sport e Giochi","url":"https://milanocortina.neocities.org/","desc":"Geni italiani protagonisti dei Giochi invernali 2026: scopri chi c'è dietro le imprese."},{"name":"Word Games","cat":"Sport e Giochi","url":"https://sacrafamigliagames.neocities.org/","desc":"Sfida le parole e allarga il tuo vocabolario divertendoti: quanti punti riesci a fare?"},{"name":"Profemon","cat":"Sport e Giochi","url":"https://profemon.neocities.org/","desc":"Schiera i tuoi prof come carte da gioco e superate insieme le sfide: il gioco cooperativo della scuola!"},{"name":"Storia del Calcio","cat":"Sport e Giochi","url":"https://calcio-one.vercel.app/","desc":"Dal 2000 al 2025: rivivi gol, campioni e imprese in un viaggio nel calcio."},{"name":"Master Chef","cat":"Sport e Giochi","url":"https://masterchef-iota.vercel.app/","desc":"Ai fornelli! Scopri le ricette italiane e il viaggio tra sapori e tradizioni d'Italia."},{"name":"Euro Capitali","cat":"Sport e Giochi","url":"https://euro-capitali.vercel.app/","desc":"Conosci le capitali d'Europa? Mettiti alla prova con il quiz geografico lampo."}];
 const CAT_COLOR = {
   "Biblioteca Digitale":"#8B6914",
   "Approfondimenti e Ricerche":"#1B6B3A",
@@ -468,45 +464,100 @@ const CAT_COLOR = {
   "Sport e Giochi":"#1D6FA5"
 };
 const PICK = 9;
-const FLIP_VARIANTS = ['', 'fvB', 'fvC', 'fvD'];
 
 function shuffle(arr){
   const a = arr.slice();
   for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
   return a;
 }
+
+/* ── Suono "roulette": ticchettio sintetico via Web Audio, nessun file esterno ── */
+let audioCtx = null;
+function ensureAudio(){
+  if(audioCtx){ if(audioCtx.state === 'suspended') audioCtx.resume(); return; }
+  try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+  catch(e){ audioCtx = null; }
+}
+function clickAt(t, vol){
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = 'square';
+  o.frequency.setValueAtTime(1550, t);
+  o.frequency.exponentialRampToValueAtTime(720, t + 0.02);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol, t + 0.001);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.035);
+  o.connect(g).connect(audioCtx.destination);
+  o.start(t); o.stop(t + 0.05);
+}
+function playRoulette(durSec, ticks){
+  if(!audioCtx) return;
+  const now = audioCtx.currentTime;
+  for(let i=0;i<ticks;i++){
+    const p = i/(ticks-1);
+    const eased = 1 - Math.pow(1-p, 3);    // fitti all'inizio, sempre più radi: decelera come una roulette
+    clickAt(now + eased*durSec, 0.20*(1 - 0.55*p));
+  }
+}
+
+const overlay = document.getElementById('autoModal');
+const grid = document.getElementById('autoGrid');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let lastFocus = null;
+
+function enableCards(){
+  grid.classList.remove('spinning');
+  grid.querySelectorAll('.auto-card').forEach(c => { c.removeAttribute('aria-disabled'); c.setAttribute('tabindex','0'); });
+}
+function spinAll(){
+  const cards = [...grid.querySelectorAll('.auto-card')];
+  if(reduceMotion || !cards.length){ enableCards(); return; }
+  grid.classList.add('spinning');
+  let maxDur = 0;
+  const done = cards.map(card => {
+    const turns = 10 + Math.floor(Math.random()*21);   // 10–30 giri completi, casuale
+    const dur = 2200 + turns*70 + Math.random()*300;   // più giri ⇒ più tempo per fermarsi
+    if(dur > maxDur) maxDur = dur;
+    const anim = card.animate(
+      [{transform:'rotateY(0deg)'}, {transform:`rotateY(${turns*360}deg)`}],
+      {duration:dur, easing:'cubic-bezier(.16,.7,.14,1)', fill:'forwards'}
+    );
+    anim.finished.then(() => {
+      anim.cancel();
+      card.style.transform = 'none';   // fronte riallineato, l'hover torna a funzionare
+      card.classList.add('stopped');
+    }).catch(()=>{});
+    return anim.finished.catch(()=>{});
+  });
+  playRoulette(maxDur/1000, 30);
+  Promise.all(done).then(enableCards);
+}
 function renderAuto(){
   const sample = shuffle(AUTONOMY).slice(0, Math.min(PICK, AUTONOMY.length));
-  // ordine di comparsa casuale: a ogni card un ritardo diverso
-  const order = shuffle(sample.map((_, i) => i));
-  const slot = {};
-  order.forEach((idx, pos) => { slot[idx] = pos; });
-  document.getElementById('autoGrid').innerHTML = sample.map((a, i) => {
+  grid.innerHTML = sample.map(a => {
     const col = CAT_COLOR[a.cat] || 'var(--green)';
-    const delay = (slot[i] * 0.09).toFixed(2);
-    const dur = (0.5 + Math.random() * 0.4).toFixed(2);          // durata casuale
-    const v = FLIP_VARIANTS[Math.floor(Math.random() * FLIP_VARIANTS.length)];  // verso/asse casuale
-    return `<a class="auto-card ${v}" href="${a.url}" target="_blank" rel="noopener" style="--card-accent:${col};animation-delay:${delay}s;animation-duration:${dur}s">
+    return `<a class="auto-card" href="${a.url}" target="_blank" rel="noopener" aria-disabled="true" tabindex="-1" style="--card-accent:${col}">
       <span class="auto-cat">${esc(a.cat)}</span>
       <span class="auto-name">${esc(a.name)}</span>
       <span class="auto-desc">${esc(a.desc||'')}</span>
       <span class="auto-go">${ARROW}</span>
     </a>`;
   }).join('');
+  spinAll();
 }
 
-const overlay = document.getElementById('autoModal');
-let lastFocus = null;
 function openAuto(){
   lastFocus = document.activeElement;
-  renderAuto();
+  ensureAudio();
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
+  renderAuto();
   document.getElementById('autoClose').focus();
 }
 function closeAuto(){
   overlay.classList.remove('open');
   document.body.style.overflow = '';
+  grid.querySelectorAll('.auto-card').forEach(c => c.getAnimations().forEach(a => a.cancel()));
   if(lastFocus) lastFocus.focus();
 }
 document.getElementById('finishBtn').addEventListener('click', openAuto);
