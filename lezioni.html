@@ -36,7 +36,7 @@ a{color:inherit;text-decoration:none}
   background:linear-gradient(135deg,var(--greenD),var(--green));
   color:#fff; padding:46px 0 40px;
 }
-.hero .wrap{display:flex;flex-direction:column;gap:14px}
+.hero .wrap{display:flex;flex-direction:column;gap:14px;position:relative}
 .hero .eyebrow{
   font-family:var(--head); font-weight:600; letter-spacing:.14em;
   text-transform:uppercase; font-size:.78rem; color:#CDE8D7;
@@ -148,6 +148,93 @@ footer{padding:28px 0 40px;text-align:center;color:var(--light);font-size:.84rem
 footer .totals{color:var(--muted);margin-bottom:6px}
 footer .totals b{color:var(--greenD)}
 
+/* ── Bottone "Ho finito" (hero) ── */
+.finish-btn{
+  position:absolute;top:48px;right:0;z-index:2;
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--head);font-weight:700;font-size:1rem;
+  color:#3a2a00;background:linear-gradient(135deg,var(--gold2),var(--gold));
+  border:none;border-radius:13px;padding:13px 20px;cursor:pointer;
+  box-shadow:0 4px 16px rgba(184,134,11,.35);transition:.15s;min-height:48px;
+}
+.finish-btn:hover,.finish-btn:focus-visible{transform:translateY(-2px);box-shadow:0 7px 22px rgba(184,134,11,.45);outline:none}
+.finish-btn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.finish-btn svg{width:20px;height:20px}
+
+/* ── Modal "Esplora in autonomia" ── */
+.modal-overlay{
+  position:fixed;inset:0;z-index:100;display:none;
+  background:rgba(14,68,35,.55);backdrop-filter:blur(4px);
+  padding:24px;overflow-y:auto;
+}
+.modal-overlay.open{display:flex;align-items:flex-start;justify-content:center}
+.modal{
+  background:var(--cream);border-radius:22px;width:100%;max-width:1080px;
+  margin:auto;box-shadow:0 24px 70px rgba(0,0,0,.35);overflow:hidden;
+  animation:pop .22s ease;
+}
+@keyframes pop{from{transform:translateY(12px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+.modal-head{
+  position:relative;background:linear-gradient(135deg,var(--greenD),var(--green));
+  color:#fff;padding:24px 26px 22px;
+}
+.modal-head h2{font-family:var(--head);font-weight:700;font-size:1.45rem;line-height:1.2;padding-right:48px}
+.modal-head p{color:#DCEFE3;font-size:.95rem;margin-top:6px;max-width:74ch}
+.modal-close{
+  position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.30);color:#fff;transition:.15s;
+}
+.modal-close:hover,.modal-close:focus-visible{background:rgba(255,255,255,.28);outline:none}
+.modal-close svg{width:20px;height:20px}
+.modal-body{padding:22px 26px}
+.auto-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;perspective:1100px}
+@keyframes flipIn{
+  from{transform:rotateY(-100deg);opacity:0}
+  60%{opacity:1}
+  to{transform:rotateY(0);opacity:1}
+}
+.auto-card{
+  display:flex;flex-direction:column;gap:6px;text-align:left;
+  background:var(--card);border:1px solid var(--brd);border-radius:14px;
+  padding:14px 15px;cursor:pointer;transition:.15s;min-height:118px;
+  border-top:3px solid var(--card-accent,var(--green));
+  transform-origin:center;backface-visibility:hidden;
+  animation:flipIn .5s cubic-bezier(.2,.75,.3,1) backwards;
+}
+@media(prefers-reduced-motion:reduce){.auto-card{animation:none}}
+.auto-card:hover,.auto-card:focus-visible{
+  border-color:var(--green);box-shadow:0 6px 18px rgba(27,107,58,.14);
+  transform:translateY(-2px);outline:none;
+}
+.auto-cat{
+  font-family:var(--head);font-weight:700;font-size:.66rem;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--card-accent,var(--green));
+}
+.auto-name{font-family:var(--head);font-weight:600;font-size:1rem;color:var(--text);line-height:1.2}
+.auto-desc{font-size:.82rem;color:var(--muted);line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.auto-go{margin-top:auto;color:var(--green);opacity:.5;align-self:flex-end}
+.auto-go svg{width:18px;height:18px;display:block}
+.auto-card:hover .auto-go,.auto-card:focus-visible .auto-go{opacity:1;transform:translateX(2px)}
+.modal-foot{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  padding:8px 26px 24px;
+}
+.modal-foot .hint{color:var(--muted);font-size:.88rem}
+.reshuffle{
+  display:inline-flex;align-items:center;gap:9px;font-family:var(--head);font-weight:600;font-size:.92rem;
+  background:var(--green);color:#fff;border:none;border-radius:12px;padding:12px 18px;cursor:pointer;transition:.15s;min-height:46px;
+}
+.reshuffle:hover,.reshuffle:focus-visible{background:var(--greenD);outline:none;transform:translateY(-1px)}
+.reshuffle svg{width:18px;height:18px}
+
+@media(max-width:860px){
+  .finish-btn{position:static;align-self:flex-start;margin-top:6px}
+}
+@media(max-width:980px){.auto-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:680px){.auto-grid{grid-template-columns:repeat(2,1fr)} .modal-overlay{padding:12px} .modal-head h2{font-size:1.25rem}}
+
 @media(max-width:620px){
   .hero h1{font-size:1.7rem}
   .lesson{padding:20px 16px 22px}
@@ -167,6 +254,10 @@ footer .totals b{color:var(--greenD)}
        svolge una o più <b>attività individuali</b> collegate, disposte in <b>ordine crescente</b>:
        dalla più introduttiva e concreta alla più approfondita e riflessiva.</p>
     <span class="by">Cittadinanza digitale · Informatica · AI · Pensiero critico</span>
+    <button class="finish-btn" id="finishBtn" type="button" aria-haspopup="dialog">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg>
+      Ho finito! Esplora in autonomia
+    </button>
   </div>
 </header>
 
@@ -191,6 +282,26 @@ footer .totals b{color:var(--greenD)}
   <div class="totals" id="totals"></div>
   <div>I link aprono in una nuova scheda · Aggiornare gli indirizzi da <b>index.html</b></div>
 </footer>
+
+<div class="modal-overlay" id="autoModal" role="dialog" aria-modal="true" aria-labelledby="autoTitle">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="autoTitle">Profe ho finito!</h2>
+      <p>Scegli una tra queste web app.</p>
+      <button class="modal-close" id="autoClose" type="button" aria-label="Chiudi">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body"><div class="auto-grid" id="autoGrid"></div></div>
+    <div class="modal-foot">
+      <span class="hint">I link si aprono in una nuova scheda.</span>
+      <button class="reshuffle" id="autoShuffle" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+        Mostrami altre app
+      </button>
+    </div>
+  </div>
+</div>
 
 <script>
 const LESSONS = [
@@ -355,6 +466,59 @@ function renderTotals(){
 }
 
 renderNav(); renderLessons(); renderTotals();
+
+/* ── Esplora in autonomia (modal) ── */
+const AUTONOMY = [{"name":"Harry Potter e la Pietra Filosofale","cat":"Biblioteca Digitale","url":"https://harrypotter-1.vercel.app/","desc":"Audiolettura interattiva: segui il narratore parola per parola, con segnalibro"},{"name":"Harry Potter e la Camera dei Segreti","cat":"Biblioteca Digitale","url":"https://harrypotter-2.vercel.app/","desc":"Audiolettura interattiva: il secondo capitolo della saga, parola per parola"},{"name":"Ventimila Leghe sotto i Mari","cat":"Biblioteca Digitale","url":"https://ventimila-leghe.vercel.app/","desc":"Audiolettura interattiva: il viaggio del capitano Nemo, parola per parola"},{"name":"Pennuti Spennati","cat":"Biblioteca Digitale","url":"https://pennutispennati.vercel.app/","desc":"Cortometraggio Pixar con attività di osservazione e metacognizione"},{"name":"L'Agnello Rimbalzello","cat":"Biblioteca Digitale","url":"https://agnellorimbalzello.vercel.app/","desc":"Cortometraggio Pixar: il video si ferma 5 volte, tu rispondi e costruisci il tuo diario"},{"name":"La Mossa di Geri","cat":"Biblioteca Digitale","url":"https://gerisgame.vercel.app/","desc":"Cortometraggio Pixar senza parole: Geri gioca a scacchi, tu osservi e rispondi"},{"name":"Le Nuvole di Gus","cat":"Biblioteca Digitale","url":"https://parzialmentenuvoloso.vercel.app/","desc":"Cortometraggio Pixar senza parole: le nuvole creano i cuccioli, tu esplori il significato"},{"name":"Il Cigno Appiccica","cat":"Biblioteca Digitale","url":"https://cignoappiccica.vercel.app/","desc":"Fiaba sonora: ascolta e completa le parole mancanti — esercizio di ascolto attivo"},{"name":"I Tre Porcellini","cat":"Biblioteca Digitale","url":"https://treporcellini.vercel.app/","desc":"Fiaba interattiva con tre livelli di difficoltà: ascolta, leggi, gioca"},{"name":"Il Pifferaio Magico","cat":"Biblioteca Digitale","url":"https://pifferaio.vercel.app/","desc":"Fiaba interattiva di Hamelin: ascolta e indovina le parole mancanti"},{"name":"Il Drago e il Leprotto","cat":"Biblioteca Digitale","url":"https://dragoleprotto.vercel.app/","desc":"Guarda la fiaba, poi metti alla prova il tuo ascolto con il dettato"},{"name":"Le Avventure di Pinocchio","cat":"Biblioteca Digitale","url":"https://pinocchio-mauve.vercel.app/","desc":"Audiolettura interattiva del romanzo di Collodi, capitolo per capitolo"},{"name":"Uno, Nessuno e Centomila","cat":"Biblioteca Digitale","url":"https://unonessunocentomila.vercel.app/","desc":"Audiolettura interattiva del romanzo di Pirandello"},{"name":"Vocabolario d'Autore","cat":"Biblioteca Digitale","url":"https://dizionario-musicale.vercel.app/","desc":"Le canzoni d'autore italiane che ti regalano parole: ascolta in cuffia e impara"},{"name":"Il Mito di Ciparisso","cat":"Biblioteca Digitale","url":"https://ciparisso.vercel.app/","desc":"Un mito antico raccontato da Enrico Galiano: ascolta, rifletti, scopri"},{"name":"Lost in Translation","cat":"Biblioteca Digitale","url":"https://lost-in-translation-phi.vercel.app/","desc":"English idioms from real songs: impara le espressioni inglesi attraverso la musica"},{"name":"La Macchina per Fare i Compiti","cat":"Biblioteca Digitale","url":"https://la-macchina-per-fare-i-compiti.vercel.app/","desc":"Lettura interattiva ispirata a Gianni Rodari: la macchina che fa i compiti al posto tuo"},{"name":"Il Barone Rampante","cat":"Biblioteca Digitale","url":"https://braone-rampante.vercel.app/","desc":"Audiolettura interattiva del romanzo di Italo Calvino, capitolo per capitolo"},{"name":"Rosso Malpelo","cat":"Biblioteca Digitale","url":"https://rosso-malpelo.vercel.app/","desc":"Audiolettura interattiva della novella di Giovanni Verga, parola per parola"},{"name":"Calibro","cat":"Approfondimenti e Ricerche","url":"https://calibro.neocities.org/","desc":"Strumento didattico per la crescita e l'autovalutazione"},{"name":"Gite Virtuali","cat":"Approfondimenti e Ricerche","url":"https://geografiamaps.neocities.org/","desc":"Esplora il mondo con Google Maps senza uscire da scuola"},{"name":"Ciro il Dinosauro","cat":"Approfondimenti e Ricerche","url":"https://sacrafamiglialabinfo.neocities.org/","desc":"Alla scoperta del primo cucciolo di dinosauro italiano"},{"name":"Il Mondo dei Dinosauri","cat":"Approfondimenti e Ricerche","url":"https://dinosauri.neocities.org/","desc":"Laboratorio Biomeccanico Virtuale"},{"name":"Il Corpo Umano","cat":"Approfondimenti e Ricerche","url":"https://apparati.neocities.org/","desc":"Viaggio interattivo tra gli apparati e i sistemi del corpo"},{"name":"Trasformiamo l'Errore in Opportunità","cat":"Approfondimenti e Ricerche","url":"https://errore.neocities.org/","desc":"Percorso interdisciplinare sull'errore come strumento di crescita"},{"name":"Debate sull'Errore","cat":"Approfondimenti e Ricerche","url":"https://debaterrore.neocities.org/","desc":"Dibattito strutturato: l'errore è davvero un'opportunità?"},{"name":"Infografiche con Notebook LM","cat":"Approfondimenti e Ricerche","url":"https://notebooklmstyle.neocities.org/","desc":"Come scegliere gli stili per le tue infografiche"},{"name":"Arena del Pensiero","cat":"Approfondimenti e Ricerche","url":"https://teamdebate.neocities.org/","desc":"Il debate di squadra in classe"},{"name":"Canto III — Divina Commedia","cat":"Approfondimenti e Ricerche","url":"https://labinfo.my.canva.site/canto3","desc":"Approfondimento multimediale sul terzo canto"},{"name":"Laboratorio Scientifico","cat":"Approfondimenti e Ricerche","url":"https://labscienze.vercel.app/","desc":"Esplora, sperimenta, scopri — dalla 3ª Primaria alla 3ª Secondaria"},{"name":"Sintesi Proteica","cat":"Approfondimenti e Ricerche","url":"https://sintesiproteica.vercel.app/","desc":"Dal DNA alle proteine: il viaggio della sintesi proteica"},{"name":"Il Viaggio dell'Uomo","cat":"Approfondimenti e Ricerche","url":"https://homoavdventure.vercel.app/","desc":"Dalle origini alla storia: il percorso dell'umanità"},{"name":"Viaggio nella Storia","cat":"Approfondimenti e Ricerche","url":"https://storia-new.vercel.app/","desc":"Percorso interattivo attraverso epoche ed eventi storici"},{"name":"100 Anni di Storia in Musica","cat":"Sacra Famiglia","url":"https://100anni.neocities.org/","desc":"Un secolo di vita e missione della Sacra Famiglia, in musica"},{"name":"Il Gioco delle Case","cat":"Sacra Famiglia","url":"https://sfida.neocities.org/","desc":"Il Gioco delle Case della Sacra Famiglia"},{"name":"Le Mascotte delle Case","cat":"Sacra Famiglia","url":"https://sacrafamiglia.neocities.org/","desc":"Le mascotte delle Case della Sacra Famiglia"},{"name":"S. Paola Elisabetta","cat":"Sacra Famiglia","url":"https://santapaola.neocities.org/","desc":"Festa e ricorrenza della fondatrice"},{"name":"Quizzone S. Paola","cat":"Sacra Famiglia","url":"https://quizzonespaola.neocities.org/","desc":"Quanto conosci Santa Paola? Mettiti alla prova!"},{"name":"Quadri Appesi","cat":"Sacra Famiglia","url":"https://quadriappesi.vercel.app/","desc":"Galleria virtuale delle opere e dei lavori della scuola"},{"name":"Studio Musicale","cat":"Sport e Giochi","url":"https://studiomusicale.neocities.org/","desc":"Esplora strumenti, note e ritmi in modo interattivo"},{"name":"Cool Runnings","cat":"Sport e Giochi","url":"https://giamaica.neocities.org/","desc":"La storia incredibile della squadra di bob giamaicana"},{"name":"Milano Cortina","cat":"Sport e Giochi","url":"https://labinfo.my.canva.site/c17sxqtedy2jyaw7","desc":"Le Olimpiadi Tecnologiche"},{"name":"Milano-Cortina 2026","cat":"Sport e Giochi","url":"https://milanocortina.neocities.org/","desc":"I geni italiani protagonisti delle Olimpiadi invernali"},{"name":"Word Games","cat":"Sport e Giochi","url":"https://sacrafamigliagames.neocities.org/","desc":"Giochi di parole per divertirsi e arricchire il lessico"},{"name":"Profemon","cat":"Sport e Giochi","url":"https://profemon.neocities.org/","desc":"Il gioco di carte cooperativo della scuola: schierate i prof e superate le sfide!"},{"name":"Storia del Calcio","cat":"Sport e Giochi","url":"https://calcio-one.vercel.app/","desc":"Un viaggio nel calcio dal 2000 al 2025"},{"name":"Master Chef","cat":"Sport e Giochi","url":"https://masterchef-iota.vercel.app/","desc":"Ricette italiane: un viaggio tra sapori e tradizioni"},{"name":"Euro Capitali","cat":"Sport e Giochi","url":"https://euro-capitali.vercel.app/","desc":"Quiz geografico sulle capitali europee: metti alla prova le tue conoscenze"}];
+const CAT_COLOR = {
+  "Biblioteca Digitale":"#8B6914",
+  "Approfondimenti e Ricerche":"#1B6B3A",
+  "Sacra Famiglia":"#6D4EA3",
+  "Sport e Giochi":"#1D6FA5"
+};
+const PICK = 16;
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function renderAuto(){
+  const sample = shuffle(AUTONOMY).slice(0, Math.min(PICK, AUTONOMY.length));
+  // ordine di comparsa casuale: a ogni card un ritardo diverso
+  const order = shuffle(sample.map((_, i) => i));
+  const slot = {};
+  order.forEach((idx, pos) => { slot[idx] = pos; });
+  document.getElementById('autoGrid').innerHTML = sample.map((a, i) => {
+    const col = CAT_COLOR[a.cat] || 'var(--green)';
+    const delay = (slot[i] * 0.06).toFixed(2);
+    return `<a class="auto-card" href="${a.url}" target="_blank" rel="noopener" style="--card-accent:${col};animation-delay:${delay}s">
+      <span class="auto-cat">${esc(a.cat)}</span>
+      <span class="auto-name">${esc(a.name)}</span>
+      <span class="auto-desc">${esc(a.desc||'')}</span>
+      <span class="auto-go">${ARROW}</span>
+    </a>`;
+  }).join('');
+}
+
+const overlay = document.getElementById('autoModal');
+let lastFocus = null;
+function openAuto(){
+  lastFocus = document.activeElement;
+  renderAuto();
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('autoClose').focus();
+}
+function closeAuto(){
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+  if(lastFocus) lastFocus.focus();
+}
+document.getElementById('finishBtn').addEventListener('click', openAuto);
+document.getElementById('autoClose').addEventListener('click', closeAuto);
+document.getElementById('autoShuffle').addEventListener('click', renderAuto);
+overlay.addEventListener('click', e => { if(e.target === overlay) closeAuto(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && overlay.classList.contains('open')) closeAuto(); });
 </script>
 </body>
 </html>
