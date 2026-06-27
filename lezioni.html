@@ -188,20 +188,23 @@ footer .totals b{color:var(--greenD)}
 .modal-close:hover,.modal-close:focus-visible{background:rgba(255,255,255,.28);outline:none}
 .modal-close svg{width:20px;height:20px}
 .modal-body{padding:22px 26px}
-.auto-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;perspective:1100px}
-@keyframes flipIn{
-  from{transform:rotateY(-100deg);opacity:0}
-  60%{opacity:1}
-  to{transform:rotateY(0);opacity:1}
-}
+.auto-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;perspective:1200px}
+/* tessere che girano: 4 varianti casuali per un effetto autonomo */
+@keyframes flipA{from{transform:rotateY(-135deg) rotateZ(-7deg);opacity:0}55%{opacity:1}to{transform:none;opacity:1}}
+@keyframes flipB{from{transform:rotateY(135deg) rotateZ(7deg);opacity:0}55%{opacity:1}to{transform:none;opacity:1}}
+@keyframes flipC{from{transform:rotateX(125deg) rotateZ(5deg);opacity:0}55%{opacity:1}to{transform:none;opacity:1}}
+@keyframes flipD{from{transform:rotateY(-200deg) rotateZ(10deg);opacity:0}50%{opacity:1}to{transform:none;opacity:1}}
 .auto-card{
   display:flex;flex-direction:column;gap:6px;text-align:left;
   background:var(--card);border:1px solid var(--brd);border-radius:14px;
   padding:14px 15px;cursor:pointer;transition:.15s;min-height:118px;
   border-top:3px solid var(--card-accent,var(--green));
   transform-origin:center;backface-visibility:hidden;
-  animation:flipIn .5s cubic-bezier(.2,.75,.3,1) backwards;
+  animation:flipA .58s cubic-bezier(.2,.75,.3,1) backwards;
 }
+.auto-card.fvB{animation-name:flipB}
+.auto-card.fvC{animation-name:flipC}
+.auto-card.fvD{animation-name:flipD}
 @media(prefers-reduced-motion:reduce){.auto-card{animation:none}}
 .auto-card:hover,.auto-card:focus-visible{
   border-color:var(--green);box-shadow:0 6px 18px rgba(27,107,58,.14);
@@ -222,17 +225,10 @@ footer .totals b{color:var(--greenD)}
   padding:8px 26px 24px;
 }
 .modal-foot .hint{color:var(--muted);font-size:.88rem}
-.reshuffle{
-  display:inline-flex;align-items:center;gap:9px;font-family:var(--head);font-weight:600;font-size:.92rem;
-  background:var(--green);color:#fff;border:none;border-radius:12px;padding:12px 18px;cursor:pointer;transition:.15s;min-height:46px;
-}
-.reshuffle:hover,.reshuffle:focus-visible{background:var(--greenD);outline:none;transform:translateY(-1px)}
-.reshuffle svg{width:18px;height:18px}
 
 @media(max-width:860px){
   .finish-btn{position:static;align-self:flex-start;margin-top:6px}
 }
-@media(max-width:980px){.auto-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:680px){.auto-grid{grid-template-columns:repeat(2,1fr)} .modal-overlay{padding:12px} .modal-head h2{font-size:1.25rem}}
 
 @media(max-width:620px){
@@ -256,7 +252,7 @@ footer .totals b{color:var(--greenD)}
     <span class="by">Cittadinanza digitale · Informatica · AI · Pensiero critico</span>
     <button class="finish-btn" id="finishBtn" type="button" aria-haspopup="dialog">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg>
-      Ho finito! Esplora in autonomia
+      Profe ho finito!
     </button>
   </div>
 </header>
@@ -295,10 +291,6 @@ footer .totals b{color:var(--greenD)}
     <div class="modal-body"><div class="auto-grid" id="autoGrid"></div></div>
     <div class="modal-foot">
       <span class="hint">I link si aprono in una nuova scheda.</span>
-      <button class="reshuffle" id="autoShuffle" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
-        Mostrami altre app
-      </button>
     </div>
   </div>
 </div>
@@ -475,7 +467,8 @@ const CAT_COLOR = {
   "Sacra Famiglia":"#6D4EA3",
   "Sport e Giochi":"#1D6FA5"
 };
-const PICK = 16;
+const PICK = 9;
+const FLIP_VARIANTS = ['', 'fvB', 'fvC', 'fvD'];
 
 function shuffle(arr){
   const a = arr.slice();
@@ -490,8 +483,10 @@ function renderAuto(){
   order.forEach((idx, pos) => { slot[idx] = pos; });
   document.getElementById('autoGrid').innerHTML = sample.map((a, i) => {
     const col = CAT_COLOR[a.cat] || 'var(--green)';
-    const delay = (slot[i] * 0.06).toFixed(2);
-    return `<a class="auto-card" href="${a.url}" target="_blank" rel="noopener" style="--card-accent:${col};animation-delay:${delay}s">
+    const delay = (slot[i] * 0.09).toFixed(2);
+    const dur = (0.5 + Math.random() * 0.4).toFixed(2);          // durata casuale
+    const v = FLIP_VARIANTS[Math.floor(Math.random() * FLIP_VARIANTS.length)];  // verso/asse casuale
+    return `<a class="auto-card ${v}" href="${a.url}" target="_blank" rel="noopener" style="--card-accent:${col};animation-delay:${delay}s;animation-duration:${dur}s">
       <span class="auto-cat">${esc(a.cat)}</span>
       <span class="auto-name">${esc(a.name)}</span>
       <span class="auto-desc">${esc(a.desc||'')}</span>
@@ -516,7 +511,6 @@ function closeAuto(){
 }
 document.getElementById('finishBtn').addEventListener('click', openAuto);
 document.getElementById('autoClose').addEventListener('click', closeAuto);
-document.getElementById('autoShuffle').addEventListener('click', renderAuto);
 overlay.addEventListener('click', e => { if(e.target === overlay) closeAuto(); });
 document.addEventListener('keydown', e => { if(e.key === 'Escape' && overlay.classList.contains('open')) closeAuto(); });
 </script>
