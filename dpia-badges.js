@@ -3,7 +3,7 @@
  * Bollini di conformità GDPR/AI Act per il portale Acerio (acerio.vercel.app)
  * 
  * Generato automaticamente da DPIA Studio il 2026-06-16 — aggiornato il 2026-06-25
- * 143 app interne + 0 servizi terzi
+ * 144 app interne + 0 servizi terzi
  * 
  * Ogni link nel portale che corrisponde a un'app classificata riceve un piccolo
  * badge colorato accanto al nome, indicante il cluster di rischio.
@@ -592,6 +592,10 @@
   "https://domande-snack.vercel.app": {
     "cluster": "D",
     "name": "Domande Snack"
+  },
+  "https://icone-apple.vercel.app": {
+    "cluster": "D",
+    "name": "Icone Apple"
   }
 };
   
