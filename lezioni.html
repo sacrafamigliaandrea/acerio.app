@@ -471,33 +471,53 @@ function shuffle(arr){
   return a;
 }
 
-/* ── Suono "roulette": ticchettio sintetico via Web Audio, nessun file esterno ── */
-let audioCtx = null;
+/* ── Suono "split-flap": scatti meccanici tipo orologio a palette, via Web Audio ── */
+let audioCtx = null, noiseBuf = null;
 function ensureAudio(){
   if(audioCtx){ if(audioCtx.state === 'suspended') audioCtx.resume(); return; }
-  try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-  catch(e){ audioCtx = null; }
+  try{
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const len = Math.floor(audioCtx.sampleRate * 0.05);
+    noiseBuf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+    const d = noiseBuf.getChannelData(0);
+    for(let i=0;i<len;i++) d[i] = (Math.random()*2 - 1) * (1 - i/len);   // rumore con decadimento
+  }catch(e){ audioCtx = null; }
 }
-function clickAt(t, vol){
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  o.type = 'square';
-  o.frequency.setValueAtTime(1550, t);
-  o.frequency.exponentialRampToValueAtTime(720, t + 0.02);
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(vol, t + 0.001);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.035);
-  o.connect(g).connect(audioCtx.destination);
-  o.start(t); o.stop(t + 0.05);
-}
-function playRoulette(durSec, ticks){
+function clackAt(t, vol){
   if(!audioCtx) return;
-  const now = audioCtx.currentTime;
-  for(let i=0;i<ticks;i++){
-    const p = i/(ticks-1);
-    const eased = 1 - Math.pow(1-p, 3);    // fitti all'inizio, sempre più radi: decelera come una roulette
-    clickAt(now + eased*durSec, 0.20*(1 - 0.55*p));
+  // un singolo "scatto" = breve raffica di rumore filtrato, senza toni: la paletta che ribalta
+  function burst(when, freq, q, peak, dur){
+    const src = audioCtx.createBufferSource(); src.buffer = noiseBuf;
+    const bp = audioCtx.createBiquadFilter(); bp.type = 'bandpass';
+    bp.frequency.value = freq; bp.Q.value = q;
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(0.0001, when);
+    g.gain.linearRampToValueAtTime(peak, when + 0.0006);   // attacco istantaneo
+    g.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+    src.connect(bp).connect(g).connect(audioCtx.destination);
+    src.start(when); src.stop(when + dur + 0.01);
   }
+  // doppio impulso ravvicinato: lo stacco della paletta e la sua battuta sul fermo ("ta-tac")
+  burst(t,          2800 + Math.random()*500, 1.0, vol*0.55, 0.010);
+  burst(t + 0.020,  1600 + Math.random()*300, 1.4, vol,      0.024);
+}
+/* valutatore di cubic-bezier (la stessa easing dell'animazione) per sincronizzare audio e movimento */
+function bezierEasing(x1,y1,x2,y2){
+  const A=(a,b)=>1-3*b+3*a, B=(a,b)=>3*b-6*a, C=a=>3*a;
+  const calc=(t,a,b)=>((A(a,b)*t+B(a,b))*t+C(a))*t;
+  return function(x){               // x = frazione di tempo → progresso "eased"
+    if(x<=0)return 0; if(x>=1)return 1;
+    let lo=0,hi=1,t=x;               // trova t tale che X(t)=x, poi restituisce Y(t)
+    for(let i=0;i<24;i++){ const xt=calc(t,x1,x2); if(Math.abs(xt-x)<1e-5)break; if(xt<x)lo=t; else hi=t; t=(lo+hi)/2; }
+    return calc(t,y1,y2);
+  };
+}
+const SPIN_EASE_STR = 'cubic-bezier(.33,1,.68,1)';   // ease-out graduale: il rallentamento resta visibile fino alla fine
+const spinEase = bezierEasing(.33,1,.68,1);
+function timeFracForProgress(o){     // inverso: dato il progresso o, la frazione di tempo in cui avviene
+  let lo=0,hi=1,x=o;
+  for(let i=0;i<24;i++){ x=(lo+hi)/2; if(spinEase(x)<o) lo=x; else hi=x; }
+  return x;
 }
 
 const overlay = document.getElementById('autoModal');
@@ -513,23 +533,34 @@ function spinAll(){
   const cards = [...grid.querySelectorAll('.auto-card')];
   if(reduceMotion || !cards.length){ enableCards(); return; }
   grid.classList.add('spinning');
-  let maxDur = 0;
+  ensureAudio();
+  const now = audioCtx ? audioCtx.currentTime : 0;
+  const clacks = [];
   const done = cards.map(card => {
     const turns = 10 + Math.floor(Math.random()*21);   // 10–30 giri completi, casuale
     const dur = 2200 + turns*70 + Math.random()*300;   // più giri ⇒ più tempo per fermarsi
-    if(dur > maxDur) maxDur = dur;
     const anim = card.animate(
-      [{transform:'rotateY(0deg)'}, {transform:`rotateY(${turns*360}deg)`}],
-      {duration:dur, easing:'cubic-bezier(.16,.7,.14,1)', fill:'forwards'}
+      [{transform:'rotateX(0deg)'}, {transform:`rotateX(${turns*360}deg)`}],
+      {duration:dur, easing:SPIN_EASE_STR, fill:'forwards'}
     );
     anim.finished.then(() => {
       anim.cancel();
       card.style.transform = 'none';   // fronte riallineato, l'hover torna a funzionare
       card.classList.add('stopped');
     }).catch(()=>{});
+    // uno scatto a ogni giro completo DI QUESTA tessera, nell'istante esatto in cui avviene
+    for(let k=1;k<=turns;k++){
+      const o = k/turns;
+      clacks.push({ t: now + timeFracForProgress(o)*(dur/1000), v: 0.22*(1 - 0.5*o) });
+    }
     return anim.finished.catch(()=>{});
   });
-  playRoulette(maxDur/1000, 30);
+  // riproduci gli scatti reali; soglia minima per non impastare i colpi quasi simultanei
+  if(audioCtx){
+    clacks.sort((a,b) => a.t - b.t);
+    let last = -1;
+    for(const c of clacks){ if(c.t - last >= 0.026){ clackAt(c.t, c.v); last = c.t; } }
+  }
   Promise.all(done).then(enableCards);
 }
 function renderAuto(){
