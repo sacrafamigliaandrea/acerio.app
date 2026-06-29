@@ -148,85 +148,6 @@ footer{padding:28px 0 40px;text-align:center;color:var(--light);font-size:.84rem
 footer .totals{color:var(--muted);margin-bottom:6px}
 footer .totals b{color:var(--greenD)}
 
-/* ── Bottone "Ho finito" (hero) ── */
-.finish-btn{
-  position:absolute;top:48px;right:0;z-index:2;
-  display:inline-flex;align-items:center;gap:10px;
-  font-family:var(--head);font-weight:700;font-size:1rem;
-  color:#3a2a00;background:linear-gradient(135deg,var(--gold2),var(--gold));
-  border:2px solid rgba(255,255,255,.92);border-radius:13px;padding:12px 20px;cursor:pointer;
-  box-shadow:0 4px 16px rgba(184,134,11,.35);transition:.15s;min-height:48px;
-}
-.finish-btn:hover,.finish-btn:focus-visible{transform:translateY(-2px);box-shadow:0 7px 22px rgba(184,134,11,.45);outline:none}
-.finish-btn:focus-visible{outline:3px solid #fff;outline-offset:2px}
-.finish-btn svg{width:20px;height:20px}
-
-/* ── Modal "Esplora in autonomia" ── */
-.modal-overlay{
-  position:fixed;inset:0;z-index:100;display:none;
-  background:rgba(14,68,35,.55);backdrop-filter:blur(4px);
-  padding:24px;overflow-y:auto;
-}
-.modal-overlay.open{display:flex;align-items:flex-start;justify-content:center}
-.modal{
-  background:var(--cream);border-radius:22px;width:100%;max-width:1080px;
-  margin:auto;box-shadow:0 24px 70px rgba(0,0,0,.35);overflow:hidden;
-  animation:pop .22s ease;
-}
-@keyframes pop{from{transform:translateY(12px) scale(.98);opacity:0}to{transform:none;opacity:1}}
-.modal-head{
-  position:relative;background:linear-gradient(135deg,var(--greenD),var(--green));
-  color:#fff;padding:24px 26px 22px;
-}
-.modal-head h2{font-family:var(--head);font-weight:700;font-size:1.45rem;line-height:1.2;padding-right:48px}
-.modal-head p{color:#DCEFE3;font-size:.95rem;margin-top:6px;max-width:74ch}
-.modal-close{
-  position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:11px;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
-  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.30);color:#fff;transition:.15s;
-}
-.modal-close:hover,.modal-close:focus-visible{background:rgba(255,255,255,.28);outline:none}
-.modal-close svg{width:20px;height:20px}
-.modal-body{padding:22px 26px}
-.auto-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;perspective:1400px}
-.auto-card{
-  display:flex;flex-direction:column;gap:6px;text-align:left;
-  background:var(--card);border:1px solid var(--brd);border-radius:14px;
-  padding:14px 15px;cursor:pointer;transition:.15s;min-height:118px;
-  border-top:3px solid var(--card-accent,var(--green));
-  transform-origin:center;will-change:transform;
-}
-/* mentre le tessere girano (roulette) i clic sono bloccati */
-.auto-grid.spinning .auto-card{pointer-events:none;cursor:default}
-/* quando si fermano: piccolo invito a scegliere */
-@keyframes settle{0%{box-shadow:0 0 0 0 rgba(184,134,11,.0)}40%{box-shadow:0 0 0 4px rgba(184,134,11,.30)}100%{box-shadow:0 0 0 0 rgba(184,134,11,.0)}}
-.auto-card.stopped{animation:settle .55s ease-out}
-@media(prefers-reduced-motion:reduce){.auto-card.stopped{animation:none}}
-.auto-card:hover,.auto-card:focus-visible{
-  border-color:var(--green);box-shadow:0 6px 18px rgba(27,107,58,.14);
-  transform:translateY(-2px);outline:none;
-}
-.auto-cat{
-  font-family:var(--head);font-weight:700;font-size:.66rem;letter-spacing:.05em;
-  text-transform:uppercase;color:var(--card-accent,var(--green));
-}
-.auto-name{font-family:var(--head);font-weight:600;font-size:1rem;color:var(--text);line-height:1.2}
-.auto-desc{font-size:.82rem;color:var(--muted);line-height:1.4;
-  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.auto-go{margin-top:auto;color:var(--green);opacity:.5;align-self:flex-end}
-.auto-go svg{width:18px;height:18px;display:block}
-.auto-card:hover .auto-go,.auto-card:focus-visible .auto-go{opacity:1;transform:translateX(2px)}
-.modal-foot{
-  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
-  padding:8px 26px 24px;
-}
-.modal-foot .hint{color:var(--muted);font-size:.88rem}
-
-@media(max-width:860px){
-  .finish-btn{position:static;align-self:flex-start;margin-top:6px}
-}
-@media(max-width:680px){.auto-grid{grid-template-columns:repeat(2,1fr)} .modal-overlay{padding:12px} .modal-head h2{font-size:1.25rem}}
-
 @media(max-width:620px){
   .hero h1{font-size:1.7rem}
   .lesson{padding:20px 16px 22px}
@@ -246,10 +167,6 @@ footer .totals b{color:var(--greenD)}
        svolge una o più <b>attività individuali</b> collegate, disposte in <b>ordine crescente</b>:
        dalla più introduttiva e concreta alla più approfondita e riflessiva.</p>
     <span class="by">Cittadinanza digitale · Informatica · AI · Pensiero critico</span>
-    <button class="finish-btn" id="finishBtn" type="button" aria-haspopup="dialog">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg>
-      Profe ho finito!
-    </button>
   </div>
 </header>
 
@@ -274,22 +191,6 @@ footer .totals b{color:var(--greenD)}
   <div class="totals" id="totals"></div>
   <div>I link aprono in una nuova scheda · Aggiornare gli indirizzi da <b>index.html</b></div>
 </footer>
-
-<div class="modal-overlay" id="autoModal" role="dialog" aria-modal="true" aria-labelledby="autoTitle">
-  <div class="modal">
-    <div class="modal-head">
-      <h2 id="autoTitle">Profe ho finito!</h2>
-      <p>Scegli una tra queste web app.</p>
-      <button class="modal-close" id="autoClose" type="button" aria-label="Chiudi">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-    </div>
-    <div class="modal-body"><div class="auto-grid" id="autoGrid"></div></div>
-    <div class="modal-foot">
-      <span class="hint">I link si aprono in una nuova scheda.</span>
-    </div>
-  </div>
-</div>
 
 <script>
 const LESSONS = [
@@ -415,6 +316,15 @@ const LESSONS = [
    {name:"Glossario Digitale", sec:"Informatica & Tech", href:"https://glossarioinfo.neocities.org/"},
    {name:"Scorciatoie Mac", sec:"Informatica & Tech", href:"https://keyboardmac.neocities.org/"},
  ]},
+ {n:17, title:"Esame di Stato", url:"https://esame-di-stato-six.vercel.app/", theme:"Il percorso completo verso l'esame conclusivo: prove INVALSI, tesina, infografiche e colloquio", acts:[
+   {name:"Missione INVALSI 2026", sec:"Esame di Stato", href:"https://invalsi.neocities.org/"},
+   {name:"Guida all'Esame", sec:"Esame di Stato", href:"https://esame.neocities.org/"},
+   {name:"Costruisci la tua Tesina", sec:"Esame di Stato", href:"https://farelatesina.vercel.app/"},
+   {name:"Pontremoli — Tesina d'Esame", sec:"Esame di Stato", href:"https://pontremoli.neocities.org/"},
+   {name:"Officina dei Prompt", sec:"Esame di Stato", href:"https://infografiche-notebook.vercel.app/"},
+   {name:"Infografiche con Notebook LM", sec:"Esame di Stato", href:"https://notebooklmstyle.neocities.org/"},
+   {name:"Il Lab del Gancio", sec:"Esame di Stato", href:"https://gancioxcolloquio.vercel.app/"},
+ ]},
 ];
 
 const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
@@ -461,147 +371,6 @@ function renderTotals(){
 }
 
 renderNav(); renderLessons(); renderTotals();
-
-/* ── Esplora in autonomia (modal) ── */
-const AUTONOMY = [{"name":"Harry Potter e la Pietra Filosofale","cat":"Biblioteca Digitale","url":"https://harrypotter-1.vercel.app/","desc":"Entra a Hogwarts: ogni parola si illumina mentre ascolti il narratore. Riprendi sempre dal tuo segnalibro."},{"name":"Harry Potter e la Camera dei Segreti","cat":"Biblioteca Digitale","url":"https://harrypotter-2.vercel.app/","desc":"Cosa si nasconde nella Camera dei Segreti? Ascolta e segui parola per parola il secondo capitolo della saga."},{"name":"Ventimila Leghe sotto i Mari","cat":"Biblioteca Digitale","url":"https://ventimila-leghe.vercel.app/","desc":"Sali a bordo del Nautilus con il capitano Nemo: ascolta il viaggio negli abissi, parola per parola."},{"name":"Pennuti Spennati","cat":"Biblioteca Digitale","url":"https://pennutispennati.vercel.app/","desc":"Un corto Pixar esilarante: osserva i dettagli e scopri cosa racconta davvero su gruppo e diversità."},{"name":"L'Agnello Rimbalzello","cat":"Biblioteca Digitale","url":"https://agnellorimbalzello.vercel.app/","desc":"Il video si ferma 5 volte: tocca a te rispondere e costruire, scena dopo scena, il tuo diario."},{"name":"La Mossa di Geri","cat":"Biblioteca Digitale","url":"https://gerisgame.vercel.app/","desc":"Corto Pixar senza parole: Geri gioca a scacchi... contro se stesso? Osserva e scopri il trucco."},{"name":"Le Nuvole di Gus","cat":"Biblioteca Digitale","url":"https://parzialmentenuvoloso.vercel.app/","desc":"Senza una parola, le nuvole creano i cuccioli del mondo. Cosa significa? Esplora il messaggio nascosto."},{"name":"Il Cigno Appiccica","cat":"Biblioteca Digitale","url":"https://cignoappiccica.vercel.app/","desc":"Riesci a cogliere ogni parola? Ascolta la fiaba e completa quelle che mancano: orecchie all'erta!"},{"name":"I Tre Porcellini","cat":"Biblioteca Digitale","url":"https://treporcellini.vercel.app/","desc":"La fiaba che conosci, ma in tre livelli di sfida: ascolta, leggi e gioca scegliendo quanto osare."},{"name":"Il Pifferaio Magico","cat":"Biblioteca Digitale","url":"https://pifferaio.vercel.app/","desc":"La melodia che incantò Hamelin: ascolta e indovina le parole mancanti prima che spariscano."},{"name":"Il Drago e il Leprotto","cat":"Biblioteca Digitale","url":"https://dragoleprotto.vercel.app/","desc":"Guarda la fiaba, poi sfida il tuo orecchio con il dettato: quante parole riesci a catturare?"},{"name":"Le Avventure di Pinocchio","cat":"Biblioteca Digitale","url":"https://pinocchio-mauve.vercel.app/","desc":"Dal burattino al bambino vero: ascolta il romanzo di Collodi, capitolo dopo capitolo."},{"name":"Uno, Nessuno e Centomila","cat":"Biblioteca Digitale","url":"https://unonessunocentomila.vercel.app/","desc":"Chi sei davvero per gli altri? Lasciati spiazzare dal romanzo di Pirandello, in audiolettura."},{"name":"Vocabolario d'Autore","cat":"Biblioteca Digitale","url":"https://dizionario-musicale.vercel.app/","desc":"Metti le cuffie: le grandi canzoni italiane ti regalano parole nuove. Quante ne scoprirai?"},{"name":"Il Mito di Ciparisso","cat":"Biblioteca Digitale","url":"https://ciparisso.vercel.app/","desc":"Un mito antico raccontato da Enrico Galiano: ascolta, lasciati toccare e scopri il finale."},{"name":"Lost in Translation","cat":"Biblioteca Digitale","url":"https://lost-in-translation-phi.vercel.app/","desc":"Scopri i modi di dire inglesi nascosti nelle canzoni vere: che cosa significano davvero?"},{"name":"La Macchina per Fare i Compiti","cat":"Biblioteca Digitale","url":"https://la-macchina-per-fare-i-compiti.vercel.app/","desc":"E se una macchina facesse i compiti al posto tuo? Una storia alla Rodari tutta da scoprire."},{"name":"Il Barone Rampante","cat":"Biblioteca Digitale","url":"https://braone-rampante.vercel.app/","desc":"Un ragazzo sale su un albero e non scende più: ascolta il capolavoro di Calvino, capitolo per capitolo."},{"name":"Rosso Malpelo","cat":"Biblioteca Digitale","url":"https://rosso-malpelo.vercel.app/","desc":"La storia dura e indimenticabile firmata Verga: ascolta parola per parola e lasciati colpire."},{"name":"Calibro","cat":"Approfondimenti e Ricerche","url":"https://calibro.neocities.org/","desc":"Quanto sei cresciuto davvero? Uno strumento per misurarti e raccontare i tuoi progressi."},{"name":"Gite Virtuali","cat":"Approfondimenti e Ricerche","url":"https://geografiamaps.neocities.org/","desc":"Viaggia in ogni angolo del mondo con Google Maps senza alzarti dal banco. Dove vai oggi?"},{"name":"Ciro il Dinosauro","cat":"Approfondimenti e Ricerche","url":"https://sacrafamiglialabinfo.neocities.org/","desc":"Conosci Ciro, il primo cucciolo di dinosauro trovato in Italia? Scopri la sua storia incredibile."},{"name":"Il Mondo dei Dinosauri","cat":"Approfondimenti e Ricerche","url":"https://dinosauri.neocities.org/","desc":"Entra nel laboratorio biomeccanico: come correvano e cacciavano davvero i dinosauri?"},{"name":"Il Corpo Umano","cat":"Approfondimenti e Ricerche","url":"https://apparati.neocities.org/","desc":"Un viaggio dentro di te: esplora apparati e sistemi e scopri come funziona la tua macchina perfetta."},{"name":"Trasformiamo l'Errore in Opportunità","cat":"Approfondimenti e Ricerche","url":"https://errore.neocities.org/","desc":"E se sbagliare fosse il modo migliore per imparare? Un percorso per cambiare idea sull'errore."},{"name":"Debate sull'Errore","cat":"Approfondimenti e Ricerche","url":"https://debaterrore.neocities.org/","desc":"L'errore è davvero un'opportunità? Scegli la tua posizione e preparati a difenderla."},{"name":"Infografiche con Notebook LM","cat":"Approfondimenti e Ricerche","url":"https://notebooklmstyle.neocities.org/","desc":"Vuoi infografiche che colpiscono? Scopri come scegliere lo stile giusto per le tue idee."},{"name":"Arena del Pensiero","cat":"Approfondimenti e Ricerche","url":"https://teamdebate.neocities.org/","desc":"Sfida le idee, non le persone: scopri come funziona il debate di squadra in classe."},{"name":"Canto III — Divina Commedia","cat":"Approfondimenti e Ricerche","url":"https://labinfo.my.canva.site/canto3","desc":"«Lasciate ogne speranza»: varca la porta dell'Inferno con un viaggio multimediale nel terzo canto."},{"name":"Laboratorio Scientifico","cat":"Approfondimenti e Ricerche","url":"https://labscienze.vercel.app/","desc":"Esplora, sperimenta, scopri: esperimenti per ogni età, dalla primaria alle medie."},{"name":"Sintesi Proteica","cat":"Approfondimenti e Ricerche","url":"https://sintesiproteica.vercel.app/","desc":"Dal DNA alle proteine: segui il viaggio microscopico che costruisce ogni parte di te."},{"name":"Il Viaggio dell'Uomo","cat":"Approfondimenti e Ricerche","url":"https://homoavdventure.vercel.app/","desc":"Dalle origini ai giorni nostri: ripercorri il lungo cammino dell'umanità, tappa dopo tappa."},{"name":"Viaggio nella Storia","cat":"Approfondimenti e Ricerche","url":"https://storia-new.vercel.app/","desc":"Salta tra epoche ed eventi in un percorso interattivo: quale momento esplori per primo?"},{"name":"100 Anni di Storia in Musica","cat":"Sacra Famiglia","url":"https://100anni.neocities.org/","desc":"Cento anni della Sacra Famiglia raccontati in musica: un secolo di storie tutto da ascoltare."},{"name":"Il Gioco delle Case","cat":"Sacra Famiglia","url":"https://sfida.neocities.org/","desc":"A quale Casa appartieni? Entra nel Gioco delle Case della Sacra Famiglia e scoprilo."},{"name":"Le Mascotte delle Case","cat":"Sacra Famiglia","url":"https://sacrafamiglia.neocities.org/","desc":"Ogni Casa ha la sua mascotte: scopri chi rappresenta la tua e perché."},{"name":"S. Paola Elisabetta","cat":"Sacra Famiglia","url":"https://santapaola.neocities.org/","desc":"Chi era la fondatrice della scuola? Scopri storia e festa di Santa Paola Elisabetta."},{"name":"Quizzone S. Paola","cat":"Sacra Famiglia","url":"https://quizzonespaola.neocities.org/","desc":"Quanto conosci davvero Santa Paola? Mettiti alla prova con il Quizzone!"},{"name":"Quadri Appesi","cat":"Sacra Famiglia","url":"https://quadriappesi.vercel.app/","desc":"Entra nella galleria virtuale e ammira opere e lavori nati tra i banchi della scuola."},{"name":"Studio Musicale","cat":"Sport e Giochi","url":"https://studiomusicale.neocities.org/","desc":"Strumenti, note e ritmi a portata di clic: gioca con la musica e prova a comporre la tua."},{"name":"Cool Runnings","cat":"Sport e Giochi","url":"https://giamaica.neocities.org/","desc":"Una squadra di bob... ai tropici? La storia vera e incredibile dei giamaicani alle Olimpiadi."},{"name":"Milano Cortina","cat":"Sport e Giochi","url":"https://labinfo.my.canva.site/c17sxqtedy2jyaw7","desc":"Le Olimpiadi diventano tecnologia: scopri le innovazioni dei Giochi di Milano-Cortina."},{"name":"Milano-Cortina 2026","cat":"Sport e Giochi","url":"https://milanocortina.neocities.org/","desc":"Geni italiani protagonisti dei Giochi invernali 2026: scopri chi c'è dietro le imprese."},{"name":"Word Games","cat":"Sport e Giochi","url":"https://sacrafamigliagames.neocities.org/","desc":"Sfida le parole e allarga il tuo vocabolario divertendoti: quanti punti riesci a fare?"},{"name":"Profemon","cat":"Sport e Giochi","url":"https://profemon.neocities.org/","desc":"Schiera i tuoi prof come carte da gioco e superate insieme le sfide: il gioco cooperativo della scuola!"},{"name":"Storia del Calcio","cat":"Sport e Giochi","url":"https://calcio-one.vercel.app/","desc":"Dal 2000 al 2025: rivivi gol, campioni e imprese in un viaggio nel calcio."},{"name":"Master Chef","cat":"Sport e Giochi","url":"https://masterchef-iota.vercel.app/","desc":"Ai fornelli! Scopri le ricette italiane e il viaggio tra sapori e tradizioni d'Italia."},{"name":"Euro Capitali","cat":"Sport e Giochi","url":"https://euro-capitali.vercel.app/","desc":"Conosci le capitali d'Europa? Mettiti alla prova con il quiz geografico lampo."}];
-const CAT_COLOR = {
-  "Biblioteca Digitale":"#8B6914",
-  "Approfondimenti e Ricerche":"#1B6B3A",
-  "Sacra Famiglia":"#6D4EA3",
-  "Sport e Giochi":"#1D6FA5"
-};
-const PICK = 9;
-
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
-  return a;
-}
-
-/* ── Suono "split-flap": scatti meccanici tipo orologio a palette, via Web Audio ── */
-let audioCtx = null, noiseBuf = null;
-function ensureAudio(){
-  if(audioCtx){ if(audioCtx.state === 'suspended') audioCtx.resume(); return; }
-  try{
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const len = Math.floor(audioCtx.sampleRate * 0.05);
-    noiseBuf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
-    const d = noiseBuf.getChannelData(0);
-    for(let i=0;i<len;i++) d[i] = (Math.random()*2 - 1) * (1 - i/len);   // rumore con decadimento
-  }catch(e){ audioCtx = null; }
-}
-function clackAt(t, vol){
-  if(!audioCtx) return;
-  // un singolo "scatto" = breve raffica di rumore filtrato, senza toni: la paletta che ribalta
-  function burst(when, freq, q, peak, dur){
-    const src = audioCtx.createBufferSource(); src.buffer = noiseBuf;
-    const bp = audioCtx.createBiquadFilter(); bp.type = 'bandpass';
-    bp.frequency.value = freq; bp.Q.value = q;
-    const g = audioCtx.createGain();
-    g.gain.setValueAtTime(0.0001, when);
-    g.gain.linearRampToValueAtTime(peak, when + 0.0006);   // attacco istantaneo
-    g.gain.exponentialRampToValueAtTime(0.0001, when + dur);
-    src.connect(bp).connect(g).connect(audioCtx.destination);
-    src.start(when); src.stop(when + dur + 0.01);
-  }
-  // doppio impulso ravvicinato: lo stacco della paletta e la sua battuta sul fermo ("ta-tac")
-  burst(t,          2800 + Math.random()*500, 1.0, vol*0.55, 0.010);
-  burst(t + 0.020,  1600 + Math.random()*300, 1.4, vol,      0.024);
-}
-/* valutatore di cubic-bezier (la stessa easing dell'animazione) per sincronizzare audio e movimento */
-function bezierEasing(x1,y1,x2,y2){
-  const A=(a,b)=>1-3*b+3*a, B=(a,b)=>3*b-6*a, C=a=>3*a;
-  const calc=(t,a,b)=>((A(a,b)*t+B(a,b))*t+C(a))*t;
-  return function(x){               // x = frazione di tempo → progresso "eased"
-    if(x<=0)return 0; if(x>=1)return 1;
-    let lo=0,hi=1,t=x;               // trova t tale che X(t)=x, poi restituisce Y(t)
-    for(let i=0;i<24;i++){ const xt=calc(t,x1,x2); if(Math.abs(xt-x)<1e-5)break; if(xt<x)lo=t; else hi=t; t=(lo+hi)/2; }
-    return calc(t,y1,y2);
-  };
-}
-const SPIN_EASE_STR = 'cubic-bezier(.33,1,.68,1)';   // ease-out graduale: il rallentamento resta visibile fino alla fine
-const spinEase = bezierEasing(.33,1,.68,1);
-function timeFracForProgress(o){     // inverso: dato il progresso o, la frazione di tempo in cui avviene
-  let lo=0,hi=1,x=o;
-  for(let i=0;i<24;i++){ x=(lo+hi)/2; if(spinEase(x)<o) lo=x; else hi=x; }
-  return x;
-}
-
-const overlay = document.getElementById('autoModal');
-const grid = document.getElementById('autoGrid');
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-let lastFocus = null;
-
-function enableCards(){
-  grid.classList.remove('spinning');
-  grid.querySelectorAll('.auto-card').forEach(c => { c.removeAttribute('aria-disabled'); c.setAttribute('tabindex','0'); });
-}
-function spinAll(){
-  const cards = [...grid.querySelectorAll('.auto-card')];
-  if(reduceMotion || !cards.length){ enableCards(); return; }
-  grid.classList.add('spinning');
-  ensureAudio();
-  const now = audioCtx ? audioCtx.currentTime : 0;
-  const clacks = [];
-  const done = cards.map(card => {
-    const turns = 10 + Math.floor(Math.random()*21);   // 10–30 giri completi, casuale
-    const dur = 2200 + turns*70 + Math.random()*300;   // più giri ⇒ più tempo per fermarsi
-    const anim = card.animate(
-      [{transform:'rotateX(0deg)'}, {transform:`rotateX(${turns*360}deg)`}],
-      {duration:dur, easing:SPIN_EASE_STR, fill:'forwards'}
-    );
-    anim.finished.then(() => {
-      anim.cancel();
-      card.style.transform = 'none';   // fronte riallineato, l'hover torna a funzionare
-      card.classList.add('stopped');
-    }).catch(()=>{});
-    // uno scatto a ogni giro completo DI QUESTA tessera, nell'istante esatto in cui avviene
-    for(let k=1;k<=turns;k++){
-      const o = k/turns;
-      clacks.push({ t: now + timeFracForProgress(o)*(dur/1000), v: 0.22*(1 - 0.5*o) });
-    }
-    return anim.finished.catch(()=>{});
-  });
-  // riproduci gli scatti reali; soglia minima per non impastare i colpi quasi simultanei
-  if(audioCtx){
-    clacks.sort((a,b) => a.t - b.t);
-    let last = -1;
-    for(const c of clacks){ if(c.t - last >= 0.026){ clackAt(c.t, c.v); last = c.t; } }
-  }
-  Promise.all(done).then(enableCards);
-}
-function renderAuto(){
-  const sample = shuffle(AUTONOMY).slice(0, Math.min(PICK, AUTONOMY.length));
-  grid.innerHTML = sample.map(a => {
-    const col = CAT_COLOR[a.cat] || 'var(--green)';
-    return `<a class="auto-card" href="${a.url}" target="_blank" rel="noopener" aria-disabled="true" tabindex="-1" style="--card-accent:${col}">
-      <span class="auto-cat">${esc(a.cat)}</span>
-      <span class="auto-name">${esc(a.name)}</span>
-      <span class="auto-desc">${esc(a.desc||'')}</span>
-      <span class="auto-go">${ARROW}</span>
-    </a>`;
-  }).join('');
-  spinAll();
-}
-
-function openAuto(){
-  lastFocus = document.activeElement;
-  ensureAudio();
-  overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  renderAuto();
-  document.getElementById('autoClose').focus();
-}
-function closeAuto(){
-  overlay.classList.remove('open');
-  document.body.style.overflow = '';
-  grid.querySelectorAll('.auto-card').forEach(c => c.getAnimations().forEach(a => a.cancel()));
-  if(lastFocus) lastFocus.focus();
-}
-document.getElementById('finishBtn').addEventListener('click', openAuto);
-document.getElementById('autoClose').addEventListener('click', closeAuto);
-overlay.addEventListener('click', e => { if(e.target === overlay) closeAuto(); });
-document.addEventListener('keydown', e => { if(e.key === 'Escape' && overlay.classList.contains('open')) closeAuto(); });
 </script>
 </body>
 </html>
