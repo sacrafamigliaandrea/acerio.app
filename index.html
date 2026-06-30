@@ -116,6 +116,8 @@
         .ql-search:hover { background: #5d6e3b; color: #fff; border-color: #5d6e3b; }
         .ql-lock { padding: .45rem .55rem !important; opacity: 0.5; }
         .ql-lock:hover { opacity: 1; }
+        .ql-present { width: 32px; height: 32px; padding: 0 !important; border-radius: 50% !important; justify-content: center; }
+        .ql-present svg { width: 18px; height: 18px; display: block; }
         .ql-suite { width: 34px; height: 34px; padding: 0 !important; border-radius: 50% !important; background: transparent !important; border: none !important; box-shadow: var(--shadow-soft) !important; overflow: hidden; flex-shrink: 0; }
         .ql-suite img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
         .ql-suite:hover { background: transparent !important; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,.18) !important; }
@@ -286,6 +288,7 @@
         <a href="scuolafutura.html" class="ql-glass"><i class="ti ti-school"></i> Percorsi Scuola Futura</a>
         <a href="https://ineai.neocities.org/" target="_blank" class="ql-glass"><i class="ti ti-brain"></i> IN + IA</a>
         <a href="riservata.html" class="ql-glass ql-lock"><i class="ti ti-lock"></i></a>
+        <a href="presentazione.html" class="ql-glass ql-present" title="Il progetto" aria-label="Il progetto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l13 2-1 4-13-2z"/><path d="M10 11.6V19"/><path d="M6.5 19h7"/></svg></a>
         <a href="suite.html" class="ql-suite" title="Suite" aria-label="Suite"><img src="suite-icon.png" alt="Suite"></a>
         <button class="ql-search" id="searchToggle" onclick="this.classList.toggle('open');document.getElementById('searchBox').focus()"><i class="ti ti-search"></i></button>
         <input type="text" id="searchBox" class="ql-search-input" placeholder="Cerca..." oninput="filterCards(this.value)">
