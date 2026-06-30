@@ -144,10 +144,14 @@ h2.title{font-family:var(--head);font-weight:800;font-size:clamp(1.6rem,4vw,2.45
 .measure .mt{font-size:.79rem;line-height:1.35;color:#CDE8D7}
 .measure .mt b{font-family:var(--head);font-weight:700;color:#fff;display:block;margin-bottom:1px;font-size:.83rem}
 
-.creds{margin-top:16px;display:flex;align-items:center;gap:13px;flex-wrap:wrap;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.24);border-radius:13px;padding:13px 17px}
-.creds i.lead-ico{font-size:1.7rem;color:var(--gold2)}
-.creds .ct{flex:1;min-width:220px;font-size:.83rem;color:#CDE8D7;line-height:1.45}
-.creds .ct b{color:#fff;font-family:var(--head);font-weight:700}
+.creds{margin-top:2px;display:flex;align-items:center;gap:15px;flex-wrap:wrap;background:rgba(212,160,23,.09);border:1px solid rgba(212,160,23,.4);border-radius:16px;padding:16px 20px}
+.creds i.lead-ico{font-size:2rem;color:var(--gold2)}
+.creds .ct{flex:1;min-width:240px;font-size:.85rem;color:#CDE8D7;line-height:1.5}
+.creds .ct b{color:#fff;font-family:var(--head);font-weight:700;display:block;font-size:1.02rem;margin-bottom:3px}
+.cstats{display:flex;gap:10px;flex-wrap:wrap}
+.cstat{text-align:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:9px 15px;min-width:74px}
+.cstat .n{display:block;font-family:var(--num);font-weight:800;font-size:1.5rem;line-height:1;color:#fff}
+.cstat .l{display:block;font-family:var(--head);font-weight:600;font-size:.62rem;text-transform:uppercase;letter-spacing:.04em;color:#BFE0CC;margin-top:5px}
 
 .families{margin-top:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:14px 18px}
 .families i.lead-ico{font-size:1.7rem;color:var(--gold2)}
@@ -204,9 +208,9 @@ h2.title{font-family:var(--head);font-weight:800;font-size:clamp(1.6rem,4vw,2.45
   .s1 .lead,.s3 .lead{color:#333!important}
   .act-tag{color:#0E4423!important;background:#fff!important;border:1px solid #B8860B!important}
   .s1 .block-label,.s3 .block-label{color:#B8860B!important}.block-label .ln{background:#ccc!important}
-  .stat,.fw,.ambiti span,.ethic,.security,.measure,.creds,.families,.sec-stat,.signature img{background:#fff!important;border:1px solid #ccc!important;backdrop-filter:none!important}
-  .stat .num,.fw h3,.ethic h4,.sec-head h4,.measure .mt b,.families h4,.creds .ct b,.signature .who .nm{color:#0E4423!important}
-  .stat .lab,.fw p,.ethic p,.measure .mt,.families p,.creds .ct,.sec-head p,.signature .who .rl,.ambiti span{color:#333!important}
+  .stat,.fw,.ambiti span,.ethic,.security,.measure,.creds,.cstat,.families,.sec-stat,.signature img{background:#fff!important;border:1px solid #ccc!important;backdrop-filter:none!important}
+  .stat .num,.fw h3,.ethic h4,.sec-head h4,.measure .mt b,.families h4,.creds .ct b,.cstat .n,.signature .who .nm{color:#0E4423!important}
+  .stat .lab,.fw p,.ethic p,.measure .mt,.families p,.creds .ct,.cstat .l,.sec-head p,.signature .who .rl,.ambiti span{color:#333!important}
   .fw .ref,.measure i,.ethic i,.creds i,.families i.lead-ico,.ambiti span i{color:#B8860B!important}
   .cta{background:#0E4423!important;color:#fff!important}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -348,9 +352,15 @@ h2.title{font-family:var(--head);font-weight:800;font-size:clamp(1.6rem,4vw,2.45
         <div class="chips"><span>Patto Digitale di Famiglia</span><span>Patentino Genitori</span><span>Guida per Genitori</span></div>
       </div>
 
+      <div class="block-label"><i class="ti ti-certificate"></i> La formazione di chi l'ha progettato<span class="ln"></span></div>
       <div class="creds">
         <i class="ti ti-certificate lead-ico"></i>
-        <div class="ct"><b>A garanzia di tutto questo, una formazione continua.</b> Profilo DigCompEdu sulle 6 aree europee e percorso Scuola Futura con oltre 390 ore certificate, con focus su intelligenza artificiale e cybersicurezza.</div>
+        <div class="ct"><b>Una competenza continua, certificata.</b> Profilo DigCompEdu sulle 6 aree europee e percorso «Scuola Futura» del PNRR, con focus su intelligenza artificiale e cybersicurezza.</div>
+        <div class="cstats">
+          <div class="cstat"><span class="n">27</span><span class="l">Percorsi</span></div>
+          <div class="cstat"><span class="n">390+</span><span class="l">Ore certificate</span></div>
+          <div class="cstat"><span class="n">6</span><span class="l">Aree DigCompEdu</span></div>
+        </div>
       </div>
 
       <div class="signature">
@@ -382,7 +392,7 @@ h2.title{font-family:var(--head);font-weight:800;font-size:clamp(1.6rem,4vw,2.45
   var io=new IntersectionObserver(function(entries){
     entries.forEach(function(e){ if(e.isIntersecting&&!seen.has(e.target)){seen.add(e.target);animate(e.target);} });
   },{threshold:.5});
-  document.querySelectorAll('[data-target]').forEach(function(el){io.observe(el);});
+  document.querySelectorAll('#deck [data-target]').forEach(function(el){io.observe(el);});
 })();
 
 /* Nav a punti: schermata attiva */
