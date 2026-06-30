@@ -241,17 +241,18 @@ h2.title{font-family:var(--head);font-weight:800;font-size:clamp(1.6rem,4vw,2.45
 @keyframes mpiShine{0%,100%{filter:drop-shadow(0 0 0 rgba(212,160,23,0))}50%{filter:drop-shadow(0 0 13px rgba(212,160,23,.95))}}
 @media(prefers-reduced-motion:reduce){.mediapop,.mediapop-card{transition:opacity .3s ease,visibility .3s ease}.mediapop-card{transform:none}.mediapop.show .mpi svg{animation:none}}
 
-/* ── Player "presentazione guidata" ── */
-.player{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:70;display:flex;align-items:center;gap:13px;background:rgba(14,68,35,.92);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:8px 16px 8px 8px;box-shadow:0 14px 38px rgba(14,68,35,.42);backdrop-filter:blur(10px);width:380px;max-width:calc(100vw - 28px)}
-.pbtn{flex:none;width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;background:var(--gold2);color:#15331f;display:flex;align-items:center;justify-content:center;font-size:1.25rem;transition:.2s}
+/* ── Player "presentazione guidata" (pillola in alto a destra, stesso stile di .home-btn) ── */
+.player{position:fixed;top:18px;right:20px;z-index:70;width:330px;max-width:calc(100vw - 40px);background:rgba(14,68,35,.55);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:6px 14px 6px 6px;backdrop-filter:blur(8px)}
+.player-inner{display:flex;align-items:center;gap:12px;width:100%}
+.pbtn{flex:none;width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;background:var(--gold2);color:#15331f;display:flex;align-items:center;justify-content:center;font-size:1.15rem;transition:.2s}
 .pbtn:hover{background:#e8b520;transform:scale(1.06)}
 .pmeta{flex:1;min-width:0}
-.ptitle{font-family:var(--head);font-weight:600;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:#E4F2E9;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pbar{height:6px;border-radius:999px;background:rgba(255,255,255,.2);cursor:pointer;position:relative}
+.ptitle{font-family:var(--head);font-weight:600;font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;color:#E4F2E9;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbar{height:5px;border-radius:999px;background:rgba(255,255,255,.22);cursor:pointer;position:relative}
 .pfill{height:100%;border-radius:999px;background:var(--gold2);width:0%}
-.ptime{flex:none;font-family:var(--num);font-weight:600;font-size:.78rem;color:#BFE0CC;min-width:34px;text-align:right}
+.ptime{flex:none;font-family:var(--num);font-weight:600;font-size:.74rem;color:#BFE0CC;min-width:32px;text-align:right}
 body.playing .scrollcue{opacity:0}
-@media(max-width:560px){.player{width:auto;left:12px;right:12px;transform:none}}
+@media(max-width:560px){.player{width:auto;max-width:56vw}.ptitle{display:none}}
 
 @media(max-width:820px){
   .fwgrid,.stairs,.spectrum-cols,.mini-cards,.cols3,.measures{grid-template-columns:1fr}
@@ -467,13 +468,15 @@ body.playing .scrollcue{opacity:0}
 </div>
 
 <div class="player" id="player">
-  <button class="pbtn" id="pbtn" aria-label="Riproduci la presentazione guidata"><i class="ti ti-player-play-filled"></i></button>
-  <div class="pmeta">
-    <div class="ptitle" id="ptitle">Presentazione guidata</div>
-    <div class="pbar" id="pbar"><div class="pfill" id="pfill"></div></div>
+  <div class="player-inner">
+    <button class="pbtn" id="pbtn" aria-label="Riproduci la presentazione guidata"><i class="ti ti-player-play-filled"></i></button>
+    <div class="pmeta">
+      <div class="ptitle" id="ptitle">Presentazione guidata</div>
+      <div class="pbar" id="pbar"><div class="pfill" id="pfill"></div></div>
+    </div>
+    <div class="ptime" id="ptime">0:00</div>
   </div>
-  <div class="ptime" id="ptime">0:00</div>
-  <audio id="audio" src="parlato.mp3" preload="metadata"></audio>
+  <audio id="audio" src="liam.mp3" preload="metadata"></audio>
 </div>
 
 <script>
@@ -535,17 +538,17 @@ body.playing .scrollcue{opacity:0}
   if(!audio) return;
 
   var deck=document.getElementById('deck');
-  var ETH_IN=105.5, ETH_OUT=113.5;   // finestra card-popup etica
-  var MED_IN=93, MED_OUT=103;        // finestra card-popup linguaggi
+  var ETH_IN=98.5, ETH_OUT=106.5;    // finestra card-popup etica
+  var MED_IN=88, MED_OUT=97;         // finestra card-popup linguaggi
 
   /* timestamp allineati all'audio reale (testo SRT + intervalli vocali) */
-  var TL=[{"id":"kw-eco","t":6.05,"s":0,"fx":"zoom"},{"id":"kw-persona","t":9.66,"s":0,"fx":"grow"},{"id":"kw-indicazioni","t":19.58,"s":0,"fx":"zoom"},{"id":"amb-1","t":28.83,"s":0,"fx":"glow"},{"id":"amb-2","t":30.66,"s":0,"fx":"glow"},{"id":"amb-3","t":32.68,"s":0,"fx":"glow"},{"id":"amb-4","t":34.78,"s":0,"fx":"glow"},{"id":"st-35","t":39.04,"s":0,"fx":"pop"},{"id":"st-100","t":41.91,"s":0,"fx":"pop"},{"id":"st-69","t":42.94,"s":0,"fx":"pop"},{"id":"kw-scaffolding","t":55.39,"s":1,"fx":"grow"},{"id":"stair-1","t":59.64,"s":1,"fx":"glow"},{"id":"stair-2","t":63.65,"s":1,"fx":"glow"},{"id":"stair-3","t":68.74,"s":1,"fx":"glow"},{"id":"scol-a","t":77.51,"s":1,"fx":"glow"},{"id":"scol-b","t":83.14,"s":1,"fx":"glow"},{"id":"scol-c","t":86.22,"s":1,"fx":"pop"},{"id":"kw-metacog","t":91.2,"s":1,"fx":"pop"},{"id":"media-1","t":94.57,"s":1,"fx":"glow"},{"id":"media-2","t":95.38,"s":1,"fx":"glow"},{"id":"media-3","t":95.78,"s":1,"fx":"glow"},{"id":"media-4","t":96.53,"s":1,"fx":"glow"},{"id":"media-5","t":97.28,"s":1,"fx":"glow"},{"id":"eth-1","t":114.44,"s":2,"fx":"glow"},{"id":"eth-2","t":124.13,"s":2,"fx":"shake"},{"id":"ms-vanilla","t":133.77,"s":2,"fx":"pop"},{"id":"ms-terze","t":137.99,"s":2,"fx":"shake"},{"id":"ms-locale","t":141.44,"s":2,"fx":"shake"},{"id":"ms-aes","t":142.26,"s":2,"fx":"shake"},{"id":"ms-dpia","t":144.84,"s":2,"fx":"shake"},{"id":"kw-formazione","t":148.7,"s":2,"fx":"pop"},{"id":"kw-famiglie","t":157.2,"s":2,"fx":"glow"}];
-  var SECT=[0,45.86,104.62];                 /* inizio audio di ogni schermata */
+  var TL=[{"id":"kw-eco","t":6.35,"s":0,"fx":"zoom"},{"id":"kw-persona","t":9.32,"s":0,"fx":"grow"},{"id":"kw-indicazioni","t":19.02,"s":0,"fx":"zoom"},{"id":"amb-1","t":27.82,"s":0,"fx":"glow"},{"id":"amb-2","t":29.35,"s":0,"fx":"glow"},{"id":"amb-3","t":30.75,"s":0,"fx":"glow"},{"id":"amb-4","t":32.7,"s":0,"fx":"glow"},{"id":"st-35","t":37.17,"s":0,"fx":"pop"},{"id":"st-100","t":39.24,"s":0,"fx":"pop"},{"id":"st-69","t":39.8,"s":0,"fx":"pop"},{"id":"kw-scaffolding","t":54.6,"s":1,"fx":"grow"},{"id":"stair-1","t":57.76,"s":1,"fx":"glow"},{"id":"stair-2","t":60.85,"s":1,"fx":"glow"},{"id":"stair-3","t":65.78,"s":1,"fx":"glow"},{"id":"scol-a","t":73.9,"s":1,"fx":"glow"},{"id":"scol-b","t":79.61,"s":1,"fx":"glow"},{"id":"scol-c","t":82.13,"s":1,"fx":"pop"},{"id":"kw-metacog","t":86.91,"s":1,"fx":"pop"},{"id":"media-1","t":89.37,"s":1,"fx":"glow"},{"id":"media-2","t":90.32,"s":1,"fx":"glow"},{"id":"media-3","t":90.66,"s":1,"fx":"glow"},{"id":"media-4","t":91.27,"s":1,"fx":"glow"},{"id":"media-5","t":91.89,"s":1,"fx":"glow"},{"id":"eth-1","t":107.41,"s":2,"fx":"glow"},{"id":"eth-2","t":116.5,"s":2,"fx":"shake"},{"id":"ms-vanilla","t":125.59,"s":2,"fx":"pop"},{"id":"ms-terze","t":129.83,"s":2,"fx":"shake"},{"id":"ms-locale","t":132.86,"s":2,"fx":"shake"},{"id":"ms-aes","t":134.52,"s":2,"fx":"shake"},{"id":"ms-dpia","t":136.96,"s":2,"fx":"shake"},{"id":"kw-formazione","t":140.24,"s":2,"fx":"pop"},{"id":"kw-famiglie","t":149.08,"s":2,"fx":"glow"}];
+  var SECT=[0,42.76,97.36];                  /* inizio audio di ogni schermata */
   var SECNAME=['La visione','Il metodo','Etica e dati'];
   TL.forEach(function(k){ k.el=document.querySelector('[data-kw="'+k.id+'"]'); k._on=false; });
 
   var curSec=-1, seeking=false;
-  var LEAD=0.8; // anticipo (s): gli effetti scattano un attimo prima della voce
+  var LEAD=0.3; // anticipo (s): gli effetti scattano un attimo prima della voce
 
   /* effetto one-shot: parte e si rimuove, così può ri-scattare e non lascia scale appesa */
   function fireFx(k){
@@ -557,7 +560,7 @@ body.playing .scrollcue{opacity:0}
   /* auto-scorrimento: tiene la parola attiva dentro lo schermo (senza forzare se già visibile) */
   function keepInView(el){
     if(!deck) return;
-    var er=el.getBoundingClientRect(), H=window.innerHeight, m=80;
+    var er=el.getBoundingClientRect(), H=deck.clientHeight, m=80;
     if(er.top<m || er.bottom>H-m){
       el.scrollIntoView({behavior:'smooth', block:'nearest'});
     }
