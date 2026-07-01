@@ -185,9 +185,9 @@
     "cluster": "D",
     "name": "Stampa 3D"
   },
-  "https://keyboardmac.neocities.org": {
+  "https://mac-ninja.vercel.app": {
     "cluster": "D",
-    "name": "Scorciatoie Mac"
+    "name": "Mac Ninja"
   },
   "https://glossarioinfo.neocities.org": {
     "cluster": "D",
