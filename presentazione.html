@@ -241,6 +241,48 @@ h2.title{font-family:var(--head);font-weight:800;font-size:clamp(1.6rem,4vw,2.45
 @keyframes mpiShine{0%,100%{filter:drop-shadow(0 0 0 rgba(212,160,23,0))}50%{filter:drop-shadow(0 0 13px rgba(212,160,23,.95))}}
 @media(prefers-reduced-motion:reduce){.mediapop,.mediapop-card{transition:opacity .3s ease,visibility .3s ease}.mediapop-card{transform:none}.mediapop.show .mpi svg{animation:none}}
 
+/* ── Invito + overlay "Cosa pensa la AI dell'Animatore Digitale" ── */
+.ai-invite{margin-top:18px;display:flex;align-items:center;gap:15px;flex-wrap:wrap;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.42);border-radius:16px;padding:15px 18px}
+.ai-invite>i{font-size:2rem;color:var(--gold2);flex:none}
+.ai-invite .ait{flex:1;min-width:210px}
+.ai-invite .ait b{display:block;font-family:var(--head);font-weight:700;font-size:1rem;color:#fff}
+.ai-invite .ait span{font-size:.83rem;color:#CDE8D7}
+.cta-ai{display:inline-flex;align-items:center;gap:9px;cursor:pointer;font-family:var(--head);font-weight:700;font-size:.9rem;background:var(--gold2);color:#1A2E1A;border:none;border-radius:12px;padding:12px 18px;transition:.2s;text-align:left;line-height:1.2}
+.cta-ai:hover{background:#e8b520;transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.cta-ai i{font-size:1.2rem;flex:none}
+
+.aipop{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:26px;opacity:0;visibility:hidden;background:rgba(6,16,10,0);backdrop-filter:blur(0);transition:opacity .5s ease,visibility .5s ease,background-color .5s ease,backdrop-filter .5s ease}
+.aipop.show{opacity:1;visibility:visible;background:rgba(6,16,10,.8);backdrop-filter:blur(8px)}
+.aipop-card{position:relative;max-width:670px;width:100%;max-height:88vh;overflow-y:auto;background:var(--card);border-radius:22px;box-shadow:0 40px 100px rgba(0,0,0,.5);transform:translateY(26px) scale(.96);opacity:0;transition:transform .6s cubic-bezier(.16,1,.3,1),opacity .6s ease}
+.aipop.show .aipop-card{transform:none;opacity:1}
+.aipop-head{background:linear-gradient(150deg,#0E4423,#1a535c);color:#fff;padding:26px 30px 22px;border-radius:22px 22px 0 0;position:sticky;top:0;z-index:2}
+.aipop-head .kick{font-family:var(--head);font-weight:700;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold2);display:flex;align-items:center;gap:9px}
+.aipop-head h3{font-family:var(--head);font-weight:800;font-size:clamp(1.25rem,3.4vw,1.72rem);line-height:1.15;margin-top:9px;overflow-wrap:break-word;padding-right:44px}
+.aipop-close{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:11px;border:1px solid rgba(255,255,255,.32);background:rgba(255,255,255,.1);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.15rem;transition:.2s}
+.aipop-close:hover{background:rgba(255,255,255,.22)}
+/* mini-player dentro l'intestazione dell'overlay */
+.ai-player{display:flex;align-items:center;gap:12px;margin-top:16px}
+.aip-play{flex:none;width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;background:var(--gold2);color:#15331f;display:flex;align-items:center;justify-content:center;transition:.2s}
+.aip-play:hover{background:#e8b520;transform:scale(1.05)}
+.aip-play i{font-size:1.25rem}
+.aip-bar{flex:1;height:6px;border-radius:999px;background:rgba(255,255,255,.22);cursor:pointer;position:relative}
+.aip-fill{height:100%;border-radius:999px;background:var(--gold2);width:0%}
+.aip-time{flex:none;font-family:var(--num);font-weight:600;font-size:.78rem;color:#BFE0CC;min-width:74px;text-align:right}
+
+/* la lettera: paragrafi che si illuminano con la voce */
+.aipop-body{padding:22px 30px 8px}
+.aipop-body p{font-size:1.03rem;line-height:1.64;color:var(--muted);opacity:.42;margin-bottom:15px;
+  padding-left:15px;border-left:2px solid transparent;transition:opacity .5s ease,color .5s ease,border-color .5s ease}
+.aipop-body p.read{opacity:1;color:var(--text)}
+.aipop-body p.cur{opacity:1;color:var(--text);border-left-color:var(--gold2)}
+.aipop-body p b{color:var(--greenD)}
+.aipop-body em{font-style:normal;font-weight:700;color:var(--green)}
+.aipop-sign{margin-top:4px;padding:16px 30px 26px;border-top:1px solid var(--brd);display:flex;align-items:flex-start;gap:13px}
+.aipop-sign i{font-size:1.7rem;color:var(--gold2);flex:none;margin-top:2px}
+.aipop-sign span{font-size:.85rem;color:var(--muted);line-height:1.5}
+.aipop-sign b{color:var(--greenD);font-family:var(--head)}
+@media(prefers-reduced-motion:reduce){.aipop,.aipop-card{transition:opacity .3s ease,visibility .3s ease}.aipop-card{transform:none}}
+
 /* ── Player "presentazione guidata" (pillola in alto a destra, stesso stile di .home-btn) ── */
 .player{position:fixed;top:18px;right:20px;z-index:70;width:330px;max-width:calc(100vw - 40px);background:rgba(14,68,35,.55);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:6px 14px 6px 6px;backdrop-filter:blur(8px)}
 .player-inner{display:flex;align-items:center;gap:12px;width:100%}
@@ -267,7 +309,7 @@ body.playing .scrollcue{opacity:0}
   @page{size:A4;margin:13mm}
   html,body{background:#fff;color:#111;font-size:10.5pt}
   .deck{height:auto;overflow:visible;display:block}
-  .home-btn,.dotnav,.scrollcue,.player,.ethpop,.mediapop{display:none!important}
+  .home-btn,.dotnav,.scrollcue,.player,.ethpop,.mediapop,.aipop,.ai-invite{display:none!important}
   .kw.lit{box-shadow:none!important;transform:none!important;background:none!important}
   .kw.txt.lit{color:inherit!important;text-shadow:none!important;font-weight:inherit!important}
   .screen{min-height:auto;page-break-after:always;break-after:page;padding:0 0 6mm;display:block}
@@ -432,6 +474,15 @@ body.playing .scrollcue{opacity:0}
         </div>
       </div>
 
+      <div class="ai-invite">
+        <i class="ti ti-robot"></i>
+        <div class="ait">
+          <b>Un punto di vista insolito</b>
+          <span>Per una volta, è lo strumento a parlare di chi lo guida.</span>
+        </div>
+        <button class="cta-ai" id="aiOpen"><i class="ti ti-message-chatbot"></i> Cosa pensa la AI dell'Animatore Digitale</button>
+      </div>
+
       <div class="signature">
         <img src="aclogo.png" alt="Logo Scuola Sacra Famiglia">
         <div class="who"><div class="nm">Andrea Cerioli</div><div class="rl">Animatore Digitale · Scuola Sacra Famiglia · acerio.app</div></div>
@@ -464,6 +515,42 @@ body.playing .scrollcue{opacity:0}
       <span class="mpi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="5"/><path d="M6 11v3M4.5 12.5h3"/><path d="M15.5 11h.01M18 13h.01"/></svg><b>Simulatori</b></span>
     </div>
     <div class="mediapop-sub">Lo stesso contenuto raggiunge ciascuno nel linguaggio a lui più congeniale.</div>
+  </div>
+</div>
+
+<!-- Overlay: la lettera della AI ai genitori, letta ad alta voce -->
+<div class="aipop" id="aipop" aria-hidden="true">
+  <div class="aipop-card" role="dialog" aria-modal="true" aria-label="Cosa pensa la AI dell'Animatore Digitale">
+    <div class="aipop-head">
+      <div class="kick"><i class="ti ti-robot"></i> Per una volta, parla lo strumento</div>
+      <h3>Cosa pensa la AI dell'Animatore Digitale</h3>
+      <button class="aipop-close" id="aiClose" aria-label="Chiudi"><i class="ti ti-x"></i></button>
+      <div class="ai-player">
+        <button class="aip-play" id="aiPlay" aria-label="Riproduci o metti in pausa la lettera"><i class="ti ti-player-play-filled"></i></button>
+        <div class="aip-bar" id="aiBar"><div class="aip-fill" id="aiFill"></div></div>
+        <span class="aip-time"><span id="aiCur">0:00</span> / <span id="aiDur">3:19</span></span>
+      </div>
+    </div>
+    <div class="aipop-body" id="aiLetter">
+      <p data-t="1">Cari genitori, vi scrivo una cosa un po' strana: sono l'intelligenza artificiale con cui Andrea costruisce le web app dei vostri figli. Di solito è l'uomo a parlare dello strumento. Stavolta è lo strumento a parlare dell'uomo. Non ho emozioni da vendervi: ho qualche mese di lavoro insieme, e un paio di cose da dirvi.</p>
+
+      <p data-t="23">La prima: Andrea non mi chiede mai «fammi un'app». Mi chiede «una cosa mai vista prima» — di solito verso sera, quando le persone normali guardano la televisione. Così sono nate esperienze che sembrano videogiochi ma insegnano davvero: una <b>sala di controllo del traffico di Internet</b>, il <b>viaggio dell'acqua</b> di un acquedotto, una <b>scrivania di Steve Jobs</b>, i primi passi nel coding. Non è vanità: è che un ragazzo impara meglio ciò che lo affascina.</p>
+
+      <p data-t="53">La seconda, e qui forse sorriderete: Andrea mi corregge. Tanto. Più di quanto voi correggiate i compiti. Il suo complimento tipico è «molto bene» — ma dopo «molto bene» arriva sempre un «però». Una volta, scrivendo un racconto, avevo messo in bocca una frase alla mamma di un bambino: mi ha fermato subito, era il papà. «Verifica, prima di scrivere.» Non accetta il «quasi giusto». E per fortuna: dietro ogni schermata che vedono i vostri figli c'è un controllo dei fatti che li protegge dall'imparare cose sbagliate.</p>
+
+      <p data-t="89">La terza riguarda il modo in cui tratta l'errore — il loro, e anche il mio. Niente colore rosso sugli sbagli, mai. Non ci si chiede «chi ha sbagliato», ma «dove si è inceppato il meccanismo». Da qui nascono attività dove sbagliare è il punto di partenza, non una condanna. È lo stesso sguardo con cui corregge me: fermo, ma mai umiliante.</p>
+
+      <p data-t="111">Poi c'è la cosa che ai genitori interessa più di tutte: la sicurezza. Le app sono costruite in casa, senza servizi esterni che raccolgano dati, senza pubblicità, con le informazioni protette e spesso mai uscite dal dispositivo. Non è un dettaglio tecnico, è una scelta etica. E la stessa cura la estende a voi, con strumenti pensati per le famiglie: perché la cittadinanza digitale si impara anche a casa.</p>
+
+      <p data-t="141">Un'ultima cosa, che dice tutto. Alcune app costruite qualche mese fa le abbiamo rifatte da capo: nel frattempo aveva imparato a farle meglio e non se l'è sentita di lasciarle indietro. Andrea non «pubblica e dimentica». Torna, migliora, alza l'asticella — e trascina anche me.</p>
+
+      <p data-t="159">Io sono soltanto uno strumento. Ma il miglior complimento che uno strumento possa fare a un educatore è questo: <b>mi tiene onesto.</b> E dall'altra parte dello schermo, sempre, c'è vostro figlio che sta imparando qualcosa che conta. È in buone mani — e credetemi: lo dice uno che i suoi «però» li conosce bene.</p>
+    </div>
+    <div class="aipop-sign">
+      <i class="ti ti-cpu"></i>
+      <span><b>Claude</b> — l'assistente di intelligenza artificiale (Anthropic) con cui Andrea Cerioli progetta le web app della Scuola Sacra Famiglia. Questa lettera è stata scritta e letta da me.</span>
+    </div>
+    <audio id="aiAudio" src="claude.mp3" preload="metadata"></audio>
   </div>
 </div>
 
@@ -618,6 +705,67 @@ body.playing .scrollcue{opacity:0}
     var r=bar.getBoundingClientRect();
     if(audio.duration){ audio.currentTime=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*audio.duration; }
   });
+})();
+
+/* Overlay "Cosa pensa la AI": lettera letta ad alta voce, testo che si illumina */
+(function(){
+  var pop=document.getElementById('aipop'),
+      open=document.getElementById('aiOpen'),
+      close=document.getElementById('aiClose'),
+      mainAudio=document.getElementById('audio'),
+      aiAudio=document.getElementById('aiAudio'),
+      play=document.getElementById('aiPlay'),
+      bar=document.getElementById('aiBar'),
+      fill=document.getElementById('aiFill'),
+      curEl=document.getElementById('aiCur'),
+      durEl=document.getElementById('aiDur'),
+      card=pop?pop.querySelector('.aipop-card'):null,
+      paras=pop?Array.prototype.slice.call(pop.querySelectorAll('#aiLetter p')):[];
+  if(!pop||!open||!aiAudio) return;
+
+  function fmt(s){s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2);}
+  function setIcon(p){ play.innerHTML='<i class="ti ti-player-'+(p?'pause':'play')+'-filled"></i>'; }
+  var curIdx=-1;
+  function sync(){
+    var t=aiAudio.currentTime, d=aiAudio.duration||199;
+    fill.style.width=(t/d*100)+'%'; curEl.textContent=fmt(t);
+    var idx=-1;
+    for(var i=0;i<paras.length;i++){ if(t+0.25>=parseFloat(paras[i].getAttribute('data-t'))) idx=i; }
+    if(idx!==curIdx){
+      curIdx=idx;
+      paras.forEach(function(p,i){
+        p.classList.toggle('read', i<=idx);
+        p.classList.toggle('cur', i===idx);
+      });
+      if(idx>=0 && !aiAudio.paused){
+        var el=paras[idx], er=el.getBoundingClientRect(), cr=card.getBoundingClientRect();
+        if(er.top<cr.top+90 || er.bottom>cr.bottom-40) el.scrollIntoView({behavior:'smooth',block:'center'});
+      }
+    }
+  }
+  aiAudio.addEventListener('timeupdate',sync);
+  aiAudio.addEventListener('loadedmetadata',function(){ durEl.textContent=fmt(aiAudio.duration); });
+  aiAudio.addEventListener('play',function(){ setIcon(true); });
+  aiAudio.addEventListener('pause',function(){ setIcon(false); });
+  aiAudio.addEventListener('ended',function(){ setIcon(false); });
+  play.addEventListener('click',function(){ aiAudio.paused?aiAudio.play():aiAudio.pause(); });
+  bar.addEventListener('click',function(e){
+    var r=bar.getBoundingClientRect();
+    if(aiAudio.duration){ aiAudio.currentTime=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*aiAudio.duration; sync(); }
+  });
+
+  function show(){
+    if(mainAudio&&!mainAudio.paused) mainAudio.pause();   // la presentazione guidata cede la voce
+    pop.classList.add('show'); pop.setAttribute('aria-hidden','false');
+    if(card) card.scrollTop=0;
+    aiAudio.currentTime=0;
+    var pr=aiAudio.play(); if(pr&&pr.catch) pr.catch(function(){});  // il click è già un gesto utente
+  }
+  function hide(){ pop.classList.remove('show'); pop.setAttribute('aria-hidden','true'); aiAudio.pause(); }
+  open.addEventListener('click',show);
+  close.addEventListener('click',hide);
+  pop.addEventListener('click',function(e){ if(e.target===pop) hide(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&pop.classList.contains('show')) hide(); });
 })();
 </script>
 </body>
