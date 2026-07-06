@@ -528,7 +528,7 @@ body.playing .scrollcue{opacity:0}
       <div class="ai-player">
         <button class="aip-play" id="aiPlay" aria-label="Riproduci o metti in pausa la lettera"><i class="ti ti-player-play-filled"></i></button>
         <div class="aip-bar" id="aiBar"><div class="aip-fill" id="aiFill"></div></div>
-        <span class="aip-time"><span id="aiCur">0:00</span> / <span id="aiDur">3:19</span></span>
+        <span class="aip-time"><span id="aiCur">0:00</span> / <span id="aiDur">2:33</span></span>
       </div>
     </div>
     <div class="aipop-body" id="aiLetter">
@@ -725,12 +725,17 @@ body.playing .scrollcue{opacity:0}
 
   function fmt(s){s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2);}
   function setIcon(p){ play.innerHTML='<i class="ti ti-player-'+(p?'pause':'play')+'-filled"></i>'; }
+  /* I data-t dei paragrafi sono i tempi dell'SRT, riferiti a un audio lungo SRT_REF secondi.
+     Il file claude.mp3 può avere durata diversa: scaliamo i tempi sulla durata reale,
+     così il testo resta in sincrono anche se l'audio viene rigenerato più corto o più lungo.
+     LEAD = piccolo anticipo (s) perché l'evidenziazione scatti un attimo prima della voce. */
+  var SRT_REF=182, LEAD=0.35;
   var curIdx=-1;
   function sync(){
-    var t=aiAudio.currentTime, d=aiAudio.duration||199;
+    var t=aiAudio.currentTime, d=aiAudio.duration||153;
     fill.style.width=(t/d*100)+'%'; curEl.textContent=fmt(t);
-    var idx=-1;
-    for(var i=0;i<paras.length;i++){ if(t+0.25>=parseFloat(paras[i].getAttribute('data-t'))) idx=i; }
+    var factor=d/SRT_REF, idx=-1;
+    for(var i=0;i<paras.length;i++){ if(t+LEAD>=parseFloat(paras[i].getAttribute('data-t'))*factor) idx=i; }
     if(idx!==curIdx){
       curIdx=idx;
       paras.forEach(function(p,i){
