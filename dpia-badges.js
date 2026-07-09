@@ -639,11 +639,11 @@
   },
   "https://fotovoltaico-orcin.vercel.app": {
     "cluster": "D",
-    "name": "Cacciatori di Sole"
+    "name": "Energy Pixel"
   },
   "https://campus-map-henna.vercel.app": {
     "cluster": "D",
-    "name": "Esplora il Campus"
+    "name": "Campus Map"
   }
 };
   
