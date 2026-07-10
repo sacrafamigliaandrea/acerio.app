@@ -637,7 +637,7 @@
     "cluster": "D",
     "name": "Diario delle Vacanze Estive"
   },
-  "https://fotovoltaico-orcin.vercel.app": {
+  "https://fotovoltaico-andreana.vercel.app": {
     "cluster": "D",
     "name": "Energy Pixel"
   },
