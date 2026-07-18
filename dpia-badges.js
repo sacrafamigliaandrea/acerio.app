@@ -205,9 +205,9 @@
     "cluster": "D",
     "name": "Keyboard Training"
   },
-  "https://pesodigitale.neocities.org": {
+  "https://data-storage-challenge.vercel.app": {
     "cluster": "D",
-    "name": "La Scala Digitale"
+    "name": "Data Storage Challenge"
   },
   "https://barscuola.neocities.org": {
     "cluster": "D",
