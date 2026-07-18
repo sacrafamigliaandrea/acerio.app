@@ -201,7 +201,7 @@
     "cluster": "D",
     "name": "Sfida di Videoscrittura"
   },
-  "https://keyboard-traning.vercel.app": {
+  "https://keyboard-training-challenge.vercel.app": {
     "cluster": "D",
     "name": "Keyboard Training"
   },
