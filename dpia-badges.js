@@ -201,9 +201,9 @@
     "cluster": "D",
     "name": "Sfida di Videoscrittura"
   },
-  "https://tastiera.neocities.org": {
+  "https://keyboard-traning.vercel.app": {
     "cluster": "D",
-    "name": "Allenamento Tastiera"
+    "name": "Keyboard Training"
   },
   "https://pesodigitale.neocities.org": {
     "cluster": "D",
