@@ -328,8 +328,9 @@ body.playing .scrollcue{opacity:0}
 }
 
 /* ── Intro: tour 3D immersivo a tutto schermo (overlay sopra il deck) ── */
-#introTour{position:fixed;inset:0;z-index:9999;background:#04150d;opacity:1;transition:opacity .9s ease}
-#introTour.hide{opacity:0;pointer-events:none}
+#introTour{position:fixed;inset:0;z-index:9999;background:#04150d;opacity:1;
+  transition:opacity 1.5s ease, transform 1.5s cubic-bezier(.16,1,.3,1)}
+#introTour.hide{opacity:0;transform:scale(1.06);pointer-events:none}
 #introTour iframe{width:100%;height:100%;border:0;display:block}
 @media print{#introTour{display:none!important}}
 
@@ -2128,6 +2129,8 @@ animate();
     <div class="ptime" id="ptime">0:00</div>
   </div>
   <audio id="audio" src="liam.mp3" preload="metadata"></audio>
+  <!-- tappeto sonoro di continuità: stessa base del tour, a volume molto basso -->
+  <audio id="bedAudio" src="tour.mp3" loop preload="auto"></audio>
 </div>
 
 <script>
@@ -2343,13 +2346,58 @@ animate();
   var overlay=document.getElementById('introTour');
   if(!overlay) return;
   var frame=document.getElementById('tourFrame');
+  var bed=document.getElementById('bedAudio');      // tappeto: stessa base del tour
+  var voce=document.getElementById('audio');        // narrazione liam.mp3
+  var BED_ON=.10, BED_DUCK=.035, XF=1500;           // volumi e durata del crossfade
+
   var salta=/(?:[?&]tour=off)|(?:#(?:salta|skip|no-tour))/i.test(location.search+location.hash);
   if(salta){ overlay.parentNode.removeChild(overlay); return; }   // arrivo da "Entra" in modalità standalone
   /* tour inline via srcdoc: nessun file esterno da caricare */
+
+  /* rampa di volume morbida (timer, non rAF: arriva a destinazione
+     anche se la scheda passa in background o il rendering è sospeso) */
+  function rampa(el,a,ms){
+    if(!el) return;
+    if(el.__ramp){ clearInterval(el.__ramp); el.__ramp=null; }
+    var da=el.volume, t0=Date.now();
+    el.__ramp=setInterval(function(){
+      var p=Math.min((Date.now()-t0)/ms,1);
+      try{ el.volume=Math.max(0,Math.min(1,da+(a-da)*p)); }catch(e){}
+      if(p>=1){ clearInterval(el.__ramp); el.__ramp=null; }
+    },40);
+  }
+
+  /* PONTE MUSICALE: il tappeto riparte dallo stesso punto del tour, in crossfade */
+  function ponteMusicale(){
+    if(!bed) return;
+    var da=0;
+    try{
+      var idoc=frame && frame.contentDocument;
+      var ta=idoc && idoc.getElementById('tourAudio');
+      if(ta && !ta.paused){ da=ta.currentTime||0; rampa(ta,0,XF); }  // il tour sfuma
+    }catch(e){}
+    var parti=function(){
+      try{ if(bed.duration) bed.currentTime=da%bed.duration; }catch(e){}
+      bed.volume=0;
+      var p=bed.play(); if(p&&p.catch) p.catch(function(){});
+      rampa(bed,BED_ON,XF);                                          // il tappeto entra
+    };
+    if(bed.readyState>=1) parti();
+    else bed.addEventListener('loadedmetadata',parti,{once:true});
+  }
+
+  /* DUCKING: sotto la voce il tappeto si abbassa, poi risale */
+  if(voce && bed){
+    voce.addEventListener('play', function(){ rampa(bed,BED_DUCK,600); });
+    voce.addEventListener('pause',function(){ rampa(bed,BED_ON,900); });
+    voce.addEventListener('ended',function(){ rampa(bed,BED_ON,900); });
+  }
+
   function entra(){
+    ponteMusicale();
     overlay.classList.add('hide');
     window.removeEventListener('message',onMsg);
-    setTimeout(function(){ if(overlay.parentNode) overlay.parentNode.removeChild(overlay); },950);
+    setTimeout(function(){ if(overlay.parentNode) overlay.parentNode.removeChild(overlay); },XF+150);
   }
   function onMsg(e){ if(e && e.data==='acerio-tour-fine') entra(); }
   window.addEventListener('message',onMsg);
