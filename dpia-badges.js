@@ -671,7 +671,7 @@
   },
   "https://lezione-copyright.vercel.app": {
     "cluster": "D",
-    "name": "Di chi è quest'opera?"
+    "name": "Quello che sei, quello che crei"
   }
 };
   
