@@ -298,6 +298,74 @@
             .guide-text h2 { font-size: 1.15rem; }
         }
 
+        /* ═══ AUTORI: MAPPA CONCETTUALE ═══ */
+        .section-title h2 .ti { color: #6b7c3e; margin-right: .3rem; vertical-align: -2px; }
+
+        .autori-intro {
+            max-width: 1200px; margin: .9rem auto 0; padding: 0 2rem;
+            color: var(--text-medium); font-size: .92rem; font-weight: 600; line-height: 1.65;
+        }
+        .autori-intro b { color: var(--text-dark); }
+
+        .mappa-wrap { max-width: 1200px; margin: 1.1rem auto 0; padding: 0 2rem; }
+        .mappa-card {
+            background: var(--bg-white); border-radius: var(--radius);
+            box-shadow: var(--shadow-card); padding: 1rem .8rem .4rem;
+        }
+        .mappa-hint {
+            text-align: center; font-size: .76rem; font-weight: 700; color: var(--text-light);
+            padding: .1rem 0 .6rem;
+        }
+        .mappa { width: 100%; height: auto; display: block; font-family: 'Nunito', sans-serif; }
+
+        .mappa .cluster { fill: #f7f9f2; stroke: #e6ebdb; stroke-width: 1.5; }
+        .mappa .cluster-lab {
+            font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 800;
+            fill: #9aa2b4; letter-spacing: .02em;
+        }
+        .mappa .edge { stroke: #ccd5bf; stroke-width: 2; fill: none; transition: opacity .25s, stroke-width .25s, stroke .25s; }
+        .mappa .edge-lab { font-size: 11.5px; font-weight: 800; fill: #6f7789; opacity: 0; transition: opacity .25s; pointer-events: none; }
+
+        .mappa .node { cursor: pointer; transition: opacity .25s; }
+        .mappa .node circle { fill: #fff; stroke-width: 3; transition: filter .25s; }
+        .mappa .node .ini { font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 800; text-anchor: middle; pointer-events: none; }
+        .mappa .node .nome { font-size: 12.5px; font-weight: 800; fill: var(--text-dark); text-anchor: middle; pointer-events: none; }
+        .mappa .node:hover circle { filter: drop-shadow(0 5px 14px rgba(45,48,71,.25)); }
+
+        .mappa .node[data-c="c1"] circle { stroke: #06b6d4; } .mappa .node[data-c="c1"] .ini { fill: #06b6d4; }
+        .mappa .node[data-c="c2"] circle { stroke: #10b981; } .mappa .node[data-c="c2"] .ini { fill: #10b981; }
+        .mappa .node[data-c="c3"] circle { stroke: #f59e0b; } .mappa .node[data-c="c3"] .ini { fill: #f59e0b; }
+        .mappa .node[data-c="c4"] circle { stroke: #6b7c3e; } .mappa .node[data-c="c4"] .ini { fill: #6b7c3e; }
+
+        /* stato "un nodo è attivo": tutto il resto sbiadisce */
+        .mappa.attiva .edge { opacity: .18; }
+        .mappa.attiva .node { opacity: .3; }
+        .mappa .node.on { opacity: 1 !important; }
+        .mappa .edge.on { opacity: 1 !important; stroke-width: 3.5; stroke: #8fa06a; }
+        .mappa .edge-lab.on { opacity: 1; }
+
+        /* schede autore */
+        .autore-card .anni { font-size: .72rem; font-weight: 800; color: var(--text-light); letter-spacing: .03em; }
+        .autore-card .dice {
+            font-style: italic; color: var(--text-dark);
+            border-left: 3px solid var(--card-color); padding-left: .75rem;
+            margin-bottom: .65rem; font-size: .86rem; font-weight: 600; line-height: 1.55;
+        }
+        .autore-card .uso-lab {
+            display: block; font-size: .67rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: .05em; color: var(--card-color); margin-bottom: .2rem;
+        }
+        @keyframes flashCard {
+            0% { box-shadow: 0 0 0 0 var(--card-color-light); }
+            25% { box-shadow: 0 0 0 6px var(--card-color-light); }
+            100% { box-shadow: var(--shadow-soft); }
+        }
+        .method-card.flash { animation: flashCard 1.3s ease; }
+
+        @media (max-width: 768px) {
+            .autori-intro, .mappa-wrap { padding-left: 1.25rem; padding-right: 1.25rem; }
+        }
+
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: #c5cfb0; border-radius: 4px; }
@@ -545,6 +613,259 @@
 
     </div>
 
+    <!-- ═══ AUTORI E MAPPA ═══ -->
+    <div class="section-title"><h2><i class="ti ti-affiliate"></i>Gli Autori e Come li Uso</h2><div class="section-line"></div></div>
+
+    <p class="autori-intro">
+        Nessuna di queste metodologie nasce in laboratorio: viene da chi, prima di noi, ha studiato
+        <b>come si impara davvero</b>. Qui ci sono gli autori a cui torno più spesso, cosa dicono e —
+        soprattutto — <b>in quale attività del portale finiscono</b>. Le linee mostrano come si parlano tra loro.
+    </p>
+
+    <div class="mappa-wrap">
+        <div class="mappa-card">
+            <svg class="mappa" id="mappaAutori" viewBox="0 0 1000 680" role="img"
+                 aria-label="Mappa concettuale degli autori di riferimento e delle loro relazioni">
+
+                <!-- famiglie concettuali -->
+                <rect class="cluster" x="35"  y="55"  width="440" height="255" rx="22"/>
+                <text class="cluster-lab" x="55"  y="82">Costruire la conoscenza</text>
+                <rect class="cluster" x="525" y="55"  width="440" height="255" rx="22"/>
+                <text class="cluster-lab" x="545" y="82">Imparare facendo</text>
+                <rect class="cluster" x="35"  y="355" width="440" height="285" rx="22"/>
+                <text class="cluster-lab" x="55"  y="382">Motivare e agganciare</text>
+                <rect class="cluster" x="525" y="355" width="440" height="285" rx="22"/>
+                <text class="cluster-lab" x="545" y="382">Riflettere e differenziare</text>
+
+                <!-- relazioni -->
+                <g id="edges" fill="none">
+                    <line class="edge" data-a="piaget"    data-b="bruner"    x1="130" y1="150" x2="240" y2="250"/>
+                    <line class="edge" data-a="vygotskij" data-b="bruner"    x1="350" y1="130" x2="240" y2="250"/>
+                    <line class="edge" data-a="piaget"    data-b="vygotskij" x1="130" y1="150" x2="350" y2="130"/>
+                    <line class="edge" data-a="ausubel"   data-b="bruner"    x1="110" y1="275" x2="240" y2="250"/>
+                    <line class="edge" data-a="bruner"    data-b="dewey"     x1="240" y1="250" x2="640" y2="150"/>
+                    <line class="edge" data-a="dewey"     data-b="papert"    x1="640" y1="150" x2="880" y2="140"/>
+                    <line class="edge" data-a="dewey"     data-b="kolb"      x1="640" y1="150" x2="760" y2="260"/>
+                    <line class="edge" data-a="bruner"    data-b="zeigarnik" x1="240" y1="250" x2="140" y2="455"/>
+                    <line class="edge" data-a="zeigarnik" data-b="csik"      x1="140" y1="455" x2="350" y2="475"/>
+                    <line class="edge" data-a="csik"      data-b="deci"      x1="350" y1="475" x2="200" y2="580"/>
+                    <line class="edge" data-a="kolb"      data-b="flavell"   x1="760" y1="260" x2="655" y2="460"/>
+                    <line class="edge" data-a="flavell"   data-b="gardner"   x1="655" y1="460" x2="870" y2="475"/>
+                    <line class="edge" data-a="papert"    data-b="gardner"   x1="880" y1="140" x2="870" y2="475"/>
+                </g>
+
+                <!-- etichette delle relazioni (compaiono al passaggio) -->
+                <g id="edgeLabs" text-anchor="middle">
+                    <text class="edge-lab" data-a="piaget"    data-b="bruner"    x="185" y="196">conflitto → scoperta</text>
+                    <text class="edge-lab" data-a="vygotskij" data-b="bruner"    x="300" y="186">ZSP → scaffolding</text>
+                    <text class="edge-lab" data-a="piaget"    data-b="vygotskij" x="240" y="132">individuale ↔ sociale</text>
+                    <text class="edge-lab" data-a="ausubel"   data-b="bruner"    x="175" y="252">ciò che già sai</text>
+                    <text class="edge-lab" data-a="bruner"    data-b="dewey"     x="440" y="194">scoperta ↔ esperienza</text>
+                    <text class="edge-lab" data-a="dewey"     data-b="papert"    x="760" y="138">fare → costruire</text>
+                    <text class="edge-lab" data-a="dewey"     data-b="kolb"      x="712" y="200">esperienza → riflessione</text>
+                    <text class="edge-lab" data-a="bruner"    data-b="zeigarnik" x="196" y="350">pensiero narrativo</text>
+                    <text class="edge-lab" data-a="zeigarnik" data-b="csik"      x="245" y="456">tensione → flow</text>
+                    <text class="edge-lab" data-a="csik"      data-b="deci"      x="290" y="530">sfida calibrata</text>
+                    <text class="edge-lab" data-a="kolb"      data-b="flavell"   x="718" y="360">riflessione → metacognizione</text>
+                    <text class="edge-lab" data-a="flavell"   data-b="gardner"   x="762" y="458">consapevolezza → differenze</text>
+                    <text class="edge-lab" data-a="papert"    data-b="gardner"   x="895" y="305">artefatti ↔ linguaggi</text>
+                </g>
+
+                <!-- autori -->
+                <g id="nodes">
+                    <g class="node" data-id="piaget" data-c="c1" tabindex="0"><circle cx="130" cy="150" r="34"/><text class="ini" x="130" y="156">JP</text><text class="nome" x="130" y="203">Piaget</text></g>
+                    <g class="node" data-id="vygotskij" data-c="c1" tabindex="0"><circle cx="350" cy="130" r="34"/><text class="ini" x="350" y="136">LV</text><text class="nome" x="350" y="183">Vygotskij</text></g>
+                    <g class="node" data-id="bruner" data-c="c1" tabindex="0"><circle cx="240" cy="250" r="34"/><text class="ini" x="240" y="256">JB</text><text class="nome" x="240" y="303">Bruner</text></g>
+                    <g class="node" data-id="ausubel" data-c="c1" tabindex="0"><circle cx="110" cy="275" r="34"/><text class="ini" x="110" y="281">DA</text><text class="nome" x="110" y="328">Ausubel</text></g>
+
+                    <g class="node" data-id="dewey" data-c="c2" tabindex="0"><circle cx="640" cy="150" r="34"/><text class="ini" x="640" y="156">JD</text><text class="nome" x="640" y="203">Dewey</text></g>
+                    <g class="node" data-id="papert" data-c="c2" tabindex="0"><circle cx="880" cy="140" r="34"/><text class="ini" x="880" y="146">SP</text><text class="nome" x="880" y="193">Papert</text></g>
+                    <g class="node" data-id="kolb" data-c="c2" tabindex="0"><circle cx="760" cy="260" r="34"/><text class="ini" x="760" y="266">DK</text><text class="nome" x="760" y="313">Kolb</text></g>
+
+                    <g class="node" data-id="zeigarnik" data-c="c3" tabindex="0"><circle cx="140" cy="455" r="34"/><text class="ini" x="140" y="461">BZ</text><text class="nome" x="140" y="508">Zeigarnik</text></g>
+                    <g class="node" data-id="csik" data-c="c3" tabindex="0"><circle cx="350" cy="475" r="34"/><text class="ini" x="350" y="481">MC</text><text class="nome" x="350" y="528">Csikszentmihalyi</text></g>
+                    <g class="node" data-id="deci" data-c="c3" tabindex="0"><circle cx="200" cy="580" r="34"/><text class="ini" x="200" y="586">D&amp;R</text><text class="nome" x="200" y="633">Deci &amp; Ryan</text></g>
+
+                    <g class="node" data-id="flavell" data-c="c4" tabindex="0"><circle cx="655" cy="460" r="34"/><text class="ini" x="655" y="466">JF</text><text class="nome" x="655" y="513">Flavell</text></g>
+                    <g class="node" data-id="gardner" data-c="c4" tabindex="0"><circle cx="870" cy="475" r="34"/><text class="ini" x="870" y="481">HG</text><text class="nome" x="870" y="528">Gardner</text></g>
+                </g>
+            </svg>
+            <div class="mappa-hint">Passa sopra un autore per vedere i suoi legami · clicca per andare alla scheda</div>
+        </div>
+    </div>
+
+    <div class="method-grid">
+
+        <div class="method-card autore-card" data-color="cyan" id="a-piaget">
+            <div class="card-top">
+                <div class="card-emoji"><i class="ti ti-puzzle"></i></div>
+                <div><h2>Jean Piaget</h2><span class="anni">1896–1980 · Costruttivismo</span></div>
+            </div>
+            <div class="card-body">
+                <p class="dice">«La conoscenza non si trasmette: si costruisce. Si impara quando qualcosa rompe l'equilibrio delle idee che avevamo.»</p>
+                <p><span class="uso-lab">Come lo uso</span>Parto quasi sempre da un <b>conflitto cognitivo</b>: una domanda che spiazza. In «Daniel e la Mamma» si scopre perché il tasto di accensione ha proprio quel simbolo; in «Sei un Piccione?» gli studenti si accorgono che le loro scelte sui social non sono così libere.</p>
+            </div>
+            <div class="tags">
+                <span class="tag">Daniel e la Mamma</span><span class="tag">Sei un Piccione?</span><span class="tag">Guarda Due Volte</span>
+            </div>
+        </div>
+
+        <div class="method-card autore-card" data-color="cyan" id="a-vygotskij">
+            <div class="card-top">
+                <div class="card-emoji"><i class="ti ti-users"></i></div>
+                <div><h2>Lev Vygotskij</h2><span class="anni">1896–1934 · Zona di sviluppo prossimale</span></div>
+            </div>
+            <div class="card-body">
+                <p class="dice">«Si impara prima insieme, poi da soli. Tra ciò che so fare e ciò che potrei fare con un aiuto c'è lo spazio in cui avviene l'apprendimento.»</p>
+                <p><span class="uso-lab">Come lo uso</span>È il motivo per cui molte attività si fanno <b>in coppia</b> e per cui il debate è centrale: il linguaggio è lo strumento con cui il pensiero prende forma. In «L'Officina delle Consegne» la consegna dell'adulto è esattamente la mediazione che rende eseguibile un compito.</p>
+            </div>
+            <div class="tags">
+                <span class="tag">Debate in Classe</span><span class="tag">Arena del Pensiero</span><span class="tag">L'Officina delle Consegne</span>
+            </div>
+        </div>
+
+        <div class="method-card autore-card" data-color="cyan" id="a-bruner">
+            <div class="card-top">
+                <div class="card-emoji"><i class="ti ti-stairs-up"></i></div>
+                <div><h2>Jerome Bruner</h2><span class="anni">1915–2016 · Scoperta, scaffolding, spirale</span></div>
+            </div>
+            <div class="card-body">
+                <p class="dice">«Scoprire invece che ricevere. E ogni tema va ripreso a spirale, più in profondità ogni volta.»</p>
+                <p><span class="uso-lab">Come lo uso</span>È <b>l'ossatura di ogni percorso</b>: lezione iniziale → pratica guidata → trasferimento, con l'impalcatura che si ritira. La cittadinanza digitale torna in 1ª, 2ª e 3ª con profondità crescente. Il suo «pensiero narrativo» è dietro alle audioletture.</p>
+            </div>
+            <div class="tags">
+                <span class="tag">I Percorsi</span><span class="tag">Identità Digitale</span><span class="tag">Biblioteca Digitale</span>
+            </div>
+        </div>
+
+        <div class="method-card autore-card" data-color="cyan" id="a-ausubel">
+            <div class="card-top">
+                <div class="card-emoji"><i class="ti ti-anchor"></i></div>
+                <div><h2>David Ausubel</h2><span class="anni">1918–2008 · Apprendimento significativo</span></div>
+            </div>
+            <div class="card-body">
+                <p class="dice">«Il fattore che più influenza l'apprendimento è ciò che l'alunno già sa: accertatelo e agite di conseguenza.»</p>
+                <p><span class="uso-lab">Come lo uso</span>Uso i <b>glossari come organizzatori anticipati</b> e metto sempre una lettura o un video preparatorio prima dell'attività: «Video di Informatica» e «Sicurnauti» funzionano proprio così, prima si ancora il lessico, poi si esplora.</p>
+            </div>
+            <div class="tags">
+                <span class="tag">Glossario iPad</span><span class="tag">Glossario Digitale</span><span class="tag">Video di Informatica</span>
+            </div>
+        </div>
+
+        <div class="method-card autore-card" data-color="emerald" id="a-dewey">
+            <div class="card-top">
+                <div class="card-emoji"><i class="ti ti-hammer"></i></div>
+                <div><h2>John Dewey</h2><span class="anni">1859–1952 · Learning by doing</span></div>
+            </div>
+            <div class="card-body">
+                <p class="dice">«L'educazione non è preparazione alla vita: è la vita stessa. Si impara dall'esperienza, a patto di rifletterci sopra.»</p>
+                <p><span class="uso-lab">Come lo uso</span>Il laboratorio è <b>un'officina, non un'aula con i computer</b>. Da qui i compiti autentici: al «Bar della Scuola» si gestisce davvero la cassa, in «Energy Pixel» si leggono i dati reali dell'impianto fotovoltaico della piscina.</p>
+            </div>
+            <div class="tags">
+                <span class="tag">Bar della Scuola</span><span class="tag">Energy Pixel</span><span class="tag">Diario delle Vacanze</span>
+            </div>
+        </div>
+
+        <div class="method-card autore-card" data-color="emerald" id="a-papert">
+            <div class="card-top">
+                <div class="card-emoji"><i class="ti ti-tools"></i></div>
+                <div><h2>Seymour Papert</h2><span class="anni">1928–2016 · Costruzionismo</span></div>
+            </div>
+            <div class="card-body">
+                <p class="dice">«Si impara meglio costruendo qualcosa di condivisibile: un oggetto, un programma, un artefatto che esiste davvero.»</p>
+                <p><span class="uso-lab">Come lo uso</span>Ogni percorso di coding finisce con <b>qualcosa che esiste</b>: un algoritmo che funziona, un pezzo stampato in 3D, un video montato. Non esercizi da consegnare, ma prodotti da mostrare.</p>
+            </div>
+            <div class="tags">
+                <span class="tag">Droni Algoritmici</span><span class="tag">Stampa 3D</span><span class="tag">Video Shorts</span>
+            </div>
+        </div>
+
+        <div class="method-card autore-card" data-color="emerald" id="a-kolb">
+            <div class="card-top">
+                <div class="card-emoji"><i class="ti ti-refresh"></i></div>
+                <div><h2>David Kolb</h2><span class="anni">1939 · Ciclo esperienziale</span></div>
+            </div>
+            <div class="card-body">
+                <p class="dice">«Esperienza → riflessione → concetto → nuova prova. L'apprendimento è un ciclo, non una linea retta.»</p>
+                <p><span class="uso-lab">Come lo uso</span>È la ragione per cui <b>lo schema delle mie lezioni cambia spesso</b>: la pratica laboratoriale porta a provare prima e a ragionare dopo su cosa ha funzionato. Le stazioni di «Video di Informatica» e il simulatore dei filamenti seguono questo ciclo.</p>
+            </div>
+            <div class="tags">
+                <span class="tag">Video di Informatica</span><span class="tag">Scegli il Filamento Giusto</span><span class="tag">Laboratorio Scientifico</span>
+            </div>
+        </div>
+
+        <div class="method-card autore-card" data-color="amber" id="a-zeigarnik">
+            <div class="card-top">
+                <div class="card-emoji"><i class="ti ti-player-pause"></i></div>
+                <div><h2>Bluma Zeigarnik</h2><span class="anni">1901–1988 · Effetto Zeigarnik</span></div>
+            </div>
+            <div class="card-body">
+                <p class="dice">«Ricordiamo meglio i compiti interrotti di quelli conclusi: ciò che resta aperto continua a lavorarci dentro.»</p>
+                <p><span class="uso-lab">Come lo uso</span>È il mio strumento preferito per <b>l'aggancio narrativo</b>. «L'Agnello Rimbalzello» si ferma cinque volte e chiede allo studente di rispondere; le escape room lasciano un enigma sospeso; «Il Lab del Gancio» costruisce i primi 90 secondi del colloquio proprio su una tensione irrisolta.</p>
+            </div>
+            <div class="tags">
+                <span class="tag">L'Agnello Rimbalzello</span><span class="tag">CyberEscape</span><span class="tag">Il Lab del Gancio</span>
+            </div>
+        </div>
+
+        <div class="method-card autore-card" data-color="amber" id="a-csik">
+            <div class="card-top">
+                <div class="card-emoji"><i class="ti ti-ripple"></i></div>
+                <div><h2>Mihály Csíkszentmihályi</h2><span class="anni">1934–2021 · Flow</span></div>
+            </div>
+            <div class="card-body">
+                <p class="dice">«Il flow nasce dove la sfida è appena sopra le tue capacità: né noia né ansia, ma assorbimento totale.»</p>
+                <p><span class="uso-lab">Come lo uso</span>Per questo quasi tutto è <b>a livelli progressivi</b>: «I Tre Porcellini» ha tre gradi di difficoltà, «Keyboard Training» calibra la sfida sulla velocità già raggiunta, il coding cresce di complessità un passo alla volta.</p>
+            </div>
+            <div class="tags">
+                <span class="tag">I Tre Porcellini</span><span class="tag">Keyboard Training</span><span class="tag">Primi Passi nel Coding</span>
+            </div>
+        </div>
+
+        <div class="method-card autore-card" data-color="amber" id="a-deci">
+            <div class="card-top">
+                <div class="card-emoji"><i class="ti ti-heart-handshake"></i></div>
+                <div><h2>Deci &amp; Ryan</h2><span class="anni">Autodeterminazione</span></div>
+            </div>
+            <div class="card-body">
+                <p class="dice">«La motivazione autentica poggia su tre gambe: autonomia, competenza, relazione.»</p>
+                <p><span class="uso-lab">Come lo uso</span><b>«Profe, ho finito!» è autonomia allo stato puro</b>: chi termina sceglie da sé dove andare, senza compiti di riempimento. Le Case danno la relazione, i livelli progressivi danno il senso di competenza.</p>
+            </div>
+            <div class="tags">
+                <span class="tag">Profe ho finito!</span><span class="tag">Il Gioco delle Case</span><span class="tag">Albo d'Oro delle Case</span>
+            </div>
+        </div>
+
+        <div class="method-card autore-card" data-color="violet" id="a-flavell">
+            <div class="card-top">
+                <div class="card-emoji"><i class="ti ti-brain"></i></div>
+                <div><h2>John Flavell</h2><span class="anni">1928 · Metacognizione</span></div>
+            </div>
+            <div class="card-body">
+                <p class="dice">«Metacognizione: pensare al proprio pensiero, accorgersi di come si sta imparando.»</p>
+                <p><span class="uso-lab">Come lo uso</span>Chiudo i percorsi con <b>domande sul processo, non solo sul contenuto</b>. «Calibro» e l'«Autovalutazione» servono a questo, e il quaderno di bordo tiene traccia del ragionamento, non solo del risultato.</p>
+            </div>
+            <div class="tags">
+                <span class="tag">Calibro</span><span class="tag">Autovalutazione Lezione</span><span class="tag">L'Atlante dei Metodi di Studio</span>
+            </div>
+        </div>
+
+        <div class="method-card autore-card" data-color="violet" id="a-gardner">
+            <div class="card-top">
+                <div class="card-emoji"><i class="ti ti-versions"></i></div>
+                <div><h2>Howard Gardner</h2><span class="anni">1943 · Intelligenze multiple</span></div>
+            </div>
+            <div class="card-body">
+                <p class="dice">«Non esiste un'unica intelligenza: esistono modi diversi di essere intelligenti.»</p>
+                <p><span class="uso-lab">Come lo uso</span>Lo stesso contenuto lo offro <b>su più canali</b> — podcast, video, audiolibro con testo evidenziato, gioco, infografica — così ciascuno trova la porta d'ingresso che gli è congeniale. È anche la base dell'inclusione: nessuno resta fuori per il formato.</p>
+            </div>
+            <div class="tags">
+                <span class="tag">Biblioteca Digitale</span><span class="tag">Vocabolario d'Autore</span><span class="tag">Podcast e Video</span>
+            </div>
+        </div>
+
+    </div>
+
     <!-- ═══ FOOTER ═══ -->
     <footer class="site-footer">
         <div class="footer-top">
@@ -577,6 +898,51 @@
         requestAnimationFrame(draw);
     }
     draw();
+})();
+
+/* ═══ Mappa degli autori: evidenzia i legami e porta alla scheda ═══ */
+(function(){
+    var svg=document.getElementById('mappaAutori'); if(!svg) return;
+    var nodi=[].slice.call(svg.querySelectorAll('.node'));
+    var archi=[].slice.call(svg.querySelectorAll('.edge'));
+    var etich=[].slice.call(svg.querySelectorAll('.edge-lab'));
+
+    function collega(id){
+        svg.classList.add('attiva');
+        var vicini={};
+        archi.forEach(function(l){
+            var on=(l.dataset.a===id||l.dataset.b===id);
+            l.classList.toggle('on',on);
+            if(on){ vicini[l.dataset.a]=1; vicini[l.dataset.b]=1; }
+        });
+        etich.forEach(function(t){ t.classList.toggle('on', t.dataset.a===id||t.dataset.b===id); });
+        nodi.forEach(function(n){ n.classList.toggle('on', !!vicini[n.dataset.id] || n.dataset.id===id); });
+    }
+    function azzera(){
+        svg.classList.remove('attiva');
+        archi.forEach(function(l){ l.classList.remove('on'); });
+        etich.forEach(function(t){ t.classList.remove('on'); });
+        nodi.forEach(function(n){ n.classList.remove('on'); });
+    }
+    function vaiAllaScheda(id){
+        var card=document.getElementById('a-'+id); if(!card) return;
+        card.scrollIntoView({behavior:'smooth',block:'center'});
+        card.classList.remove('flash'); void card.offsetWidth; card.classList.add('flash');
+        setTimeout(function(){ card.classList.remove('flash'); },1400);
+    }
+
+    nodi.forEach(function(n){
+        var id=n.dataset.id;
+        n.addEventListener('mouseenter',function(){ collega(id); });
+        n.addEventListener('focus',function(){ collega(id); });
+        n.addEventListener('mouseleave',azzera);
+        n.addEventListener('blur',azzera);
+        n.addEventListener('click',function(){ vaiAllaScheda(id); });
+        n.addEventListener('keydown',function(e){
+            if(e.key==='Enter'||e.key===' '){ e.preventDefault(); vaiAllaScheda(id); }
+        });
+    });
+    svg.addEventListener('mouseleave',azzera);
 })();
 </script>
 </body>
