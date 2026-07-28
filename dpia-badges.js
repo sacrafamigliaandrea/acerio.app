@@ -687,7 +687,7 @@
   },
   "https://escapeprofroom.vercel.app": {
     "cluster": "D",
-    "name": "Sala Professori 3D"
+    "name": "Escape Prof Room"
   }
 };
   
