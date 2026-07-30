@@ -695,7 +695,7 @@
   },
   "https://escaperoomdna.vercel.app": {
     "cluster": "D",
-    "name": "Il Filamento Interrotto"
+    "name": "Escape Room DNA"
   },
   "https://primopiano.vercel.app": {
     "cluster": "D",
