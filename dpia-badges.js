@@ -711,7 +711,11 @@
     "color": "#8B4A3C",
     "bg": "#F4E6E2",
     "desc": "Questa applicazione costruisce profili dettagliati degli studenti per analizzarne competenze e comportamenti nel tempo. Richiede consenso esplicito delle famiglie e supervisione costante.",
-    "legalRef": "Trattamento ad alto rischio ex GDPR art. 35 e AI Act art. 26 (Allegato III). DPIA + FRIA obbligatorie."
+    "legalRef": "Trattamento ad alto rischio ex GDPR art. 35 e AI Act art. 26 (Allegato III). DPIA + FRIA obbligatorie.",
+    "aiAct": {
+      "fascia": "Alto rischio · Allegato III.3",
+      "text": "La profilazione degli studenti è sempre ad alto rischio: la deroga dell'art. 6.3 non si applica. Un eventuale modello di IA richiederebbe FRIA (art. 27) e sorveglianza umana qualificata (art. 26). L'esito non raggiunge mai studente o famiglia senza validazione del docente."
+    }
   },
   "B": {
     "label": "B",
@@ -720,7 +724,11 @@
     "color": "#B8860B",
     "bg": "#FBF3DC",
     "desc": "Questa applicazione osserva il comportamento degli studenti durante l'uso (tempi, scelte, attenzione). I dati possono restare nel browser o essere trasmessi alla scuola.",
-    "legalRef": "GDPR art. 35 e AI Act Allegato III. Uso solo formativo, mai sommativo."
+    "legalRef": "GDPR art. 35 e AI Act Allegato III. Uso solo formativo, mai sommativo.",
+    "aiAct": {
+      "fascia": "Allegato III.3 · deroga art. 6.3",
+      "text": "L'osservazione usa soglie deterministiche, non un modello di IA: formalmente fuori dall'art. 3.1. Vietata in ogni caso l'inferenza di emozioni a scuola (art. 5.1.f): l'output resta descrittivo e comportamentale, mai emotivo. Solo uso formativo, mai sommativo."
+    }
   },
   "C": {
     "label": "C",
@@ -729,7 +737,11 @@
     "color": "#1E4A8A",
     "bg": "#E4EAF3",
     "desc": "Questa applicazione utilizza intelligenza artificiale per generare risposte e contenuti. Le richieste degli studenti sono inviate al fornitore del servizio IA.",
-    "legalRef": "GDPR art. 28 e AI Act art. 50 (obbligo di trasparenza). Uso supervisionato dal docente."
+    "legalRef": "GDPR art. 28 e AI Act art. 50 (obbligo di trasparenza). Uso supervisionato dal docente.",
+    "aiAct": {
+      "fascia": "Trasparenza · art. 50",
+      "text": "Cluster che si attiva solo se un'app integra davvero un modello di IA a runtime: allora scatta la trasparenza (art. 50) e la scuola diventa anche fornitore (art. 3.3). Ad oggi nessuna app del portale rientra in questo caso. Interazione dichiarata prima del primo uso, contenuti sintetici sempre etichettati; nessun uso diretto da parte degli under 14."
+    }
   },
   "D": {
     "label": "D",
@@ -738,7 +750,11 @@
     "color": "#6B7280",
     "bg": "#EDEFF2",
     "desc": "Questa applicazione non raccoglie alcun dato personale degli studenti. Funziona interamente nel browser senza inviare informazioni a server esterni.",
-    "legalRef": "GDPR art. 30 par. 5 (registro semplificato). Principio di minimizzazione applicato."
+    "legalRef": "GDPR art. 30 par. 5 (registro semplificato). Principio di minimizzazione applicato.",
+    "aiAct": {
+      "fascia": "Fuori perimetro AI Act",
+      "text": "Logica deterministica (conteggi, soglie, formule): non è un sistema di IA ai sensi dell'art. 3.1, quindi fuori dall'ambito del Regolamento. Il criterio è funzionale — conta cosa gira a runtime, non come è stato scritto il codice: nessun modello, nessun apprendimento, nessun adattamento. Restano i soli obblighi GDPR, già a rischio minimo."
+    }
   },
   "E": {
     "label": "E",
@@ -747,7 +763,11 @@
     "color": "#4A5160",
     "bg": "#F1F3F7",
     "desc": "Questa applicazione raccoglie alcuni dati degli studenti (nickname, risposte, scelte didattiche) e li salva in fogli di lavoro accessibili solo al docente di classe.",
-    "legalRef": "GDPR art. 5 (minimizzazione) e art. 30. Workspace for Education DPA."
+    "legalRef": "GDPR art. 5 (minimizzazione) e art. 30. Workspace for Education DPA.",
+    "aiAct": {
+      "fascia": "Fuori perimetro AI Act",
+      "text": "Raccolta gestita con logica deterministica, senza modelli di IA: fuori dall'ambito dell'AI Act, disciplinata dal solo GDPR. Un'eventuale elaborazione automatica che orientasse le scelte didattiche ricadrebbe nella deroga dell'art. 6.3, senza profilazione."
+    }
   },
   "F": {
     "label": "F",
@@ -756,7 +776,11 @@
     "color": "#2C5F8D",
     "bg": "#E4EAF3",
     "desc": "Questa applicazione è accessibile soltanto ai docenti tramite area riservata. I dati trattati sono analoghi a quelli del registro elettronico.",
-    "legalRef": "GDPR art. 6.1.e (interesse pubblico) e art. 9.2.g. D.Lgs. 297/1994."
+    "legalRef": "GDPR art. 6.1.e (interesse pubblico) e art. 9.2.g. D.Lgs. 297/1994.",
+    "aiAct": {
+      "fascia": "Fuori perimetro AI Act · art. 4",
+      "text": "Strumenti d'ufficio per soli docenti, senza componente di IA: fuori dall'ambito del Regolamento. Il personale che li utilizza rientra nell'obbligo di alfabetizzazione IA (art. 4), assolto con la formazione PNRR documentata dalla scuola."
+    }
   }
 };
   
@@ -905,6 +929,43 @@
         line-height: 1.5;
         font-style: italic;
         border-radius: 0 2px 2px 0;
+      }
+      .dpia-popout-aiact {
+        margin: 0 0 12px 0;
+        padding: 9px 11px 10px;
+        background: #EEF2FA;
+        border: 1px solid #D2DCF0;
+        border-left: 3px solid #123E90;
+        border-radius: 0 3px 3px 0;
+      }
+      .dpia-popout-aiact-head {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 5px;
+        flex-wrap: wrap;
+      }
+      .dpia-popout-aiact-tag {
+        font-family: 'IBM Plex Sans Condensed', system-ui, sans-serif;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #FFFFFF;
+        background: #123E90;
+        padding: 2px 7px;
+        border-radius: 2px;
+      }
+      .dpia-popout-aiact-fascia {
+        font-size: 11px;
+        font-weight: 600;
+        color: #123E90;
+      }
+      .dpia-popout-aiact-text {
+        margin: 0;
+        color: #3A4658;
+        font-size: 12px;
+        line-height: 1.55;
       }
       .dpia-popout-app {
         margin: 0 0 14px 0;
@@ -1145,7 +1206,19 @@
     if (isThirdparty) {
       actionsHtml += '<span class="dpia-popout-btn" style="background:#F7F5EE;color:#5A4600;border-color:#E8D9B0;cursor:default;font-style:italic">Servizio terzo</span>';
     }
-    
+
+    let aiActHtml = '';
+    if (meta.aiAct) {
+      aiActHtml =
+        '<div class="dpia-popout-aiact">' +
+          '<div class="dpia-popout-aiact-head">' +
+            '<span class="dpia-popout-aiact-tag">AI Act</span>' +
+            '<span class="dpia-popout-aiact-fascia">' + meta.aiAct.fascia + '</span>' +
+          '</div>' +
+          '<p class="dpia-popout-aiact-text">' + meta.aiAct.text + '</p>' +
+        '</div>';
+    }
+
     popout.innerHTML = 
       '<button class="dpia-popout-close" aria-label="Chiudi">×</button>' +
       '<div class="dpia-popout-header">' +
@@ -1156,8 +1229,9 @@
       (appName ? '<div class="dpia-popout-app"><strong>App:</strong> ' + escapeForHtml(appName) + '</div>' : '') +
       '<p class="dpia-popout-desc">' + meta.desc + '</p>' +
       (meta.legalRef ? '<p class="dpia-popout-legal">' + meta.legalRef + '</p>' : '') +
+      aiActHtml +
       (actionsHtml ? '<div class="dpia-popout-actions">' + actionsHtml + '</div>' : '') +
-      '<div class="dpia-popout-footer">Classificazione DPIA Studio · GDPR + AI Act</div>';
+      '<div class="dpia-popout-footer">Classificazione DPIA Studio · GDPR + AI Act (Reg. UE 2024/1689)</div>';
     
     document.body.appendChild(popout);
     activePopout = popout;
