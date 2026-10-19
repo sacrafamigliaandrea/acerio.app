@@ -55,15 +55,24 @@
         .hero-content { position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; }
         .hero-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
         .hero-brand { display: flex; align-items: stretch; gap: 1.2rem; }
-        .hero-logo {
-            width: 120px; height: 120px; border-radius: 18px;
-            object-fit: cover;
-            border: none;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        .hero-logo-wrap {
+            position: relative; width: 120px; height: 120px; flex-shrink: 0; align-self: center;
             animation: logoPopIn 0.6s cubic-bezier(0.175,0.885,0.32,1.275) both;
-            flex-shrink: 0;
+        }
+        .hero-logo-wrap::before {
+            content: ""; position: absolute; inset: -12px; border-radius: 50%; z-index: 0;
+            background: radial-gradient(circle, rgba(130,235,195,.45), rgba(130,235,195,0) 70%);
+            animation: logoHalo 4.6s ease-in-out infinite;
+        }
+        .hero-logo {
+            position: relative; z-index: 1; width: 120px; height: 120px; border-radius: 50%;
+            object-fit: cover; display: block;
+            border: 2px solid rgba(185,255,222,.5);
+            box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.25), 0 6px 22px rgba(0,0,0,.35), 0 0 28px rgba(120,230,190,.22);
         }
         @keyframes logoPopIn { from { opacity:0; transform:scale(0.5) rotate(-10deg); } to { opacity:1; transform:scale(1) rotate(0); } }
+        @keyframes logoHalo { 0%,100% { opacity:.5; transform:scale(1); } 50% { opacity:.9; transform:scale(1.06); } }
+        @media (prefers-reduced-motion: reduce) { .hero-logo-wrap { animation: none; } .hero-logo-wrap::before { animation: none; opacity: .6; } }
         .hero-text { display: flex; flex-direction: column; justify-content: center; }
         .hero-pre { font-family: 'DM Sans', sans-serif; font-size: 1.3rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.75; animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .05s both; }
         .hero-text h1 { font-family: 'DM Sans', sans-serif; font-size: 3.2rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; text-shadow: 0 2px 12px rgba(0,0,0,0.15); animation: fadeUp .7s cubic-bezier(.16,1,.3,1) .1s both; }
@@ -257,9 +266,9 @@
         <div class="hero-content">
             <div class="hero-top">
                 <div class="hero-brand">
-                    <img src="logo_petrolio.jpg" alt="Logo Sacra Famiglia" class="hero-logo">
+                    <div class="hero-logo-wrap"><img src="aclogo.png" alt="Logo Sacra Famiglia" class="hero-logo"></div>
                     <div class="hero-text">
-                        <div class="hero-pre">Portale</div>
+                        <div class="hero-pre">Galassia</div>
                         <h1>Web App Didattiche</h1>
                         <p>Andrea Cerioli · Animatore Digitale</p>
                     </div>
@@ -1266,406 +1275,208 @@
     </footer>
 
     <script>
-        /* ═══ HERO: ITALIA CONNESSA AL MONDO ═══ */
-        (function() {
-            var canvas = document.getElementById('heroNet');
-            if (!canvas) return;
-            var ctx = canvas.getContext('2d');
-            var W, H;
+        /* ═══ HERO: GALASSIA DELLE WEB APP ═══
+           Una stella per ogni web app, colore = categoria. Disco a spirale inclinato,
+           rotazione lenta, nucleo luminoso. Effetto cinematografico: ingresso in
+           dissolvenza + zoom, nucleo che respira, telecamera fluttuante, rare stelle cadenti.
+           Rispetta prefers-reduced-motion (fotogramma statico) e hardware datato. */
+        (function () {
+          var canvas = document.getElementById('heroNet');
+          if (!canvas) return;
+          var ctx = canvas.getContext('2d');
 
-            function resize() {
-                canvas.width = canvas.parentElement.offsetWidth || 1;
-                canvas.height = canvas.parentElement.offsetHeight || 1;
-                W = canvas.width; H = canvas.height;
-            }
-            resize();
-            window.addEventListener('resize', resize);
+          var CAT_COLOR = {
+            "Biblioteca Digitale": "#8B6914",
+            "Approfondimenti e Ricerche": "#1B6B3A",
+            "Sacra Famiglia": "#6D4EA3",
+            "Sport e Giochi": "#1D6FA5",
+            "Informatica & Tech": "#2d4a3e",
+            "Coding": "#355070",
+            "Cittadinanza Digitale": "#2E8B74",
+            "Lab. Scrittura": "#B8860B",
+            "Lezioni": "#2F9E8F",
+            "Esame di Stato": "#C08A2E",
+            "Genitori e Famiglie": "#7FA650"
+          };
+          var COUNTS = {
+            "Sacra Famiglia": 18, "Cittadinanza Digitale": 17, "Lab. Scrittura": 15,
+            "Biblioteca Digitale": 19, "Informatica & Tech": 24, "Coding": 15,
+            "Lezioni": 23, "Approfondimenti e Ricerche": 16, "Esame di Stato": 7,
+            "Genitori e Famiglie": 6, "Sport e Giochi": 12
+          };
 
-            /* Italy — high-fidelity coastline ~150 pts */
-            var italyMain = [
-                /* ── Liguria (confine FR → La Spezia) ── */
-                [7.53,43.79],[7.62,43.80],[7.77,43.80],[7.92,43.82],[8.05,43.87],
-                [8.18,43.88],[8.30,43.92],[8.45,44.00],[8.58,44.10],[8.70,44.22],
-                [8.80,44.32],[8.92,44.40],[9.08,44.42],[9.22,44.38],[9.38,44.32],
-                [9.52,44.28],[9.65,44.22],[9.78,44.15],[9.88,44.08],
-                /* ── Toscana ── */
-                [10.00,43.98],[10.08,43.82],[10.15,43.68],[10.22,43.55],
-                [10.30,43.42],[10.35,43.28],[10.42,43.12],[10.48,42.98],
-                [10.55,42.85],[10.65,42.72],[10.72,42.60],
-                /* promontorio Argentario */
-                [10.80,42.48],[10.90,42.38],[11.02,42.30],[11.10,42.22],
-                [11.15,42.12],
-                /* ── Lazio ── */
-                [11.18,42.00],[11.22,41.88],[11.32,41.72],[11.48,41.58],
-                [11.65,41.45],[11.82,41.38],[11.95,41.42],[12.10,41.50],
-                [12.22,41.62],[12.32,41.72],[12.42,41.68],[12.50,41.58],
-                [12.55,41.48],[12.62,41.38],[12.72,41.28],
-                /* Circeo / Gaeta */
-                [12.85,41.22],[13.02,41.18],[13.18,41.22],[13.35,41.12],
-                [13.52,41.05],
-                /* ── Campania — golfo di Napoli ── */
-                [13.68,41.00],[13.82,40.92],[13.95,40.85],[14.08,40.82],
-                [14.18,40.78],[14.28,40.72],
-                /* penisola sorrentina / Amalfi */
-                [14.38,40.65],[14.48,40.62],[14.55,40.58],[14.65,40.55],
-                /* ── Cilento ── */
-                [14.78,40.45],[14.88,40.35],[14.98,40.28],[15.08,40.18],
-                [15.18,40.08],[15.28,40.00],
-                /* ── Calabria costa tirrenica ── */
-                [15.38,39.90],[15.48,39.78],[15.55,39.65],[15.62,39.52],
-                [15.68,39.38],[15.72,39.25],[15.78,39.12],[15.82,39.00],
-                [15.78,38.88],[15.72,38.72],[15.68,38.58],[15.65,38.42],
-                [15.62,38.28],[15.62,38.18],
-                /* ── PUNTA DELLO STIVALE ── */
-                [15.65,38.05],[15.72,37.95],[15.82,37.92],[15.92,37.95],
-                [16.02,38.00],
-                /* ── Calabria costa ionica (risalita) ── */
-                [16.12,38.08],[16.22,38.15],[16.32,38.28],[16.42,38.42],
-                [16.48,38.55],[16.55,38.68],[16.62,38.82],[16.68,38.95],
-                [16.72,39.08],[16.78,39.22],[16.82,39.35],
-                /* ── Golfo di Taranto ── */
-                [16.88,39.48],[16.95,39.62],[17.02,39.75],[17.08,39.88],
-                [17.15,39.98],
-                /* ── Puglia — verso il tacco ── */
-                [17.28,40.05],[17.45,40.08],[17.62,40.10],[17.78,40.08],
-                [17.92,40.02],[18.05,39.95],[18.15,39.85],
-                /* ── TACCO — Salento ── */
-                [18.28,39.78],[18.38,39.72],[18.45,39.62],[18.50,39.52],
-                [18.52,39.42],[18.48,39.35],
-                /* punta di Leuca */
-                [18.35,39.48],[18.22,39.58],[18.12,39.68],
-                /* risalita adriatica Puglia */
-                [18.22,39.82],[18.35,39.98],[18.48,40.08],[18.52,40.18],
-                [18.50,40.28],[18.42,40.38],[18.32,40.48],[18.18,40.55],
-                [18.02,40.62],[17.85,40.72],[17.68,40.82],[17.48,40.92],
-                [17.28,41.00],[17.08,41.08],
-                /* ── Gargano (sperone) ── */
-                [16.85,41.15],[16.62,41.22],[16.42,41.35],[16.22,41.52],
-                [16.08,41.62],[15.95,41.72],[15.88,41.82],[15.82,41.92],
-                [15.75,41.98],[15.62,41.95],[15.52,41.88],
-                /* ── Abruzzo / Marche ── */
-                [15.35,42.00],[15.18,42.05],[14.98,42.08],[14.78,42.12],
-                [14.58,42.18],[14.38,42.22],[14.18,42.28],[13.98,42.38],
-                [13.78,42.48],[13.62,42.58],
-                /* ── Romagna / Emilia ── */
-                [13.52,42.72],[13.55,42.88],[13.58,43.05],[13.62,43.22],
-                [13.58,43.38],[13.48,43.52],[13.32,43.62],[13.12,43.72],
-                /* ── Veneto / delta del Po ── */
-                [12.88,43.88],[12.62,44.05],[12.42,44.18],[12.28,44.35],
-                [12.22,44.52],[12.25,44.68],[12.28,44.82],[12.32,44.95],
-                [12.38,45.08],[12.45,45.22],
-                /* ── Venezia / Trieste ── */
-                [12.55,45.35],[12.68,45.42],[12.82,45.48],[13.02,45.55],
-                [13.18,45.62],[13.38,45.65],[13.55,45.68],[13.68,45.72],
-                /* ── Confine NE (Friuli → Trentino) ── */
-                [13.75,45.82],[13.78,46.00],[13.72,46.15],[13.58,46.28],
-                [13.38,46.42],[13.15,46.52],[12.85,46.60],[12.52,46.65],
-                [12.22,46.72],[11.88,46.82],[11.52,46.88],[11.18,46.92],
-                [10.88,46.92],[10.55,46.85],[10.25,46.72],[10.02,46.60],
-                [9.72,46.50],[9.48,46.38],[9.28,46.25],[9.08,46.08],
-                /* ── Confine CH / Piemonte nord ── */
-                [8.82,46.08],[8.58,46.10],[8.32,46.12],[8.12,46.12],
-                [7.92,45.98],[7.72,45.88],[7.52,45.78],
-                /* ── Val d'Aosta / Piemonte ovest ── */
-                [7.32,45.62],[7.12,45.48],[6.92,45.28],[6.72,45.12],
-                [6.65,44.98],[6.72,44.82],[6.82,44.68],[6.95,44.55],
-                [7.08,44.42],[7.22,44.28],[7.38,44.15],[7.53,43.79]
-            ];
-            /* Sicily — triangolo riconoscibile */
-            var sicily = [
-                [13.02,38.18],[13.12,38.12],[13.25,38.08],[13.38,38.02],
-                [13.52,37.92],[13.65,37.82],[13.78,37.72],[13.92,37.58],
-                [14.05,37.48],[14.18,37.35],[14.32,37.18],[14.48,37.05],
-                [14.65,36.92],[14.82,36.82],[15.00,36.72],[15.12,36.72],
-                [15.22,36.78],[15.30,36.92],[15.38,37.08],[15.48,37.28],
-                [15.55,37.48],[15.58,37.68],[15.55,37.85],[15.48,37.98],
-                [15.35,38.08],[15.18,38.15],[15.00,38.18],[14.82,38.20],
-                [14.62,38.20],[14.42,38.18],[14.22,38.18],[14.02,38.20],
-                [13.82,38.22],[13.62,38.22],[13.42,38.22],[13.22,38.20],
-                [13.02,38.18]
-            ];
-            /* Sardinia — forma caratteristica */
-            var sardinia = [
-                [8.15,41.08],[8.25,41.12],[8.38,41.18],[8.52,41.22],
-                [8.68,41.18],[8.82,41.12],[8.95,41.02],[9.08,40.88],
-                [9.18,40.72],[9.28,40.55],[9.35,40.38],[9.42,40.22],
-                [9.48,40.05],[9.55,39.88],[9.60,39.72],[9.65,39.55],
-                [9.68,39.38],[9.68,39.22],[9.65,39.08],[9.58,38.92],
-                [9.48,38.85],[9.35,38.82],[9.22,38.85],[9.08,38.88],
-                [8.92,38.95],[8.78,39.02],[8.62,39.12],[8.48,39.25],
-                [8.38,39.42],[8.28,39.58],[8.22,39.75],[8.18,39.92],
-                [8.15,40.08],[8.12,40.25],[8.10,40.42],[8.08,40.58],
-                [8.08,40.75],[8.10,40.92],[8.15,41.08]
-            ];
+          function starColor(hex) {
+            var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+            var lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+            var f = lum < 0.35 ? 0.62 : 0.42;
+            r = Math.round(r + (255 - r) * f); g = Math.round(g + (255 - g) * f); b = Math.round(b + (255 - b) * f);
+            return [r, g, b];
+          }
 
-            /* Orzinuovi coordinates */
-            var OZ_LON = 9.92, OZ_LAT = 45.40;
+          var DPR = Math.min(window.devicePixelRatio || 1, 2);
+          var W, H, cx, cy, scale, renderScale = 1, camX = 0, camY = 0;
+          var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-            /* project [lon,lat] to canvas pixels — Italy right side */
-            var IT_CX, IT_CY, SC;
-            function calcProjection() {
-                SC = Math.max(1, Math.min(W * 0.042, H * 0.075));
-                IT_CX = W * 0.80;
-                IT_CY = H * 0.5;
-            }
-            calcProjection();
-            window.addEventListener('resize', calcProjection);
+          function resize() {
+            var w = canvas.parentElement.offsetWidth || 1;
+            var h = canvas.parentElement.offsetHeight || 1;
+            canvas.width = Math.round(w * DPR);
+            canvas.height = Math.round(h * DPR);
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+            W = canvas.width; H = canvas.height;
+            cx = W * 0.6; cy = H * 0.5;
+            scale = Math.min(W, H * 1.9) * 0.5;
+            renderScale = scale;
+          }
 
-            function proj(lon, lat) {
-                return {
-                    x: IT_CX + (lon - 12.5) * SC,
-                    y: IT_CY - (lat - 42.5) * SC * 1.3
-                };
-            }
+          var ARMS = 3, TIGHT = 2.7, TILT = -18 * Math.PI / 180, FLAT = 0.44;
+          var cosT = Math.cos(TILT), sinT = Math.sin(TILT);
+          var stars = [];
 
-            function drawShape(pts) {
-                ctx.beginPath();
-                for (var j = 0; j < pts.length; j++) {
-                    var p = proj(pts[j][0], pts[j][1]);
-                    if (j === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
-                }
-                ctx.closePath();
-            }
-
-            /* world destinations — positioned around canvas edges */
-            var worldPts = [
-                { label:'New York',   x: 0.02, y: 0.3 },
-                { label:'São Paulo',  x: 0.05, y: 0.85 },
-                { label:'London',     x: 0.35, y: 0.05 },
-                { label:'Berlin',     x: 0.55, y: 0.03 },
-                { label:'Moscow',     x: 0.85, y: 0.05 },
-                { label:'Dubai',      x: 0.95, y: 0.45 },
-                { label:'Tokyo',      x: 0.98, y: 0.25 },
-                { label:'Mumbai',     x: 0.92, y: 0.6 },
-                { label:'Sydney',     x: 0.97, y: 0.85 },
-                { label:'Cape Town',  x: 0.45, y: 0.95 },
-                { label:'Cairo',      x: 0.72, y: 0.85 },
-                { label:'Toronto',    x: 0.08, y: 0.15 },
-                { label:'Buenos Aires', x: 0.1, y: 0.92 },
-            ];
-
-            /* connection pulses */
-            var conns = [];
-            for (var i = 0; i < worldPts.length; i++) {
-                conns.push({
-                    idx: i,
-                    t: Math.random(),
-                    speed: 0.001 + Math.random() * 0.003,
-                    dir: Math.random() > 0.5 ? 1 : -1
+          function build() {
+            stars = [];
+            var arm = 0;
+            Object.keys(COUNTS).forEach(function (cat) {
+              var col = starColor(CAT_COLOR[cat] || '#1B6B3A');
+              for (var i = 0; i < COUNTS[cat]; i++) {
+                var rN = Math.pow(Math.random(), 0.62);
+                var armIdx = (arm + (Math.random() < 0.15 ? Math.floor(Math.random() * ARMS) : 0)) % ARMS;
+                var a0 = rN * TIGHT * Math.PI * 2 + armIdx * (Math.PI * 2 / ARMS)
+                       + (Math.random() - 0.5) * (0.5 + (1 - rN) * 0.9);
+                stars.push({
+                  r: 0.12 + rN * 0.88, a0: a0, spin: 0.85 + Math.random() * 0.4,
+                  size: (rN < 0.18 ? 2.1 : 1.0 + Math.random() * 1.3), col: col,
+                  tw: 0.6 + Math.random() * 1.8, ph: Math.random() * Math.PI * 2,
+                  hub: Math.random() < 0.12
                 });
+                arm++;
+              }
+            });
+            for (var d = 0; d < 90; d++) {
+              var rN2 = Math.pow(Math.random(), 0.5);
+              stars.push({
+                r: 0.1 + rN2 * 0.95, a0: Math.random() * Math.PI * 2, spin: 0.85 + Math.random() * 0.4,
+                size: 0.5 + Math.random() * 0.7, col: [220, 232, 228],
+                tw: 0.5 + Math.random() * 1.5, ph: Math.random() * Math.PI * 2, hub: false, dust: true
+              });
             }
+          }
 
-            /* floating particles */
-            var particles = [];
-            for (var i = 0; i < 40; i++) {
-                particles.push({
-                    x: Math.random() * 2000, y: Math.random() * 500,
-                    vx: (Math.random() - 0.5) * 0.25, vy: (Math.random() - 0.5) * 0.18,
-                    r: Math.random() * 1.2 + 0.6, pulse: Math.random() * Math.PI * 2
-                });
+          function project(r, ang) {
+            var gx = Math.cos(ang) * r, gy = Math.sin(ang) * r * FLAT;
+            var px = cx + camX, py = cy + camY;
+            return [px + (gx * cosT - gy * sinT) * renderScale, py + (gx * sinT + gy * cosT) * renderScale];
+          }
+
+          function drawCore(pulse) {
+            var R = renderScale * 0.6 * pulse;
+            var px = cx + camX, py = cy + camY;
+            var g = ctx.createRadialGradient(px, py, 0, px, py, R);
+            g.addColorStop(0, 'rgba(180,255,220,' + (0.30 * pulse) + ')');
+            g.addColorStop(0.25, 'rgba(90,200,170,0.14)');
+            g.addColorStop(0.6, 'rgba(40,120,120,0.05)');
+            g.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.arc(px, py, R, 0, Math.PI * 2); ctx.fill();
+          }
+
+          var comets = [], nextComet = 2.5;
+          function spawnComet() {
+            var fromLeft = Math.random() < 0.5;
+            var sp = (0.45 + Math.random() * 0.35) * W;
+            comets.push({
+              x: fromLeft ? -0.08 * W : 1.08 * W, y: H * (0.06 + Math.random() * 0.42),
+              vx: (fromLeft ? 1 : -1) * sp, vy: (0.12 + Math.random() * 0.12) * sp,
+              life: 0, ttl: 1.0 + Math.random() * 0.6, len: (60 + Math.random() * 80) * DPR
+            });
+          }
+          function drawComets(dt) {
+            for (var i = comets.length - 1; i >= 0; i--) {
+              var c = comets[i];
+              c.life += dt; c.x += c.vx * dt; c.y += c.vy * dt;
+              if (c.life > c.ttl || c.x < -0.2 * W || c.x > 1.2 * W) { comets.splice(i, 1); continue; }
+              var fade = Math.min(1, (c.ttl - c.life) / 0.4) * Math.min(1, c.life / 0.12);
+              var mag = Math.hypot(c.vx, c.vy) || 1;
+              var tx = c.x - c.vx / mag * c.len, ty = c.y - c.vy / mag * c.len;
+              var g = ctx.createLinearGradient(c.x, c.y, tx, ty);
+              g.addColorStop(0, 'rgba(235,255,245,' + (0.9 * fade) + ')');
+              g.addColorStop(1, 'rgba(235,255,245,0)');
+              ctx.strokeStyle = g; ctx.lineWidth = 1.6 * DPR; ctx.lineCap = 'round';
+              ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(tx, ty); ctx.stroke();
+              ctx.fillStyle = 'rgba(255,255,255,' + (0.95 * fade) + ')';
+              ctx.beginPath(); ctx.arc(c.x, c.y, 1.6 * DPR, 0, Math.PI * 2); ctx.fill();
             }
+          }
 
-            function draw() {
-                ctx.clearRect(0, 0, W, H);
-                var t = Date.now() * 0.001;
+          var INTRO_DUR = 1.8;
+          function easeOut(x) { return 1 - Math.pow(1 - x, 3); }
 
-                /* Google Earth zoom — dive into Orzinuovi */
-                var savedSC = SC;
-                var savedCX = IT_CX;
-                var savedCY = IT_CY;
+          function frame(t, dt, moving) {
+            var ease = moving ? easeOut(Math.min(1, introT / INTRO_DUR)) : 1;
+            renderScale = scale * (1 + 0.10 * (1 - ease));
+            camX = moving ? Math.sin(t * 0.08) * W * 0.010 : 0;
+            camY = moving ? Math.cos(t * 0.063) * H * 0.016 : 0;
+            var pulse = moving ? (1 + 0.06 * Math.sin(t * 0.9)) : 1;
+            var rot = t * 0.045;
 
-                /* cycle: 18 seconds */
-                var cycle = (t % 18) / 18;
-                var zoomT;
-                if (cycle < 0.3) {
-                    /* zoom IN with easing */
-                    var p = cycle / 0.3;
-                    zoomT = p * p * (3 - 2 * p);
-                } else if (cycle < 0.45) {
-                    /* hold close-up on Orzinuovi */
-                    zoomT = 1;
-                } else if (cycle < 0.75) {
-                    /* zoom OUT with easing */
-                    var p = (cycle - 0.45) / 0.3;
-                    zoomT = 1 - p * p * (3 - 2 * p);
-                } else {
-                    /* hold wide view */
-                    zoomT = 0;
-                }
-
-                /* scale: 1x → 2.8x */
-                var zoomFactor = 1 + zoomT * 1.8;
-                SC = savedSC * zoomFactor;
-
-                /* where Orzinuovi lands with current scale but original center */
-                var ozScreenX = savedCX + (OZ_LON - 12.5) * SC;
-                var ozScreenY = savedCY - (OZ_LAT - 42.5) * SC * 1.3;
-                /* shift center so Orzinuovi moves to savedCX/savedCY */
-                IT_CX = savedCX + (savedCX - ozScreenX) * zoomT;
-                IT_CY = savedCY + (savedCY - ozScreenY) * zoomT;
-
-                var oz = proj(OZ_LON, OZ_LAT);
-                if (!isFinite(oz.x) || !isFinite(oz.y) || !isFinite(SC) || SC <= 0) {
-                    SC = savedSC; IT_CX = savedCX; IT_CY = savedCY;
-                    requestAnimationFrame(draw); return;
-                }
-
-                /* glow behind Italy */
-                var grd = ctx.createRadialGradient(oz.x, oz.y, 10, oz.x, oz.y, SC * 18);
-                grd.addColorStop(0, 'rgba(255,255,255,0.08)');
-                grd.addColorStop(1, 'rgba(255,255,255,0)');
-                ctx.fillStyle = grd;
-                ctx.fillRect(0, 0, W, H);
-
-                /* draw Italy mainland */
-                drawShape(italyMain);
-                ctx.fillStyle = 'rgba(255,255,255,0.13)';
-                ctx.fill();
-                ctx.strokeStyle = 'rgba(255,255,255,0.30)';
-                ctx.lineWidth = 1.2;
-                ctx.stroke();
-
-                /* draw Sicily */
-                drawShape(sicily);
-                ctx.fillStyle = 'rgba(255,255,255,0.13)';
-                ctx.fill();
-                ctx.strokeStyle = 'rgba(255,255,255,0.30)';
-                ctx.lineWidth = 1.2;
-                ctx.stroke();
-
-                /* draw Sardinia */
-                drawShape(sardinia);
-                ctx.fillStyle = 'rgba(255,255,255,0.13)';
-                ctx.fill();
-                ctx.strokeStyle = 'rgba(255,255,255,0.30)';
-                ctx.lineWidth = 1.2;
-                ctx.stroke();
-
-                /* Orzinuovi — radar sweep */
-                var sweep = (t * 0.8) % (Math.PI * 2);
-                var radarR = 20 + Math.sin(t * 0.5) * 5;
-                /* radar cone */
-                ctx.beginPath();
-                ctx.moveTo(oz.x, oz.y);
-                ctx.arc(oz.x, oz.y, radarR, sweep, sweep + 0.8);
-                ctx.closePath();
-                var coneGrd = ctx.createRadialGradient(oz.x, oz.y, 0, oz.x, oz.y, radarR);
-                coneGrd.addColorStop(0, 'rgba(255,255,255,0.12)');
-                coneGrd.addColorStop(1, 'rgba(255,255,255,0)');
-                ctx.fillStyle = coneGrd;
-                ctx.fill();
-                /* expanding rings */
-                for (var r = 0; r < 3; r++) {
-                    var ringT = ((t * 0.6 + r * 1.2) % 3.6) / 3.6;
-                    var ringR = ringT * 35;
-                    var ringA = (1 - ringT) * 0.2;
-                    ctx.beginPath();
-                    ctx.arc(oz.x, oz.y, ringR, 0, Math.PI * 2);
-                    ctx.strokeStyle = 'rgba(255,255,255,' + ringA + ')';
-                    ctx.lineWidth = 0.8;
-                    ctx.stroke();
-                }
-                /* center dot */
-                ctx.beginPath();
-                ctx.arc(oz.x, oz.y, 3.5, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(255,255,255,0.85)';
-                ctx.fill();
-                /* soft glow around dot */
-                ctx.beginPath();
-                ctx.arc(oz.x, oz.y, 6, 0, Math.PI * 2);
-                var dotGlow = ctx.createRadialGradient(oz.x, oz.y, 2, oz.x, oz.y, 6);
-                dotGlow.addColorStop(0, 'rgba(255,255,255,0.3)');
-                dotGlow.addColorStop(1, 'rgba(255,255,255,0)');
-                ctx.fillStyle = dotGlow;
-                ctx.fill();
-
-                /* restore projection */
-                SC = savedSC;
-                IT_CX = savedCX;
-                IT_CY = savedCY;
-
-                /* world destinations + connections */
-                for (var i = 0; i < worldPts.length; i++) {
-                    var wp = worldPts[i];
-                    var wx = wp.x * W;
-                    var wy = wp.y * H;
-
-                    /* arc from Orzinuovi to world point */
-                    var mx = (oz.x + wx) / 2;
-                    var my = (oz.y + wy) / 2;
-                    var dx = wx - oz.x;
-                    var dy = wy - oz.y;
-                    var dist = Math.sqrt(dx*dx + dy*dy);
-                    var nx = -dy / dist * dist * 0.15;
-                    var ny = dx / dist * dist * 0.15;
-                    var cpx = mx + nx;
-                    var cpy = my + ny;
-
-                    /* pulsing arc opacity */
-                    var arcAlpha = 0.08 + Math.sin(t * 0.8 + i * 0.5) * 0.04;
-                    ctx.beginPath();
-                    ctx.moveTo(oz.x, oz.y);
-                    ctx.quadraticCurveTo(cpx, cpy, wx, wy);
-                    ctx.strokeStyle = 'rgba(255,255,255,' + arcAlpha + ')';
-                    ctx.lineWidth = 0.7;
-                    ctx.stroke();
-
-                    /* traveling pulse along arc — with trail */
-                    var cn = conns[i];
-                    cn.t = (cn.t + cn.speed * cn.dir + 1) % 1;
-                    var pt = cn.t;
-                    var px = (1-pt)*(1-pt)*oz.x + 2*(1-pt)*pt*cpx + pt*pt*wx;
-                    var py = (1-pt)*(1-pt)*oz.y + 2*(1-pt)*pt*cpy + pt*pt*wy;
-                    /* trail glow */
-                    var trailGrd = ctx.createRadialGradient(px, py, 0, px, py, 6);
-                    trailGrd.addColorStop(0, 'rgba(255,255,255,0.5)');
-                    trailGrd.addColorStop(1, 'rgba(255,255,255,0)');
-                    ctx.beginPath();
-                    ctx.arc(px, py, 6, 0, Math.PI * 2);
-                    ctx.fillStyle = trailGrd;
-                    ctx.fill();
-                    /* core dot */
-                    ctx.beginPath();
-                    ctx.arc(px, py, 1.8, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(255,255,255,0.6)';
-                    ctx.fill();
-
-                    /* destination dot with glow */
-                    var dotAlpha = 0.2 + Math.sin(t * 1.5 + i) * 0.1;
-                    ctx.beginPath();
-                    ctx.arc(wx, wy, 2.5, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(255,255,255,' + dotAlpha + ')';
-                    ctx.fill();
-                }
-
-                /* floating particles */
-                for (var i = 0; i < particles.length; i++) {
-                    var p = particles[i];
-                    p.x += p.vx; p.y += p.vy;
-                    if (p.x < 0 || p.x > W) p.vx *= -1;
-                    if (p.y < 0 || p.y > H) p.vy *= -1;
-                    for (var j = i + 1; j < particles.length; j++) {
-                        var q = particles[j];
-                        var ddx = p.x - q.x; var ddy = p.y - q.y;
-                        var dd = Math.sqrt(ddx*ddx + ddy*ddy);
-                        if (dd < 120) {
-                            ctx.beginPath();
-                            ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
-                            ctx.strokeStyle = 'rgba(255,255,255,' + ((1 - dd/120) * 0.08) + ')';
-                            ctx.lineWidth = 0.4;
-                            ctx.stroke();
-                        }
-                    }
-                    var gl = 0.12 + Math.sin(t * 1.5 + p.pulse) * 0.06;
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(255,255,255,' + gl + ')';
-                    ctx.fill();
-                }
-
-                requestAnimationFrame(draw);
+            ctx.clearRect(0, 0, W, H);
+            ctx.globalAlpha = ease;
+            ctx.globalCompositeOperation = 'lighter';
+            drawCore(pulse);
+            for (var i = 0; i < stars.length; i++) {
+              var s = stars[i];
+              var p = project(s.r, s.a0 + rot * s.spin);
+              var tw = moving ? (0.72 + 0.28 * Math.sin(t * s.tw + s.ph)) : 0.92;
+              var a = (s.dust ? 0.5 : 0.95) * tw;
+              var rad = s.size * DPR;
+              if (s.hub) {
+                var gg = ctx.createRadialGradient(p[0], p[1], 0, p[0], p[1], rad * 4);
+                gg.addColorStop(0, 'rgba(' + s.col[0] + ',' + s.col[1] + ',' + s.col[2] + ',' + (0.9 * tw) + ')');
+                gg.addColorStop(1, 'rgba(' + s.col[0] + ',' + s.col[1] + ',' + s.col[2] + ',0)');
+                ctx.fillStyle = gg;
+                ctx.beginPath(); ctx.arc(p[0], p[1], rad * 4, 0, Math.PI * 2); ctx.fill();
+              }
+              ctx.fillStyle = 'rgba(' + s.col[0] + ',' + s.col[1] + ',' + s.col[2] + ',' + a + ')';
+              ctx.beginPath(); ctx.arc(p[0], p[1], rad, 0, Math.PI * 2); ctx.fill();
             }
-            draw();
+            if (moving && ease > 0.6) {
+              nextComet -= dt;
+              if (nextComet <= 0) { spawnComet(); nextComet = 3.4 + Math.random() * 4.0; }
+              drawComets(dt);
+            }
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.globalAlpha = 1;
+          }
+
+          var animate = true, raf = null, startT = 0, lastNow = 0, introT = 0;
+          function loop(now) {
+            if (!startT) { startT = now; lastNow = now; }
+            var t = (now - startT) / 1000;
+            var dt = Math.min(0.05, (now - lastNow) / 1000); lastNow = now;
+            introT += dt;
+            frame(t, dt, true);
+            raf = requestAnimationFrame(loop);
+          }
+          function stopLoop() { if (raf) cancelAnimationFrame(raf); raf = null; }
+
+          function start() {
+            resize(); build();
+            animate = !reduce;
+            comets = []; nextComet = 2.5; startT = 0; lastNow = 0;
+            introT = animate ? 0 : INTRO_DUR;
+            stopLoop();
+            if (animate) raf = requestAnimationFrame(loop);
+            else frame(6.3, 0, false);
+          }
+
+          window.addEventListener('resize', function () { resize(); if (!animate) frame(6.3, 0, false); });
+          document.addEventListener('visibilitychange', function () {
+            if (document.hidden) stopLoop();
+            else if (animate && !raf) { lastNow = 0; raf = requestAnimationFrame(loop); }
+          });
+
+          start();
         })();
     </script>
     <script>
