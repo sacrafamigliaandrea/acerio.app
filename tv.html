@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Smart TV · Lezioni</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* =============================================================================
+   SMART TV — pagina di proiezione che gira direttamente nel browser del TV
+   (Hisense VIDAA e simili), senza Mac. Sola lettura: legge orario e variazioni
+   dal Google Sheet "Orario lezioni" (gestito dal Cruscotto, planning.html).
+
+   Compatibilità con browser TV datati, scelte deliberate:
+   - 1rem = 1% dell'altezza dello stage 16:9, calcolato in JS (no container query, no calc)
+   - solo flexbox (con prefissi -webkit-), niente grid, niente gap, niente inset
+   - colori scritti per esteso, niente variabili CSS
+   - JavaScript ES5 (niente arrow function, let/const, template, Promise obbligatorie)
+   - campanella = file WAV generato in JS e suonato con <audio> (non serve Web Audio)
+   ============================================================================= */
+html { font-size: 10.8px; font-size: 1vh; }
+* { -webkit-box-sizing: border-box; box-sizing: border-box; }
+html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #EE7C00; }
+body {
+  font-family: 'Manrope', 'Helvetica Neue', Arial, sans-serif; color: #fff;
+  -webkit-font-smoothing: antialiased; -webkit-user-select: none; user-select: none;
+  -webkit-font-feature-settings: "tnum"; font-feature-settings: "tnum"; font-variant-numeric: tabular-nums;
+}
+body.inattivo, body.inattivo * { cursor: none !important; }
+
+/* ---------- Fondo arancione tecnologico ---------- */
+.tv {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden;
+  background-color: #EE7C00;
+  background-image:
+    radial-gradient(ellipse 70% 60% at 30% 40%, rgba(255,160,50,.55), rgba(255,160,50,0) 70%),
+    radial-gradient(ellipse 130% 110% at 50% 45%, #EE7C00 45%, #DA6C00 80%, #C35E00 100%);
+}
+.tv-griglia {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background-image: linear-gradient(rgba(255,255,255,.09) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.09) 1px, transparent 1px);
+  background-size: 4.5vh 4.5vh; background-size: 4.5vmin 4.5vmin; background-position: center center;
+  -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, transparent 30%, #000 95%);
+          mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, transparent 30%, #000 95%);
+}
+.tv-circuiti { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.tv-circuiti .pista { fill: none; stroke: rgba(255,255,255,.32); stroke-width: 1.6; stroke-linejoin: round; }
+.tv-circuiti .nodo { fill: #EE7C00; stroke: rgba(255,255,255,.75); stroke-width: 1.6; }
+/* impulsi di luce: niente filtri (pesanti sulle CPU dei TV), l'alone è un tratto largo e trasparente */
+.tv-circuiti .alone, .tv-circuiti .impulso {
+  fill: none; stroke-linecap: round; stroke-dasharray: 45 1100; stroke-dashoffset: 45;
+  -webkit-animation: impulso 9s linear infinite; animation: impulso 9s linear infinite;
+}
+.tv-circuiti .alone { stroke: rgba(255,255,255,.35); stroke-width: 10; }
+.tv-circuiti .impulso { stroke: #fff; stroke-width: 3.2; }
+@-webkit-keyframes impulso { 0% { stroke-dashoffset: 45; } 45% { stroke-dashoffset: -1050; } 100% { stroke-dashoffset: -1050; } }
+@keyframes impulso { 0% { stroke-dashoffset: 45; } 45% { stroke-dashoffset: -1050; } 100% { stroke-dashoffset: -1050; } }
+
+/* ---------- Stage 16:9 (dimensioni e posizione impostate da scala()) ---------- */
+.tv-stage { position: absolute; left: 0; top: 0; width: 177.78rem; height: 100rem; display: -webkit-flex; display: flex; }
+.tv-cornici {
+  position: absolute; top: 3rem; left: 3rem; right: 3rem; bottom: 3rem; opacity: .75;
+  background-image: linear-gradient(#fff,#fff), linear-gradient(#fff,#fff), linear-gradient(#fff,#fff), linear-gradient(#fff,#fff),
+                    linear-gradient(#fff,#fff), linear-gradient(#fff,#fff), linear-gradient(#fff,#fff), linear-gradient(#fff,#fff);
+  background-repeat: no-repeat;
+  background-size: 4rem .3rem, .3rem 4rem, 4rem .3rem, .3rem 4rem, 4rem .3rem, .3rem 4rem, 4rem .3rem, .3rem 4rem;
+  background-position: 0 0, 0 0, 100% 0, 100% 0, 0 100%, 0 100%, 100% 100%, 100% 100%;
+}
+.tv-micro {
+  display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center;
+  font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 1.8rem; font-weight: 600;
+  letter-spacing: .32em; text-transform: uppercase; color: rgba(43,17,0,.8);
+}
+.tv-led { width: 1rem; height: 1rem; margin-right: 1.2rem; background: #fff; box-shadow: 0 0 1rem #fff, 0 0 2.5rem rgba(255,255,255,.8); }
+
+/* ---------- Colonna sinistra: ora e data ---------- */
+.tv-sx {
+  position: relative; width: 44%;
+  display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center;
+  padding: 6rem 5rem 10rem 9rem;
+}
+.tv-sx .tv-micro { margin-bottom: 2.6rem; }
+.tv-ora {
+  font-size: 25rem; font-weight: 300; line-height: .86; letter-spacing: -.035em; white-space: nowrap; margin-left: -.04em;
+  text-shadow: 0 0 .03em rgba(255,255,255,.7), 0 .02em .06em rgba(120,45,0,.3);
+}
+.tv-dp { display: inline-block; position: relative; top: -.07em; color: rgba(43,17,0,.85); text-shadow: none; }
+.tv-secondi { display: -webkit-flex; display: flex; -webkit-align-items: flex-end; align-items: flex-end; margin-top: 4rem; }
+.tv-righello {
+  position: relative; -webkit-flex: 1; flex: 1; height: 2rem; margin-right: 2.4rem; border-right: 2px solid rgba(255,255,255,.75);
+  background-image: repeating-linear-gradient(90deg, rgba(255,255,255,.75) 0, rgba(255,255,255,.75) 2px, transparent 2px, transparent 8.3333%),
+                    repeating-linear-gradient(90deg, rgba(255,255,255,.45) 0, rgba(255,255,255,.45) 1px, transparent 1px, transparent 1.6667%);
+  background-repeat: no-repeat; background-position: left bottom, left bottom; background-size: 100% 100%, 100% 45%;
+}
+.tv-raggio {
+  position: absolute; left: 0; bottom: -.2rem; height: .45rem; width: 0; border-radius: 1rem;
+  background: linear-gradient(90deg, rgba(255,255,255,0), #fff); box-shadow: 0 0 1.2rem rgba(255,255,255,.85);
+  -webkit-transition: width 1s linear; transition: width 1s linear;
+}
+.tv-raggio:after { content: ''; position: absolute; right: -.7rem; top: 50%; width: 1.4rem; height: 1.4rem; margin-top: -.7rem; border-radius: 50%; background: #fff; box-shadow: 0 0 1rem #fff, 0 0 3rem rgba(255,255,255,.9); }
+.tv-sec { width: 5.6rem; text-align: right; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 3.4rem; font-weight: 600; line-height: 1; }
+.tv-data { margin-top: 5.5rem; }
+.tv-giorno { font-size: 7.4rem; font-weight: 800; line-height: 1.05; }
+.tv-data-estesa { margin-top: 1rem; font-size: 4.8rem; font-weight: 500; color: rgba(255,255,255,.92); }
+.tv-stato { position: absolute; left: 9rem; right: 4rem; bottom: 5.5rem; display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; }
+.tv-voce {
+  display: -webkit-inline-flex; display: inline-flex; -webkit-align-items: center; align-items: center;
+  margin: 0 1.4rem 1.2rem 0; padding: .8rem 1.6rem; border-radius: 5rem;
+  background: rgba(43,17,0,.2); font-size: 1.8rem; font-weight: 700; white-space: nowrap;
+}
+.tv-voce.vuota { display: none; }
+.tv-voce svg { width: 2.2rem; height: 2.2rem; margin-right: 1rem; }
+.tv-voce .punto { width: .9rem; height: .9rem; margin-right: 1rem; border-radius: 50%; background: rgba(255,255,255,.55); }
+.tv-voce.ok .punto { background: #fff; box-shadow: 0 0 1rem #fff; }
+.tv-voce.warn { background: #102C78; }
+.tv-voce.warn .punto { background: #82E1FF; box-shadow: 0 0 1rem #82E1FF; }
+
+.tv-divisore { width: 2px; margin: 12rem 0; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,.85) 30%, rgba(255,255,255,.85) 70%, rgba(255,255,255,0)); box-shadow: 0 0 1.5rem rgba(255,255,255,.7); }
+
+/* ---------- Colonna destra: lezioni del giorno ---------- */
+.tv-dx {
+  -webkit-flex: 1; flex: 1; min-width: 0;
+  display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center;
+  padding: 7rem 8rem 7rem 6rem;
+}
+.tv-testa { display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: space-between; justify-content: space-between; margin: 0 0 3.4rem 5rem; }
+.tv-riepilogo { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 1.9rem; font-weight: 600; letter-spacing: .04em; color: rgba(43,17,0,.8); white-space: nowrap; }
+.tv-lista { position: relative; padding-left: 5rem; }
+.tv-binario { position: absolute; left: 1.5rem; top: 0; bottom: 1.3rem; width: .3rem; border-radius: 1rem; background: rgba(255,255,255,.35); }
+.tv-binario-luce { position: absolute; left: 0; top: 0; width: 100%; height: 0; border-radius: 1rem; background: #fff; box-shadow: 0 0 1.2rem #fff, 0 0 3rem rgba(255,255,255,.7); -webkit-transition: height 1s linear; transition: height 1s linear; }
+.tv-scaletta { list-style: none; margin: 0; padding: 0; }
+.tv-riga {
+  position: relative; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center;
+  min-height: 8rem; margin-bottom: 1.3rem; padding: 1rem 3rem; border-radius: 1.4rem;
+  background: rgba(43,17,0,.16); -webkit-transition: opacity .8s; transition: opacity .8s;
+}
+.tv-riga:before { content: ''; position: absolute; left: -4rem; top: 50%; width: 1.3rem; height: 1.3rem; margin-top: -.65rem; border-radius: 50%; background: #EE7C00; box-shadow: inset 0 0 0 .25rem rgba(255,255,255,.8); }
+.tv-riga.pausa { min-height: 5.4rem; background: transparent; border: .15rem dashed rgba(255,255,255,.55); }
+.tv-riga.passata { opacity: .45; }
+.tv-riga.passata:before { background: rgba(255,255,255,.9); box-shadow: none; }
+.tv-r-ora, .tv-r-corpo, .tv-r-count { position: relative; z-index: 1; }
+.tv-r-ora { width: 22rem; margin-right: 3rem; -webkit-flex: none; flex: none; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 2.5rem; font-weight: 600; color: rgba(255,255,255,.92); white-space: nowrap; }
+.tv-r-ora .sep { margin: 0 .3em; opacity: .6; }
+.tv-r-corpo { -webkit-flex: 1; flex: 1; min-width: 0; display: -webkit-flex; display: flex; -webkit-flex-wrap: wrap; flex-wrap: wrap; -webkit-align-items: baseline; align-items: baseline; }
+.tv-r-corpo > span { margin-right: 1.6rem; }
+.tv-r-grado { font-size: 2.7rem; font-weight: 600; color: rgba(255,255,255,.88); }
+.tv-r-classe { font-size: 4.8rem; font-weight: 800; line-height: 1.05; }
+.tv-riga.pausa .tv-r-classe { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 2.3rem; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; color: rgba(255,255,255,.92); }
+.tv-riga.annullata .tv-r-classe { font-family: 'Manrope', 'Helvetica Neue', Arial, sans-serif; font-size: 3.2rem; font-weight: 700; letter-spacing: 0; text-transform: none; }
+.tv-riga.annullata .tv-r-classe, .tv-riga.annullata .tv-r-grado { text-decoration: line-through; opacity: .75; }
+.tv-r-corpo .tv-r-nota { display: block; width: 100%; margin: .6rem 0 0; font-size: 2rem; font-weight: 500; color: rgba(255,255,255,.88); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tv-badge { position: relative; top: -.4rem; padding: .5rem 1.2rem .45rem 1.4rem; border: .16rem solid rgba(255,255,255,.85); border-radius: .8rem; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 1.6rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; white-space: nowrap; }
+.tv-r-count { display: none; margin-left: 3rem; text-align: right; }
+.tv-cd { font-size: 12.5rem; font-weight: 300; line-height: .9; letter-spacing: -.03em; white-space: nowrap; }
+.tv-cd-lbl { margin-top: 1.4rem; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 1.9rem; font-weight: 600; letter-spacing: .28em; text-transform: uppercase; }
+.tv-cd-sub { margin-top: .6rem; font-size: 2.1rem; font-weight: 600; }
+.tv-trascorso { display: none; position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 1.4rem 0 0 1.4rem; background: rgba(238,124,0,.18); -webkit-transition: width 1s linear; transition: width 1s linear; }
+.tv-barra { display: none; position: absolute; left: 3.6rem; right: 3.6rem; bottom: 1.3rem; height: .55rem; border-radius: 1rem; background: rgba(43,17,0,.1); overflow: hidden; }
+.tv-barra-fill { height: 100%; width: 0; background: #EE7C00; -webkit-transition: width 1s linear; transition: width 1s linear; }
+
+/* riga in primo piano: pannello luminoso */
+.tv-riga.fuoco {
+  min-height: 23rem; padding: 2.6rem 3.6rem; border: none; color: #2B1100; background: #fffaf3;
+  box-shadow: 0 0 0 .3rem rgba(255,255,255,.55), 0 0 4rem rgba(255,255,255,.55), 0 0 14rem rgba(255,235,210,.45);
+}
+.tv-riga.fuoco:before { background: #fff; box-shadow: 0 0 0 .5rem rgba(255,255,255,.35), 0 0 2rem #fff; }
+.tv-riga.fuoco .tv-r-count { display: block; }
+.tv-riga.corrente .tv-trascorso, .tv-riga.corrente .tv-barra { display: block; }
+.tv-riga.fuoco .tv-r-ora { width: 14rem; font-size: 3.2rem; line-height: 1.3; color: rgba(43,17,0,.85); white-space: normal; }
+.tv-riga.fuoco .tv-r-ora span { display: block; }
+.tv-riga.fuoco .tv-r-ora .sep { display: none; }
+.tv-riga.fuoco .tv-r-ora .a { color: rgba(43,17,0,.55); }
+.tv-riga.fuoco .tv-r-corpo { -webkit-flex-direction: column; flex-direction: column; -webkit-align-items: flex-start; align-items: flex-start; }
+.tv-riga.fuoco .tv-r-corpo > span { margin: 0 0 .8rem 0; }
+.tv-riga.fuoco .tv-r-grado { font-size: 3rem; color: rgba(43,17,0,.7); }
+.tv-riga.fuoco .tv-r-classe { font-size: 10rem; line-height: .95; color: #2B1100; }
+.tv-riga.fuoco.pausa .tv-r-classe { font-size: 4.6rem; letter-spacing: .16em; color: #2B1100; }
+.tv-riga.fuoco.annullata .tv-r-classe { font-size: 5.6rem; }
+.tv-riga.fuoco .tv-r-nota { color: rgba(43,17,0,.7); white-space: normal; }
+.tv-riga.fuoco .tv-badge { top: 0; border-color: rgba(43,17,0,.7); }
+.tv-riga.fuoco .tv-cd-lbl { color: #B85700; }
+.tv-riga.fuoco .tv-cd-sub { color: rgba(43,17,0,.6); }
+/* ultimi 4 minuti: blu con luce ciano (mai rosso) */
+.tv-riga.fuoco.avviso { color: #fff; background: #102C78; box-shadow: 0 0 0 .3rem rgba(130,225,255,.75), 0 0 5rem rgba(130,225,255,.55), 0 0 16rem rgba(130,225,255,.3); }
+.tv-riga.fuoco.avviso:before { background: #82E1FF; box-shadow: 0 0 0 .5rem rgba(130,225,255,.35), 0 0 2rem #82E1FF; }
+.tv-riga.fuoco.avviso .tv-trascorso { background: rgba(130,225,255,.2); }
+.tv-riga.fuoco.avviso .tv-barra { background: rgba(255,255,255,.14); }
+.tv-riga.fuoco.avviso .tv-barra-fill { background: #82E1FF; }
+.tv-riga.fuoco.avviso .tv-r-ora, .tv-riga.fuoco.avviso .tv-r-grado, .tv-riga.fuoco.avviso .tv-r-nota, .tv-riga.fuoco.avviso .tv-cd-sub { color: rgba(255,255,255,.82); }
+.tv-riga.fuoco.avviso .tv-r-ora .a { color: rgba(255,255,255,.6); }
+.tv-riga.fuoco.avviso .tv-r-classe, .tv-riga.fuoco.avviso .tv-cd { color: #fff; text-shadow: 0 0 .05em rgba(130,225,255,.8), 0 0 .25em rgba(130,225,255,.35); }
+.tv-riga.fuoco.avviso .tv-cd-lbl { color: #82E1FF; }
+.tv-riga.fuoco.avviso .tv-badge { border-color: rgba(255,255,255,.8); }
+.tv-riga.rintocco { -webkit-animation: onda 1.7s ease-out 3; animation: onda 1.7s ease-out 3; }
+@-webkit-keyframes onda { 0% { box-shadow: 0 0 0 .3rem #82E1FF, 0 0 0 0 rgba(130,225,255,.75), 0 0 6rem rgba(130,225,255,.6); } 100% { box-shadow: 0 0 0 .3rem rgba(130,225,255,.75), 0 0 0 6rem rgba(130,225,255,0), 0 0 5rem rgba(130,225,255,.55); } }
+@keyframes onda { 0% { box-shadow: 0 0 0 .3rem #82E1FF, 0 0 0 0 rgba(130,225,255,.75), 0 0 6rem rgba(130,225,255,.6); } 100% { box-shadow: 0 0 0 .3rem rgba(130,225,255,.75), 0 0 0 6rem rgba(130,225,255,0), 0 0 5rem rgba(130,225,255,.55); } }
+
+.tv-messaggio { display: none; margin: 3rem 0 0 5rem; padding: 3rem 3.6rem; border-radius: 1.6rem; background: rgba(43,17,0,.2); }
+.tv-messaggio.vis { display: block; }
+.tv-msg-titolo { font-size: 4.4rem; font-weight: 800; }
+.tv-msg-sub { margin-top: 1.2rem; font-size: 2.8rem; font-weight: 500; color: rgba(255,255,255,.92); }
+.tv-msg-sub b { font-weight: 800; color: #fff; }
+.tv-messaggio.grande { margin-top: 0; padding: 5rem; }
+.tv-messaggio.grande .tv-msg-titolo { font-size: 7rem; }
+.tv-messaggio.grande .tv-msg-sub { margin-top: 2rem; font-size: 3.4rem; }
+
+/* ---------- Attivazione audio (prima pressione di un tasto) ---------- */
+.tv-attiva { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10; background: rgba(60,22,0,.55); text-align: center; }
+.tv-attiva.via { display: none; }
+.tv-attiva-box {
+  position: absolute; left: 50%; top: 50%; width: 112rem; margin-left: -56rem; -webkit-transform: translateY(-50%); transform: translateY(-50%);
+  padding: 5rem 6rem; border-radius: 3rem; background: #fffaf3; color: #2B1100;
+  box-shadow: 0 0 0 .3rem rgba(255,255,255,.6), 0 0 8rem rgba(255,255,255,.5);
+}
+.tv-attiva-box svg { width: 9rem; height: 9rem; color: #EE7C00; }
+.tv-attiva-titolo { margin-top: 2rem; font-size: 5.6rem; font-weight: 800; }
+.tv-attiva-sub { margin-top: 1.2rem; font-size: 2.6rem; color: rgba(43,17,0,.7); }
+.tv-tasti { margin-top: 4rem; font-size: 2.1rem; color: rgba(43,17,0,.75); }
+.tv-tasti span { display: inline-block; margin: .8rem 1.6rem; white-space: nowrap; }
+.tv-tasti b { display: inline-block; min-width: 3.4rem; margin-right: .8rem; padding: .3rem .9rem; border: .15rem solid rgba(43,17,0,.4); border-radius: .7rem; font-family: 'JetBrains Mono', 'Courier New', monospace; color: #2B1100; }
+
+/* ---------- Diagnostica (?diag oppure tasto 0) ---------- */
+.tv-diag { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 20; padding: 4rem 6rem; background: rgba(25,9,0,.94); color: #fff; overflow: hidden; }
+.tv-diag.vis { display: block; }
+.tv-diag-titolo { font-size: 4rem; font-weight: 800; }
+.tv-diag-sub { margin: .8rem 0 2.2rem; font-size: 2.2rem; color: rgba(255,255,255,.75); }
+.tv-diag table { width: 100%; border-collapse: collapse; }
+.tv-diag td { padding: .85rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,.12); font-size: 2.1rem; vertical-align: top; }
+.tv-diag td.v { width: 26rem; font-weight: 700; color: rgba(255,255,255,.85); }
+.tv-diag td.d { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 1.8rem; word-wrap: break-word; word-break: break-all; }
+.tv-diag td.e { width: 18rem; text-align: right; }
+.esito { display: inline-block; padding: .4rem 1rem; border: .15rem solid; border-radius: .6rem; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 1.6rem; font-weight: 600; letter-spacing: .12em; }
+.esito.ok { color: #8CF5B5; border-color: rgba(140,245,181,.7); }
+.esito.attenzione { color: #FFC266; border-color: rgba(255,194,102,.8); }
+.esito.info { color: rgba(255,255,255,.7); border-color: rgba(255,255,255,.35); }
+</style>
+</head>
+<body>
+
+<div class="tv" id="tv">
+  <div class="tv-griglia"></div>
+  <svg class="tv-circuiti" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <path class="pista" d="M0 96H150L190 56H460"/>
+    <path class="pista" d="M44 900V760L74 730V600"/>
+    <path class="pista" d="M1600 92H1440L1400 52H1170"/>
+    <path class="pista" d="M1562 0V150L1546 166V330"/>
+    <path class="pista" d="M0 862H220L250 832H330"/>
+    <path class="pista" d="M1600 860H1410L1380 884H1090"/>
+    <circle class="nodo" cx="460" cy="56" r="5"/><circle class="nodo" cx="74" cy="600" r="5"/>
+    <circle class="nodo" cx="1170" cy="52" r="5"/><circle class="nodo" cx="1546" cy="330" r="5"/>
+    <circle class="nodo" cx="330" cy="832" r="5"/><circle class="nodo" cx="1090" cy="884" r="5"/>
+    <path class="alone" pathLength="1000" d="M0 96H150L190 56H460"/>
+    <path class="impulso" pathLength="1000" d="M0 96H150L190 56H460"/>
+    <path class="alone" pathLength="1000" style="-webkit-animation-delay:-3s; animation-delay:-3s" d="M1600 92H1440L1400 52H1170"/>
+    <path class="impulso" pathLength="1000" style="-webkit-animation-delay:-3s; animation-delay:-3s" d="M1600 92H1440L1400 52H1170"/>
+    <path class="alone" pathLength="1000" style="-webkit-animation-delay:-6s; animation-delay:-6s" d="M1600 860H1410L1380 884H1090"/>
+    <path class="impulso" pathLength="1000" style="-webkit-animation-delay:-6s; animation-delay:-6s" d="M1600 860H1410L1380 884H1090"/>
+  </svg>
+  <div class="tv-stage" id="stage">
+    <div class="tv-cornici"></div>
+    <section class="tv-sx">
+      <div class="tv-micro"><span class="tv-led"></span>Ora</div>
+      <div class="tv-ora"><span id="hh">--</span><span class="tv-dp">:</span><span id="mm">--</span></div>
+      <div class="tv-secondi">
+        <div class="tv-righello"><div class="tv-raggio" id="raggio"></div></div>
+        <span class="tv-sec" id="ss">--</span>
+      </div>
+      <div class="tv-data">
+        <div class="tv-giorno" id="giorno"></div>
+        <div class="tv-data-estesa" id="dataEstesa"></div>
+      </div>
+      <div class="tv-stato">
+        <span class="tv-voce" id="statoCampana"></span>
+        <span class="tv-voce" id="statoSync"></span>
+        <span class="tv-voce warn vuota" id="statoSim"></span>
+      </div>
+    </section>
+    <div class="tv-divisore"></div>
+    <section class="tv-dx">
+      <div class="tv-testa">
+        <div class="tv-micro"><span class="tv-led"></span>Le mie lezioni</div>
+        <div class="tv-riepilogo" id="riepilogo"></div>
+      </div>
+      <div class="tv-lista">
+        <div class="tv-binario"><div class="tv-binario-luce" id="binarioLuce"></div></div>
+        <ol class="tv-scaletta" id="scaletta"></ol>
+      </div>
+      <div class="tv-messaggio" id="messaggio">
+        <div class="tv-msg-titolo" id="msgTitolo"></div>
+        <div class="tv-msg-sub" id="msgSub"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="tv-attiva" id="attiva">
+  <div class="tv-attiva-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.6 2.2H4.4z"/><path d="M10 20.6a2 2 0 0 0 4 0"/><path d="M12 3V2"/></svg>
+    <div class="tv-attiva-titolo">Premi OK per attivare la campanella</div>
+    <div class="tv-attiva-sub" id="attivaSub">Il browser del TV blocca l'audio finché non premi un tasto del telecomando</div>
+    <div class="tv-tasti">
+      <span><b>2</b>tasto verde · prova campana</span>
+      <span><b>3</b>tasto giallo · muto</span>
+      <span><b>4</b>tasto blu · schermo intero</span>
+      <span><b>1</b>tasto rosso · aggiorna orario</span>
+      <span><b>0</b>diagnostica</span>
+    </div>
+  </div>
+</div>
+
+<div class="tv-diag" id="diag">
+  <div class="tv-diag-titolo">Diagnostica Smart TV</div>
+  <div class="tv-diag-sub">Premi OK per attivare l'audio, poi 2 (o il tasto verde) per provare la campanella · 0 chiude questa pagina</div>
+  <table><tbody id="diagTab"></tbody></table>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ===========================================================================
+     CONFIGURAZIONE
+     =========================================================================== */
+  var VERSIONE = '1.0 · 15/10/2026';
+  // App web del foglio "Orario lezioni": qui si usa SOLO la lettura (azione=leggi), nessuna chiave.
+  var ORARIO_ENDPOINT = 'https://script.google.com/macros/s/AKfycby5MtvFxnvEK2faMzEKSJ1Zm4w_I2NUGTX8E_zWvWt-Fte2gao95zMcJMda5uHkcEe0dA/exec';
+  var INTERVALLO = { from: '10:40', to: '10:55' };   // fisso per tutta la scuola
+  var ANTICIPO = 4;                                  // minuti prima della fine della lezione
+  var AGGIORNA_MS = 5 * 60 * 1000;                   // rilettura del foglio
+  // Orario di riserva (da orario-acerio.json) se il foglio non risponde e non c'è una copia salvata
+  var ORARIO_DEFAULT = [
+    { giorno: 1, from: '09:00', to: '09:50', id: 'PRIM_1A' }, { giorno: 1, from: '09:50', to: '10:40', id: 'PRIM_1B' },
+    { giorno: 2, from: '09:00', to: '09:50', id: 'PRIM_3B' }, { giorno: 2, from: '09:50', to: '10:40', id: 'PRIM_3A' },
+    { giorno: 2, from: '10:55', to: '11:45', id: 'PRIM_5A' }, { giorno: 2, from: '11:45', to: '12:35', id: 'PRIM_5B' },
+    { giorno: 3, from: '09:00', to: '09:50', id: 'PRIM_4A' }, { giorno: 3, from: '09:50', to: '10:40', id: 'PRIM_4B' },
+    { giorno: 3, from: '10:55', to: '11:45', id: 'PRIM_2B' }, { giorno: 3, from: '11:45', to: '12:35', id: 'PRIM_2A' },
+    { giorno: 4, from: '08:05', to: '09:00', id: 'SEC_3B' }, { giorno: 4, from: '09:00', to: '09:50', id: 'SEC_1A' },
+    { giorno: 4, from: '09:50', to: '10:40', id: 'SEC_3A' }, { giorno: 4, from: '10:55', to: '11:45', id: 'SEC_2C' },
+    { giorno: 4, from: '11:45', to: '12:40', id: 'SEC_2A' },
+    { giorno: 5, from: '08:05', to: '09:00', id: 'SEC_1B' }, { giorno: 5, from: '09:00', to: '09:55', id: 'SEC_2B' },
+    { giorno: 5, from: '10:55', to: '11:45', id: 'SEC_1C' }, { giorno: 5, from: '11:45', to: '12:40', id: 'SEC_3C' }
+  ];
+  // Tasti (keyCode): lettere da tastiera, tasti colorati dei telecomandi (403-406), cifre e tastierino
+  var TASTI = {
+    aggiorna: [82, 403, 49, 97],   // R · rosso · 1
+    prova:    [84, 404, 50, 98],   // T · verde · 2
+    muto:     [77, 405, 51, 99],   // M · giallo · 3
+    schermo:  [70, 406, 52, 100],  // F · blu · 4
+    diag:     [68, 48, 96]         // D · 0
+  };
+  var CHIAVE_CACHE = 'tv_orario_v1', CHIAVE_MUTO = 'tv_muto';
+  var GIORNI = ['domenica', 'lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato'];
+  var MESI = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
+  var ICONA_CAMPANA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.6 2.2H4.4z"/><path d="M10 20.6a2 2 0 0 0 4 0"/></svg>';
+  var ICONA_MUTA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.6 2.2H4.4z"/><path d="M10 20.6a2 2 0 0 0 4 0"/><path d="M3.5 3.5l17 17"/></svg>';
+
+  /* ===========================================================================
+     UTILITÀ (ES5)
+     =========================================================================== */
+  function $(id) { return document.getElementById(id); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function toMin(s) { var p = s.split(':'); return (+p[0]) * 60 + (+p[1]); }
+  function hm(m) { return pad(Math.floor(m / 60)) + ':' + pad(m % 60); }
+  function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  function trova(a, fn) { for (var i = 0; i < a.length; i++) if (fn(a[i], i)) return a[i]; return null; }
+  function indice(a, fn) { for (var i = 0; i < a.length; i++) if (fn(a[i], i)) return i; return -1; }
+  function contiene(a, v) { for (var i = 0; i < a.length; i++) if (a[i] === v) return true; return false; }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function setTesto(el, t) { if (el.textContent !== t) el.textContent = t; }
+  function setHTML(el, h) { if (el.innerHTML !== h) el.innerHTML = h; }
+  function haClasse(el, c) { return (' ' + el.className + ' ').indexOf(' ' + c + ' ') >= 0; }
+  function classe(el, c, on) {
+    var ha = haClasse(el, c);
+    if (on && !ha) el.className += ' ' + c;
+    else if (!on && ha) el.className = (' ' + el.className + ' ').replace(' ' + c + ' ', ' ').replace(/^\s+|\s+$/g, '');
+  }
+  function param(nome) {
+    var m = new RegExp('[?&]' + nome + '(=([^&#]*))?(&|#|$)').exec(location.search);
+    return m ? decodeURIComponent(m[2] || '') : null;
+  }
+  function leggiLS(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
+  function scriviLS(k, v) { try { window.localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+
+  /* ===========================================================================
+     ORA ITALIANA indipendente dall'orologio e dal fuso del TV
+     - offsetServer: correzione dell'orologio del TV con l'ora di Google (risposta del foglio)
+     - ora legale italiana calcolata qui: dall'ultima domenica di marzo all'ultima di ottobre, 01:00 UTC
+     adesso() restituisce un Date i cui campi UTC sono l'ora di Roma: va letto SOLO con getUTC*()
+     =========================================================================== */
+  var offsetServer = 0, offsetSim = 0, sim = false;
+  function ultimaDomenica(anno, mese) { var d = new Date(Date.UTC(anno, mese + 1, 0)); return d.getUTCDate() - d.getUTCDay(); }
+  function offsetRoma(utc) {
+    var y = new Date(utc).getUTCFullYear();
+    var inizio = Date.UTC(y, 2, ultimaDomenica(y, 2), 1), fine = Date.UTC(y, 9, ultimaDomenica(y, 9), 1);
+    return (utc >= inizio && utc < fine) ? 7200000 : 3600000;
+  }
+  function adessoReale() { var u = new Date().getTime() + offsetServer; return new Date(u + offsetRoma(u)); }
+  function adesso() { return new Date(adessoReale().getTime() + offsetSim); }
+  function ymd(d) { return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()); }
+  function isoGiorno(d) { return d.getUTCDay() === 0 ? 7 : d.getUTCDay(); }
+
+  // Test: tv.html?giorno=4&ora=11:40:45 (anche data=AAAA-MM-GG) simula data e ora
+  (function simulazione() {
+    var pData = param('data'), pGiorno = param('giorno'), pOra = param('ora');
+    if (!pData && !pGiorno && !pOra) return;
+    var base = adessoReale(), t = new Date(base.getTime()), m;
+    if (pData && (m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(pData))) t.setUTCFullYear(+m[1], +m[2] - 1, +m[3]);
+    if (pGiorno && /^[1-7]$/.test(pGiorno)) t.setUTCDate(t.getUTCDate() + (+pGiorno) - isoGiorno(t));
+    if (pOra && (m = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/.exec(pOra))) t.setUTCHours(+m[1], +m[2], +(m[3] || 0), 0);
+    offsetSim = t.getTime() - base.getTime();
+    sim = true;
+  })();
+
+  /* ===========================================================================
+     DATI: orario settimanale + variazioni (dal foglio, in sola lettura)
+     =========================================================================== */
+  function normOra(v) {
+    var m = /^(\d{1,2})[:.](\d{2})(?::\d{2})?$/.exec(String(v == null ? '' : v).replace(/^\s+|\s+$/g, ''));
+    if (!m || +m[1] > 23 || +m[2] > 59) return null;
+    return pad(+m[1]) + ':' + m[2];
+  }
+  function normLezione(l) {
+    var g = Number(l && l.giorno), from = normOra(l && l.from), to = normOra(l && l.to);
+    if (!(g >= 1 && g <= 7) || !from || !to || from >= to) return null;
+    return { giorno: g, from: from, to: to, id: String(l.id == null ? '' : l.id) };
+  }
+  function normVariazione(v) {
+    var data = /^\d{4}-\d{2}-\d{2}$/.test(v && v.data) ? v.data : null;
+    var from = normOra(v && v.from), to = normOra(v && v.to), tipo = String((v && v.tipo) || '').toLowerCase();
+    if (!data || !from || !to || from >= to || !contiene(['supplenza', 'variazione', 'annullata'], tipo)) return null;
+    return { data: data, from: from, to: to, tipo: tipo, id: String(v.id == null ? '' : v.id), nota: String(v.nota == null ? '' : v.nota) };
+  }
+  function normLista(a, fn) {
+    var r = [];
+    if (a && a.length) for (var i = 0; i < a.length; i++) { var x = fn(a[i]); if (x) r.push(x); }
+    return r;
+  }
+
+  var dati = { settimanale: normLista(ORARIO_DEFAULT, normLezione), variazioni: [] };
+  var sync = { stato: 'caricamento', quando: null, errore: '', rtt: 0, offset: null, lezioni: 0, variazioni: 0, fonte: 'predefinito' };
+  (function leggiCache() {
+    try {
+      var c = JSON.parse(leggiLS(CHIAVE_CACHE));
+      var s = c && normLista(c.settimanale, normLezione);
+      if (s && s.length) { dati.settimanale = s; dati.variazioni = normLista(c.variazioni, normVariazione); sync.fonte = 'copia'; }
+    } catch (e) { /* nessuna copia valida */ }
+  })();
+
+  // Apps Script risponde in 1–12 s, a volte oltre 40 s (avvio a freddo): dopo 20 s segnalo
+  // "lento" ma continuo ad aspettare fino a 90 s e accetto anche la risposta tardiva.
+  function jsonp(url, ok, ko, lento) {
+    var cb = 'tvcb_' + new Date().getTime() + '_' + Math.floor(Math.random() * 1e6);
+    var s = document.createElement('script'), finito = false;
+    var timerLento = setTimeout(function () { if (!finito && lento) lento(); }, 20000);
+    var timer = setTimeout(function () { if (!finito) { chiudi(); ko('nessuna risposta in 90 s'); } }, 90000);
+    function chiudi() { finito = true; clearTimeout(timer); clearTimeout(timerLento); window[cb] = function () {}; if (s.parentNode) s.parentNode.removeChild(s); }
+    window[cb] = function (p) { if (finito) return; chiudi(); if (p && p.ok) ok(p); else ko((p && p.errore) || 'risposta non valida'); };
+    s.onerror = function () { if (!finito) { chiudi(); ko('errore di rete'); } };
+    s.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'azione=leggi&callback=' + cb + '&nocache=' + new Date().getTime();
+    document.getElementsByTagName('head')[0].appendChild(s);
+  }
+
+  var letturaInCorso = false;
+  function caricaFoglio() {
+    if (letturaInCorso) return;
+    letturaInCorso = true;
+    var t0 = new Date().getTime();
+    if (!sync.quando) sync.stato = 'caricamento';
+    jsonp(ORARIO_ENDPOINT, function (p) {
+      letturaInCorso = false;
+      var t1 = new Date().getTime();
+      var sett = normLista(p.settimanale, normLezione);
+      if (sett.length) dati.settimanale = sett;   // foglio vuoto: tengo l'orario che ho già
+      dati.variazioni = normLista(p.variazioni, normVariazione);
+      scriviLS(CHIAVE_CACHE, JSON.stringify(dati));
+      // Correzione dell'orologio: si applica solo se lo scarto è grande (TV mai sincronizzato),
+      // altrimenti la latenza della risposta (±1 s) farebbe saltellare i secondi
+      var server = Date.parse(p.aggiornato), stima = null;
+      if (!isNaN(server)) {
+        stima = server - (t0 + t1) / 2;
+        if (Math.abs(stima) > 10000 && t1 - t0 < 8000) offsetServer = stima;
+        else if (Math.abs(stima) <= 10000) offsetServer = 0;
+      }
+      sync = { stato: sett.length ? 'ok' : 'vuoto', quando: adessoReale(), errore: '', rtt: t1 - t0, offset: stima, lezioni: sett.length, variazioni: dati.variazioni.length, fonte: 'foglio' };
+      aggiornaStato();
+    }, function (err) {
+      letturaInCorso = false;
+      sync.stato = 'errore'; sync.errore = err;
+      aggiornaStato();
+    }, function () {
+      if (sync.stato !== 'ok') { sync.stato = 'lento'; aggiornaStato(); }
+    });
+  }
+
+  // Lezioni di una data = settimanale del giorno + variazioni della data
+  //  annullata → marca le lezioni sovrapposte · supplenza/variazione → sostituisce le sovrapposte
+  function lezioniDel(data) {
+    var chiave = ymd(data), g = isoGiorno(data), i, j;
+    function sovrapposte(a, b) { return toMin(a.from) < toMin(b.to) && toMin(b.from) < toMin(a.to); }
+    var lezioni = [];
+    for (i = 0; i < dati.settimanale.length; i++) {
+      var l = dati.settimanale[i];
+      if (l.giorno === g) lezioni.push({ from: l.from, to: l.to, id: l.id, tipo: 'ordinaria', nota: '', annullata: false });
+    }
+    var vars = [];
+    for (i = 0; i < dati.variazioni.length; i++) if (dati.variazioni[i].data === chiave) vars.push(dati.variazioni[i]);
+    for (i = 0; i < vars.length; i++) {
+      if (vars[i].tipo !== 'annullata') continue;
+      for (j = 0; j < lezioni.length; j++) if (sovrapposte(lezioni[j], vars[i])) { lezioni[j].annullata = true; if (vars[i].nota) lezioni[j].nota = vars[i].nota; }
+    }
+    for (i = 0; i < vars.length; i++) {
+      var v = vars[i];
+      if (v.tipo === 'annullata') continue;
+      var tenute = [];
+      for (j = 0; j < lezioni.length; j++) if (!sovrapposte(lezioni[j], v)) tenute.push(lezioni[j]);
+      tenute.push({ from: v.from, to: v.to, id: v.id, tipo: v.tipo, nota: v.nota, annullata: false });
+      lezioni = tenute;
+    }
+    lezioni.sort(function (a, b) { return toMin(a.from) - toMin(b.from); });
+    return lezioni;
+  }
+  // Righe della giornata: lezioni, annullate, intervallo (se interno alla giornata e libero), fasce libere
+  function scalettaDel(data) {
+    var lez = lezioniDel(data), blocchi = [], i;
+    if (!lez.length) return [];
+    for (i = 0; i < lez.length; i++) blocchi.push({ kind: lez[i].annullata ? 'annullata' : 'lezione', a: toMin(lez[i].from), b: toMin(lez[i].to), id: lez[i].id, tipo: lez[i].tipo, nota: lez[i].nota });
+    var inizio = blocchi[0].a, fine = blocchi[0].b;
+    for (i = 1; i < blocchi.length; i++) { inizio = Math.min(inizio, blocchi[i].a); fine = Math.max(fine, blocchi[i].b); }
+    var iA = toMin(INTERVALLO.from), iB = toMin(INTERVALLO.to);
+    if (iA >= inizio && iB <= fine && !trova(blocchi, function (x) { return x.a < iB && iA < x.b; })) blocchi.push({ kind: 'intervallo', a: iA, b: iB });
+    blocchi.sort(function (x, y) { return x.a - y.a; });
+    var righe = [], cursore = blocchi[0].a;
+    for (i = 0; i < blocchi.length; i++) {
+      if (blocchi[i].a > cursore) righe.push({ kind: 'libero', a: cursore, b: blocchi[i].a });
+      righe.push(blocchi[i]);
+      cursore = Math.max(cursore, blocchi[i].b);
+    }
+    return righe;
+  }
+  function etichetta(id) {
+    var m = /^(PRIM|SEC)[_\s-]*(.+)$/i.exec(id || '');
+    if (m) return { grado: m[1].toUpperCase() === 'PRIM' ? 'Primaria' : 'Secondaria', classe: m[2] };
+    return { grado: '', classe: id || '' };
+  }
+  function prossimaLezione(oggi) {
+    for (var d = 1; d <= 14; d++) {
+      var g = new Date(Date.UTC(oggi.getUTCFullYear(), oggi.getUTCMonth(), oggi.getUTCDate() + d));
+      var l = trova(lezioniDel(g), function (x) { return !x.annullata; });
+      if (!l) continue;
+      var e = etichetta(l.id);
+      var quando = d === 1 ? 'Domani' : cap(GIORNI[g.getUTCDay()]) + (d > 6 ? ' ' + g.getUTCDate() + '/' + pad(g.getUTCMonth() + 1) : '');
+      return 'Prossima lezione: <b>' + quando + ' alle ' + l.from + '</b> · ' + esc((e.grado ? e.grado + ' ' : '') + e.classe);
+    }
+    return '';
+  }
+
+  /* ===========================================================================
+     CAMPANELLA: tre rintocchi sintetizzati in JavaScript e salvati come file WAV
+     (si suona con <audio>, supportato da qualunque browser TV; Web Audio non serve).
+     Campana = parziali inarmoniche (hum, prime, terza minore, quinta, nominal…) con
+     decadimento esponenziale, colpo di batacchio (rumore passa-banda) e riverbero di Schroeder.
+     Il seno è calcolato per ricorrenza (y[n] = 2cos(w)·y[n-1] − y[n-2]): veloce anche su CPU lente.
+     =========================================================================== */
+  var SR = 22050, F0 = 440;
+  var PARZIALI = [[0.5, 0.30, 6.0], [1.0, 0.42, 4.2], [1.183, 0.30, 3.4], [1.506, 0.16, 2.6], [2.0, 0.38, 2.4],
+                  [2.514, 0.12, 1.6], [2.662, 0.10, 1.4], [3.011, 0.08, 1.1], [4.166, 0.05, 0.8], [5.433, 0.03, 0.55]];
+  var audio = { tre: null, uno: null, silenzio: null, stato: 'preparazione', ms: 0, errore: '' };
+  var muto = leggiLS(CHIAVE_MUTO) === '1';
+
+  function nuovoBuffer(n) {
+    if (typeof Float32Array !== 'undefined') return new Float32Array(n);
+    var a = new Array(n); for (var i = 0; i < n; i++) a[i] = 0; return a;
+  }
+  function aggiungiRintocco(buf, t0, forza) {
+    var att = Math.floor(0.004 * SR), i, c, n;
+    for (i = 0; i < PARZIALI.length; i++) {
+      var pz = PARZIALI[i], copie = i < 5 ? [[0, 1], [i < 2 ? 0.9 : 0.55, 0.5]] : [[0, 1]];
+      for (c = 0; c < copie.length; c++) {
+        var w = 2 * Math.PI * (F0 * pz[0] + copie[c][0]) / SR, k = 2 * Math.cos(w), y1 = 0, y2 = -Math.sin(w);
+        var picco = pz[1] * copie[c][1] * forza * 0.35, durata = Math.floor(pz[2] * SR);
+        var len = Math.min(buf.length - t0, durata), g = Math.exp(-Math.log(picco / 0.0001) / (durata - att)), amp = picco;
+        for (n = 0; n < len; n++) {
+          var y = k * y1 - y2; y2 = y1; y1 = y;
+          if (n < att) buf[t0 + n] += y * picco * n / att;
+          else { buf[t0 + n] += y * amp; amp *= g; }
+        }
+      }
+    }
+    // colpo del batacchio: rumore bianco filtrato passa-banda (biquad RBJ) per 45 ms
+    var w0 = 2 * Math.PI * F0 * 6 / SR, alpha = Math.sin(w0) / (2 * 1.2), a0 = 1 + alpha;
+    var b0 = alpha / a0, b2 = -alpha / a0, a1 = -2 * Math.cos(w0) / a0, a2 = (1 - alpha) / a0;
+    var x1 = 0, x2 = 0, z1 = 0, z2 = 0, nl = Math.floor(0.05 * SR), an = 0.22 * forza, gn = Math.exp(Math.log(0.0001 / 0.22) / (0.045 * SR));
+    for (n = 0; n < nl && t0 + n < buf.length; n++) {
+      var x = Math.random() * 2 - 1, yb = b0 * x + b2 * x2 - a1 * z1 - a2 * z2;
+      x2 = x1; x1 = x; z2 = z1; z1 = yb;
+      buf[t0 + n] += yb * an; an *= gn;
+    }
+  }
+  function riverbero(buf, mix) {
+    var out = nuovoBuffer(buf.length), ritardi = [0.0297, 0.0371, 0.0411, 0.0437], rt = 2.2, r, n, p, d, g, linea;
+    for (r = 0; r < ritardi.length; r++) {            // 4 comb in parallelo
+      d = Math.floor(ritardi[r] * SR); g = Math.pow(10, -3 * ritardi[r] / rt); linea = nuovoBuffer(d); p = 0;
+      for (n = 0; n < buf.length; n++) { var y = linea[p]; linea[p] = buf[n] + y * g; out[n] += y / ritardi.length; if (++p === d) p = 0; }
+    }
+    var ap = [[0.005, 0.7], [0.0017, 0.7]];          // 2 allpass in serie
+    for (r = 0; r < ap.length; r++) {
+      d = Math.floor(ap[r][0] * SR); g = ap[r][1]; linea = nuovoBuffer(d); p = 0;
+      for (n = 0; n < out.length; n++) { var wd = linea[p], wn = out[n] + g * wd; out[n] = -g * wn + wd; linea[p] = wn; if (++p === d) p = 0; }
+    }
+    for (n = 0; n < buf.length; n++) buf[n] = buf[n] * 0.85 + out[n] * mix;
+  }
+  function wav(buf, scala) {
+    var n = buf.length, ab = new ArrayBuffer(44 + n * 2), dv = new DataView(ab), i;
+    function s(o, str) { for (var k = 0; k < str.length; k++) dv.setUint8(o + k, str.charCodeAt(k)); }
+    s(0, 'RIFF'); dv.setUint32(4, 36 + n * 2, true); s(8, 'WAVE'); s(12, 'fmt ');
+    dv.setUint32(16, 16, true); dv.setUint16(20, 1, true); dv.setUint16(22, 1, true); dv.setUint32(24, SR, true);
+    dv.setUint32(28, SR * 2, true); dv.setUint16(32, 2, true); dv.setUint16(34, 16, true); s(36, 'data'); dv.setUint32(40, n * 2, true);
+    for (i = 0; i < n; i++) { var v = Math.max(-1, Math.min(1, buf[i] * scala)); dv.setInt16(44 + i * 2, v < 0 ? v * 32768 : v * 32767, true); }
+    return ab;
+  }
+  function creaAudio(buf, scala) {
+    var ab = wav(buf, scala), url = null;
+    try { url = URL.createObjectURL(new Blob([ab], { type: 'audio/wav' })); } catch (e) { url = null; }
+    if (!url) { // ripiego: data URI (loop byte per byte: niente fromCharCode.apply, va in overflow su Safari)
+      var b = new Uint8Array(ab), bin = '';
+      for (var i = 0; i < b.length; i++) bin += String.fromCharCode(b[i]);
+      url = 'data:audio/wav;base64,' + btoa(bin);
+    }
+    var a = new Audio();
+    a.preload = 'auto';
+    a.src = url;
+    return a;
+  }
+  function generaCampanella() {
+    try {
+      var t = new Date().getTime(), spazio = 1.7, coda = 7.5, c, i;
+      var b3 = nuovoBuffer(Math.floor((2 * spazio + coda) * SR));
+      for (c = 0; c < 3; c++) aggiungiRintocco(b3, Math.floor((0.05 + c * spazio) * SR), c === 2 ? 0.9 : 1);
+      var b1 = nuovoBuffer(Math.floor(coda * SR));
+      aggiungiRintocco(b1, Math.floor(0.05 * SR), 0.45);
+      riverbero(b3, 0.32); riverbero(b1, 0.32);
+      var picco = 0;
+      for (i = 0; i < b3.length; i++) { var v = b3[i] < 0 ? -b3[i] : b3[i]; if (v > picco) picco = v; }
+      var scala = picco > 0 ? 0.6 / picco : 1;     // picco a circa -4,4 dBFS, uguale per i due file
+      audio.tre = creaAudio(b3, scala);
+      audio.uno = creaAudio(b1, scala);
+      audio.silenzio = creaAudio(nuovoBuffer(Math.floor(0.15 * SR)), 1);
+      audio.ms = new Date().getTime() - t;
+      audio.stato = 'pronto';
+      setTesto($('attivaSub'), TESTO_ATTIVA);
+      provaAutoplay();
+    } catch (e) {
+      audio.stato = 'non disponibile'; audio.errore = e && e.message ? e.message : String(e);
+    }
+    aggiornaStato();
+  }
+  function suona(a, conferma) {
+    if (!a || muto) return;
+    if (a === audio.tre && armando) { armando = false; a.muted = false; } // un suono vero interrompe l'armamento in muto
+    try { a.currentTime = 0; } catch (e) { /* non ancora caricato */ }
+    var p;
+    try { p = a.play(); } catch (e) { audio.stato = 'bloccato'; aggiornaStato(); return; }
+    if (p && typeof p.then === 'function') {
+      p.then(function () { audio.stato = 'attivo'; aggiornaStato(); if (conferma) conferma(true); },
+             function () { audio.stato = 'bloccato'; aggiornaStato(); if (conferma) conferma(false); });
+    } else { audio.stato = 'attivo'; aggiornaStato(); if (conferma) conferma(true); }
+  }
+  // Se il browser permette già l'audio (es. app kiosk configurata) la schermata OK non serve
+  function provaAutoplay() {
+    if (!audio.silenzio || attivato) return;
+    var p;
+    try { p = audio.silenzio.play(); } catch (e) { return; }
+    if (p && typeof p.then === 'function') p.then(function () { audio.stato = 'attivo'; attiva(true); }, function () { /* serve un tasto */ });
+  }
+  // Primo gesto: il rintocco singolo conferma l'audio; i tre rintocchi vengono "armati" in muto
+  // (avviati e subito fermati dentro il gesto: i browser più restrittivi sbloccano così l'elemento)
+  var armando = false, sbloccoRichiesto = false;
+  function serveSblocco() { return !sbloccoRichiesto || audio.stato === 'bloccato'; }
+  function sbloccaAudio() {
+    if (!audio.tre || muto) return;
+    sbloccoRichiesto = true;
+    suona(audio.uno);
+    try {
+      var a = audio.tre, p;
+      armando = true;
+      a.muted = true;
+      p = a.play();
+      var stop = function () { if (!armando) return; armando = false; try { a.pause(); a.currentTime = 0; } catch (e) {} a.muted = false; };
+      if (p && typeof p.then === 'function') p.then(stop, function () { armando = false; a.muted = false; });
+      else setTimeout(stop, 80);
+    } catch (e) { armando = false; }
+  }
+
+  /* ===========================================================================
+     SCHERMO
+     =========================================================================== */
+  var stage = $('stage');
+  function scala() { // 1rem = 1% dell'altezza dello stage 16:9 centrato nella finestra
+    var w = window.innerWidth || document.documentElement.clientWidth, h = window.innerHeight || document.documentElement.clientHeight;
+    var u = Math.min(h, w * 9 / 16) / 100;
+    document.documentElement.style.fontSize = u + 'px';
+    stage.style.width = (u * 177.78) + 'px';
+    stage.style.height = (u * 100) + 'px';
+    stage.style.left = ((w - u * 177.78) / 2) + 'px';
+    stage.style.top = ((h - u * 100) / 2) + 'px';
+    firma = '';
+  }
+  function fsElemento() { return document.fullscreenElement || document.webkitFullscreenElement || document.webkitCurrentFullScreenElement || document.mozFullScreenElement || document.msFullscreenElement || null; }
+  function fsRichiesta() { var e = document.documentElement; return e.requestFullscreen || e.webkitRequestFullscreen || e.webkitRequestFullScreen || e.mozRequestFullScreen || e.msRequestFullscreen || null; }
+  function schermoIntero() {
+    try {
+      if (fsElemento()) { var x = document.exitFullscreen || document.webkitExitFullscreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || document.msExitFullscreen; if (x) x.call(document); }
+      else { var r = fsRichiesta(); if (r) { var p = r.call(document.documentElement); if (p && typeof p.then === 'function') p.then(null, function () {}); } }
+    } catch (e) { /* non supportato */ }
+  }
+  var wake = null;
+  function wakeLock() {
+    try {
+      if (navigator.wakeLock && !wake) navigator.wakeLock.request('screen').then(function (w) { wake = w; w.addEventListener('release', function () { wake = null; }); }, function () {});
+    } catch (e) {}
+  }
+
+  /* ===========================================================================
+     DISEGNO
+     =========================================================================== */
+  var firma = '', giornoPrec = '', secPrec = null, fuocoIdx = -1, suonate = {};
+
+  function disegna(righe) {
+    var html = '', i, lezioni = [], variate = 0;
+    for (i = 0; i < righe.length; i++) {
+      var x = righe[i], corpo;
+      if (x.kind === 'lezione' || x.kind === 'annullata') {
+        var e = etichetta(x.id);
+        corpo = (e.grado ? '<span class="tv-r-grado">' + esc(e.grado) + '</span>' : '') + '<span class="tv-r-classe">' + esc(e.classe || cap(x.tipo)) + '</span>';
+        if (x.kind === 'annullata') corpo += '<span class="tv-badge">Annullata</span>';
+        else if (x.tipo !== 'ordinaria') corpo += '<span class="tv-badge">' + esc(x.tipo) + '</span>';
+        if (x.nota) corpo += '<span class="tv-r-nota">' + esc(x.nota) + '</span>';
+        if (x.kind === 'lezione') { lezioni.push(x); if (x.tipo !== 'ordinaria') variate++; }
+      } else {
+        corpo = '<span class="tv-r-classe">' + (x.kind === 'intervallo' ? 'Intervallo' : 'Libero') + '</span>';
+      }
+      html += '<li class="tv-riga ' + (x.kind === 'lezione' ? 'lezione' : 'pausa ' + x.kind) + '">'
+        + '<div class="tv-trascorso"></div>'
+        + '<div class="tv-r-ora"><span class="da">' + hm(x.a) + '</span><span class="sep">–</span><span class="a">' + hm(x.b) + '</span></div>'
+        + '<div class="tv-r-corpo">' + corpo + '</div>'
+        + '<div class="tv-r-count"><div class="tv-cd"></div><div class="tv-cd-lbl"></div><div class="tv-cd-sub"></div></div>'
+        + '<div class="tv-barra"><div class="tv-barra-fill"></div></div>'
+        + '</li>';
+    }
+    $('scaletta').innerHTML = html;
+    setTesto($('riepilogo'), lezioni.length
+      ? lezioni.length + (lezioni.length === 1 ? ' lezione' : ' lezioni') + ' · ' + hm(lezioni[0].a) + '–' + hm(lezioni[lezioni.length - 1].b) + (variate ? ' · ' + variate + (variate === 1 ? ' variazione' : ' variazioni') : '')
+      : '');
+  }
+
+  function durata(sec) {
+    var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    return h ? h + ':' + pad(m) + ':' + pad(s) : pad(m) + ':' + pad(s);
+  }
+  function figlio(li, cls) { var c = li.getElementsByTagName('div'); for (var i = 0; i < c.length; i++) if (haClasse(c[i], cls)) return c[i]; return null; }
+
+  function stati(righe, sec, now) {
+    var lis = $('scaletta').getElementsByTagName('li'), fase, fuoco = -1, i;
+    if (!righe.length) fase = 'nessuna';
+    else if (sec < righe[0].a * 60) { fase = 'prima'; fuoco = indice(righe, function (x) { return x.kind === 'lezione'; }); }
+    else if (sec >= righe[righe.length - 1].b * 60) fase = 'terminate';
+    else { fase = 'corso'; fuoco = indice(righe, function (x) { return sec >= x.a * 60 && sec < x.b * 60; }); }
+    fuocoIdx = fuoco;
+
+    var progresso = 0;
+    for (i = 0; i < lis.length && i < righe.length; i++) {
+      var x = righe[i], li = lis[i];
+      var corrente = fase === 'corso' && i === fuoco, attesa = fase === 'prima' && i === fuoco;
+      var p = corrente ? (sec - x.a * 60) / ((x.b - x.a) * 60) : 0, avviso = false;
+      classe(li, 'passata', !corrente && sec >= x.b * 60);
+      classe(li, 'corrente', corrente);
+      classe(li, 'fuoco', corrente || attesa);
+      if (corrente) {
+        var perc = (p * 100).toFixed(2) + '%', tr = figlio(li, 'tv-trascorso');
+        figlio(li, 'tv-barra-fill').style.width = perc;
+        tr.style.width = perc;
+        tr.style.borderRadius = p > 0.98 ? '1.4rem' : '1.4rem 0 0 1.4rem';
+      }
+      if (corrente || attesa) {
+        var obiettivo, lbl, sotto;
+        if (attesa) { obiettivo = x.a * 60; lbl = "all'inizio"; sotto = 'prima lezione alle ' + hm(x.a); }
+        else if (x.kind === 'lezione') { obiettivo = x.b * 60; lbl = 'alla fine'; sotto = 'termina alle ' + hm(x.b); avviso = obiettivo - sec <= ANTICIPO * 60; }
+        else {
+          var succ = null;
+          for (var j = i + 1; j < righe.length; j++) if (righe[j].kind === 'lezione') { succ = righe[j]; break; }
+          if (succ) { obiettivo = succ.a * 60; lbl = 'alla prossima lezione'; sotto = 'inizia alle ' + hm(succ.a); }
+          else { obiettivo = x.b * 60; lbl = 'alla fine'; sotto = 'fino alle ' + hm(x.b); }
+        }
+        setTesto(figlio(li, 'tv-cd'), durata(Math.max(0, Math.ceil(obiettivo - sec))));
+        setTesto(figlio(li, 'tv-cd-lbl'), lbl);
+        setTesto(figlio(li, 'tv-cd-sub'), sotto);
+        progresso = p;
+      }
+      classe(li, 'avviso', avviso);
+    }
+
+    var y = 0;
+    if (fase === 'terminate') y = $('scaletta').offsetHeight;
+    else if (fase === 'corso' && fuoco >= 0) y = lis[fuoco].offsetTop + lis[fuoco].offsetHeight * progresso;
+    $('binarioLuce').style.height = y + 'px';
+
+    var msg = $('messaggio');
+    if (fase === 'nessuna' || fase === 'terminate') {
+      classe(msg, 'vis', true);
+      classe(msg, 'grande', fase === 'nessuna');
+      setTesto($('msgTitolo'), fase === 'nessuna' ? 'Nessuna lezione oggi' : 'Lezioni terminate');
+      setHTML($('msgSub'), prossimaLezione(now));
+    } else classe(msg, 'vis', false);
+  }
+
+  // Una sola volta per lezione, quando il tempo attraversa fine − 4 minuti (mai in ritardo all'avvio)
+  function controllaCampana(righe, sec, chiave) {
+    if (secPrec === null) return;
+    for (var i = 0; i < righe.length; i++) {
+      var x = righe[i];
+      if (x.kind !== 'lezione' || x.b - x.a <= ANTICIPO) continue;
+      var soglia = (x.b - ANTICIPO) * 60, k = chiave + '|' + x.a + '|' + x.b + '|' + x.id;
+      if (!suonate[k] && secPrec < soglia && sec >= soglia && sec - soglia < 90) {
+        suonate[k] = true;
+        suona(audio.tre);
+        evidenzia(i);
+      }
+    }
+  }
+  function evidenzia(i) {
+    var li = $('scaletta').getElementsByTagName('li')[i];
+    if (!li) return;
+    classe(li, 'rintocco', false);
+    void li.offsetWidth;
+    classe(li, 'rintocco', true);
+    setTimeout(function () { classe(li, 'rintocco', false); }, 5300);
+  }
+
+  function aggiornaStato() {
+    var c = $('statoCampana'), s = $('statoSync'), testo, cls;
+    if (muto) { c.className = 'tv-voce'; setHTML(c, ICONA_MUTA + '<span>Campanella muta</span>'); }
+    else if (audio.stato === 'attivo') { c.className = 'tv-voce ok'; setHTML(c, ICONA_CAMPANA + '<span>Campanella ' + ANTICIPO + ' min prima della fine</span>'); }
+    else if (audio.stato === 'preparazione') { c.className = 'tv-voce'; setHTML(c, ICONA_CAMPANA + '<span>Preparazione campanella…</span>'); }
+    else if (audio.stato === 'non disponibile') { c.className = 'tv-voce warn'; setHTML(c, ICONA_CAMPANA + '<span>Audio non disponibile su questo browser</span>'); }
+    else { c.className = 'tv-voce warn'; setHTML(c, ICONA_CAMPANA + '<span>Audio da attivare: premi OK</span>'); }
+
+    cls = 'tv-voce';
+    if (sync.stato === 'ok') { testo = 'Orario aggiornato alle ' + pad(sync.quando.getUTCHours()) + ':' + pad(sync.quando.getUTCMinutes()); cls += ' ok'; }
+    else if (sync.stato === 'vuoto') { testo = 'Foglio senza orario · copia locale'; cls += ' warn'; }
+    else if (sync.stato === 'errore') { testo = 'Foglio non raggiungibile · ' + (sync.fonte === 'copia' || sync.fonte === 'foglio' ? 'copia locale' : 'orario predefinito'); cls += ' warn'; }
+    else if (sync.stato === 'lento') testo = 'Il foglio risponde lentamente, attendo…';
+    else testo = 'Lettura orario…';
+    s.className = cls;
+    setHTML(s, '<span class="punto"></span><span>' + testo + '</span>');
+    var sm = $('statoSim');
+    setTesto(sm, sim ? 'Simulazione' : '');
+    classe(sm, 'vuota', !sim);
+    if (diagAperta) disegnaDiag();
+  }
+
+  function tick() {
+    var now = adesso(), s = now.getUTCSeconds();
+    setTesto($('hh'), pad(now.getUTCHours()));
+    setTesto($('mm'), pad(now.getUTCMinutes()));
+    setTesto($('ss'), pad(s));
+    var r = $('raggio');
+    if (s === 0) { r.style.webkitTransition = 'none'; r.style.transition = 'none'; r.style.width = '0%'; void r.offsetWidth; r.style.webkitTransition = ''; r.style.transition = ''; }
+    r.style.width = ((s + 1) / 60 * 100).toFixed(3) + '%';
+    setTesto($('giorno'), cap(GIORNI[now.getUTCDay()]));
+    setTesto($('dataEstesa'), now.getUTCDate() + ' ' + MESI[now.getUTCMonth()] + ' ' + now.getUTCFullYear());
+
+    var chiave = ymd(now);
+    if (chiave !== giornoPrec) { giornoPrec = chiave; secPrec = null; }
+    var righe = scalettaDel(now), f = chiave + JSON.stringify(righe);
+    if (f !== firma) { firma = f; disegna(righe); }
+    var sec = now.getUTCHours() * 3600 + now.getUTCMinutes() * 60 + s + now.getUTCMilliseconds() / 1000;
+    stati(righe, sec, now);
+    controllaCampana(righe, sec, chiave);
+    secPrec = sec;
+    if (diagAperta) disegnaDiag();
+  }
+  function pianifica() {
+    try { tick(); } catch (e) { if (window.console) console.error(e); }
+    setTimeout(pianifica, 1000 - ((new Date().getTime() + offsetServer + offsetSim) % 1000) + 8);
+  }
+
+  /* ===========================================================================
+     DIAGNOSTICA (tv.html?diag oppure tasto 0)
+     =========================================================================== */
+  var diagAperta = param('diag') !== null, ultimoTasto = 'nessuno';
+  function supportoWav() { try { var a = document.createElement('audio'); return !!(a.canPlayType && a.canPlayType('audio/wav; codecs="1"').replace(/no/, '')); } catch (e) { return false; } }
+  function supportoLS() { try { window.localStorage.setItem('tv_test', '1'); window.localStorage.removeItem('tv_test'); return true; } catch (e) { return false; } }
+  function diagRighe() {
+    var r = [], w = window.innerWidth, h = window.innerHeight, sec, fusoTv, fusoRoma;
+    r.push(['Browser', navigator.userAgent, 'info']);
+    r.push(['Finestra', w + ' × ' + h + ' px · densità ' + (window.devicePixelRatio || 1), Math.abs(w / h - 16 / 9) < 0.06 ? 'ok' : 'info']);
+    if (sync.stato === 'ok') r.push(['Orario dal foglio', sync.lezioni + ' lezioni, ' + sync.variazioni + ' variazioni · risposta in ' + (sync.rtt / 1000).toFixed(1) + ' s', 'ok']);
+    else if (sync.stato === 'vuoto') r.push(['Orario dal foglio', 'il foglio risponde ma non contiene l\'orario: uso la copia locale', 'attenzione']);
+    else if (sync.stato === 'errore') r.push(['Orario dal foglio', 'non raggiungibile (' + sync.errore + ') · uso ' + (sync.fonte === 'predefinito' ? 'l\'orario predefinito' : 'la copia locale'), 'attenzione']);
+    else if (sync.stato === 'lento') r.push(['Orario dal foglio', 'risposta lenta (oltre 20 s), attendo fino a 90 s · intanto uso ' + (sync.fonte === 'predefinito' ? 'l\'orario predefinito' : 'la copia locale'), 'info']);
+    else r.push(['Orario dal foglio', 'lettura in corso…', 'info']);
+    if (sync.offset === null) r.push(['Orologio del TV', 'in attesa della risposta del foglio', 'info']);
+    else { sec = sync.offset / 1000; r.push(['Orologio del TV', (sec >= 0 ? 'indietro di ' : 'avanti di ') + Math.abs(sec).toFixed(1) + ' s rispetto a Google' + (offsetServer ? ' · corretto automaticamente' : ''), Math.abs(sec) <= 10 ? 'ok' : 'attenzione']); }
+    fusoTv = -new Date().getTimezoneOffset() / 60; fusoRoma = offsetRoma(new Date().getTime() + offsetServer) / 3600000;
+    r.push(['Fuso orario del TV', 'UTC' + (fusoTv >= 0 ? '+' : '') + fusoTv + (fusoTv === fusoRoma ? ' · ora italiana' : ' · la pagina usa comunque l\'ora italiana (UTC+' + fusoRoma + ')'), fusoTv === fusoRoma ? 'ok' : 'info']);
+    r.push(['Audio WAV', supportoWav() ? 'supportato' : 'non supportato', supportoWav() ? 'ok' : 'attenzione']);
+    r.push(['Campanella', audio.stato === 'non disponibile' ? 'errore: ' + audio.errore : (audio.ms ? 'generata in ' + audio.ms + ' ms' : 'in preparazione…'), audio.stato === 'non disponibile' ? 'attenzione' : (audio.ms ? 'ok' : 'info')]);
+    var sa = { preparazione: ['in preparazione', 'info'], pronto: ['da attivare: premi OK', 'attenzione'], attivo: ['attivo', 'ok'], bloccato: ['bloccato dal browser: premi OK e riprova con 2', 'attenzione'], 'non disponibile': ['non disponibile', 'attenzione'] }[audio.stato];
+    r.push(['Audio sbloccato', muto ? 'campanella muta (tasto 3 per riattivarla)' : sa[0], muto ? 'info' : sa[1]]);
+    r.push(['Memoria locale', supportoLS() ? 'disponibile: senza rete uso l\'ultimo orario letto' : 'non disponibile: senza rete uso l\'orario predefinito', supportoLS() ? 'ok' : 'attenzione']);
+    r.push(['Schermo intero', fsRichiesta() ? (fsElemento() ? 'attivo' : 'disponibile (tasto 4)') : 'non supportato: usa lo schermo intero del browser', fsRichiesta() ? 'ok' : 'info']);
+    var font = (document.fonts && document.fonts.check) ? (document.fonts.check('300 20px "Manrope"') ? 'Manrope caricato' : 'Manrope non caricato: uso un font di sistema') : 'non verificabile';
+    r.push(['Font', font, font === 'Manrope caricato' ? 'ok' : 'info']);
+    r.push(['Web Audio API', (window.AudioContext || window.webkitAudioContext) ? 'presente (non necessaria)' : 'assente (non necessaria: la campanella è un file WAV)', 'info']);
+    r.push(['Blocco standby', navigator.wakeLock ? 'Wake Lock disponibile' + (wake ? ' e attivo' : '') : 'non disponibile: disattiva lo spegnimento automatico nelle impostazioni del TV', navigator.wakeLock ? 'ok' : 'info']);
+    r.push(['Ultimo tasto premuto', ultimoTasto, 'info']);
+    r.push(['Versione pagina', VERSIONE + (sim ? ' · SIMULAZIONE attiva' : ''), 'info']);
+    return r;
+  }
+  function disegnaDiag() {
+    var r = diagRighe(), html = '', nomi = { ok: 'OK', attenzione: 'ATTENZIONE', info: 'INFO' };
+    for (var i = 0; i < r.length; i++) html += '<tr><td class="v">' + esc(r[i][0]) + '</td><td class="d">' + esc(r[i][1]) + '</td><td class="e"><span class="esito ' + r[i][2] + '">' + nomi[r[i][2]] + '</span></td></tr>';
+    setHTML($('diagTab'), html);
+  }
+  function mostraDiag(on) { diagAperta = on; classe($('diag'), 'vis', on); if (on) disegnaDiag(); }
+
+  /* ===========================================================================
+     COMANDI
+     =========================================================================== */
+  var attivato = false, TESTO_ATTIVA = $('attivaSub').textContent;
+  // Il primo tasto deve arrivare a campanella pronta: è quel gesto che sblocca l'audio
+  function provaAttivare() {
+    if (audio.stato === 'preparazione') { setTesto($('attivaSub'), 'Preparazione della campanella: riprova tra un istante'); return; }
+    setTesto($('attivaSub'), TESTO_ATTIVA);
+    attiva(false);
+  }
+  function attiva(automatico) {
+    if (attivato) return;
+    attivato = true;
+    classe($('attiva'), 'via', true);
+    if (!automatico) { sbloccaAudio(); schermoIntero(); }
+    wakeLock();
+    aggiornaStato();
+  }
+  function tasto(e) {
+    e = e || window.event;
+    var k = e.keyCode || e.which;
+    ultimoTasto = (e.key ? e.key + ' · ' : '') + 'codice ' + k;
+    if (!attivato) { provaAttivare(); if (diagAperta) disegnaDiag(); if (e.preventDefault) e.preventDefault(); return; }
+    var usato = true;
+    if (contiene(TASTI.prova, k)) { if (audio.stato !== 'attivo' && serveSblocco()) sbloccaAudio(); suona(audio.tre); if (fuocoIdx >= 0) evidenzia(fuocoIdx); }
+    else if (contiene(TASTI.muto, k)) { muto = !muto; scriviLS(CHIAVE_MUTO, muto ? '1' : '0'); if (!muto && audio.stato !== 'attivo' && serveSblocco()) sbloccaAudio(); aggiornaStato(); }
+    else if (contiene(TASTI.schermo, k)) schermoIntero();
+    else if (contiene(TASTI.aggiorna, k)) caricaFoglio();
+    else if (contiene(TASTI.diag, k)) mostraDiag(!diagAperta);
+    else usato = false;
+    if (diagAperta) disegnaDiag();
+    if (usato && e.preventDefault) e.preventDefault();
+  }
+  var timerCursore = null;
+  function attivitaMouse() {
+    classe(document.body, 'inattivo', false);
+    clearTimeout(timerCursore);
+    timerCursore = setTimeout(function () { classe(document.body, 'inattivo', true); }, 3000);
+  }
+
+  /* ===========================================================================
+     AVVIO
+     =========================================================================== */
+  scala();
+  window.onresize = scala;
+  document.onkeydown = tasto;
+  document.onclick = function () { if (!attivato) provaAttivare(); };
+  document.ondblclick = function () { if (attivato) schermoIntero(); };
+  document.onmousemove = attivitaMouse;
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) { wakeLock(); tick(); } }, false);
+  if (diagAperta) mostraDiag(true);
+  aggiornaStato();
+  pianifica();
+  caricaFoglio();
+  setInterval(caricaFoglio, AGGIORNA_MS);
+  setTimeout(generaCampanella, 300);   // dopo il primo disegno: la sintesi richiede qualche centinaio di ms
+  attivitaMouse();
+})();
+</script>
+</body>
+</html>
