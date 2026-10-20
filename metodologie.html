@@ -366,6 +366,169 @@
             .autori-intro, .mappa-wrap { padding-left: 1.25rem; padding-right: 1.25rem; }
         }
 
+        /* ═══ DESIGN ETICO: DOPO IL PROCESSO AI SOCIAL ═══ */
+        .etico { max-width: 1200px; margin: 1.1rem auto 0; padding: 0 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
+        .etico .sub-h {
+            display: flex; align-items: center; gap: .5rem; margin-top: .6rem;
+            font-family: 'DM Sans', sans-serif; font-size: 1.02rem; font-weight: 800; color: var(--text-dark);
+        }
+        .etico .sub-h .ti { color: #6b7c3e; font-size: 1.2rem; }
+        .etico .sub-h small { font-family: 'Nunito'; font-size: .8rem; font-weight: 700; color: var(--text-light); margin-left: .2rem; }
+        .rv-e { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1); }
+        .rv-e.vis { opacity: 1; transform: none; }
+        .fonte { font-size: .74rem; font-weight: 700; color: var(--text-light); line-height: 1.5; }
+        .fonte .ti { vertical-align: -2px; margin-right: .2rem; }
+
+        /* contesto: il processo */
+        .processo {
+            background: linear-gradient(135deg, #2d3047 0%, #1a535c 100%); color: #fff;
+            border-radius: var(--radius); padding: 1.8rem 2rem; box-shadow: 0 8px 32px rgba(26,83,92,.22);
+            display: grid; grid-template-columns: 1.25fr 1fr; gap: 1.6rem 2rem; position: relative; overflow: hidden;
+        }
+        .processo::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 95% 10%, rgba(255,255,255,.1) 0%, transparent 55%); pointer-events: none; }
+        .processo .eyebrow { font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #fcd34d; display: flex; align-items: center; gap: .4rem; }
+        .processo h3 { font-family: 'DM Sans', sans-serif; font-size: 1.6rem; font-weight: 800; line-height: 1.15; margin: .45rem 0 .6rem; letter-spacing: -.01em; }
+        .processo p { font-size: .92rem; font-weight: 600; line-height: 1.6; opacity: .9; }
+        .processo .numeri { display: flex; flex-direction: column; gap: .6rem; }
+        .processo .num { display: flex; align-items: center; gap: .9rem; padding: .7rem 1rem; border-radius: var(--radius-sm); background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.16); }
+        .processo .num b { font-family: 'DM Sans', sans-serif; font-size: 2rem; font-weight: 800; line-height: 1; min-width: 3.2ch; letter-spacing: -.02em; }
+        .processo .num span { font-size: .84rem; font-weight: 700; line-height: 1.35; opacity: .92; }
+        .processo .regole { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding-top: 1.1rem; border-top: 1px solid rgba(255,255,255,.16); }
+        .processo .regole .lab { font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; opacity: .75; margin-right: .3rem; }
+        .processo .regola { font-size: .82rem; font-weight: 800; padding: .4rem .85rem; border-radius: 50px; background: rgba(252,211,77,.16); border: 1.5px solid rgba(252,211,77,.5); color: #fef3c7; }
+        .processo .regole .nota { flex-basis: 100%; font-size: .86rem; font-weight: 700; font-style: italic; opacity: .85; margin-top: .3rem; }
+        .processo .fonte { grid-column: 1 / -1; color: rgba(255,255,255,.6); }
+
+        /* ricerca */
+        .ricerca { background: var(--bg-white); border-radius: var(--radius); box-shadow: var(--shadow-card); padding: 1.6rem 1.8rem; display: grid; grid-template-columns: auto 1fr; gap: 1.6rem; align-items: start; }
+        .ricerca .big { text-align: center; padding: 1rem 1.3rem; border-radius: var(--radius-sm); background: #fffbeb; border: 2px solid #fef3c7; min-width: 150px; }
+        .ricerca .big small { display: block; font-size: .78rem; font-weight: 800; color: #b45309; }
+        .ricerca .big b { display: block; font-family: 'DM Sans', sans-serif; font-size: 4.2rem; font-weight: 800; line-height: 1; color: #2d3047; letter-spacing: -.04em; }
+        .ricerca .big span { display: block; font-size: .74rem; font-weight: 800; color: #b45309; line-height: 1.3; margin-top: .3rem; }
+        .ricerca h3 { font-family: 'DM Sans', sans-serif; font-size: 1.2rem; font-weight: 800; margin-bottom: .5rem; }
+        .ricerca p { color: var(--text-medium); font-size: .9rem; font-weight: 600; line-height: 1.65; margin-bottom: .6rem; }
+        .ricerca p b { color: var(--text-dark); }
+        .cautela { display: flex; gap: .7rem; align-items: flex-start; padding: .8rem 1rem; border-radius: var(--radius-sm); background: #f2f5ec; border-left: 4px solid #6b7c3e; margin: .3rem 0 .7rem; }
+        .cautela .ti { color: #6b7c3e; font-size: 1.3rem; flex-shrink: 0; margin-top: .05rem; }
+        .cautela p { margin: 0; color: var(--text-dark); font-size: .86rem; }
+        /* settimana del portale */
+        .settimana { background: var(--bg-white); border-radius: var(--radius); box-shadow: var(--shadow-card); padding: 1.2rem 1.3rem 1.1rem; }
+        .settimana .tit { font-family: 'DM Sans', sans-serif; font-size: .92rem; font-weight: 800; margin-bottom: .8rem; display: flex; align-items: center; gap: .4rem; }
+        .settimana .tit .ti { color: #1a535c; }
+        .wg { display: grid; grid-template-columns: 2.6em repeat(24, 1fr); gap: 2px; align-items: center; }
+        .wg .hh { font-size: .62rem; font-weight: 700; color: var(--text-light); height: 1.3em; }
+        .wg .dd { font-size: .74rem; font-weight: 800; color: var(--text-medium); }
+        .wg i { height: 18px; border-radius: 3px; background: #eef1f6; transition: background .4s, box-shadow .4s; }
+        .wg i.on { background: #10b981; box-shadow: 0 0 0 1px #059669 inset; }
+        .wf { display: flex; align-items: baseline; gap: .6rem; margin-top: .9rem; }
+        .wf b { font-family: 'DM Sans', sans-serif; font-size: 2.2rem; font-weight: 800; line-height: 1; color: var(--text-dark); letter-spacing: -.03em; }
+        .wf span { font-size: .84rem; font-weight: 700; color: var(--text-medium); line-height: 1.4; }
+
+        /* patto di design */
+        .patto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem; }
+        .patto-grid .method-card { animation: none; }
+        .patto-grid .card-top { padding-bottom: .5rem; }
+        .patto-grid .tags { padding-top: .6rem; }
+        a.tag { text-decoration: none; }
+        a.tag .ti { font-size: .78rem; vertical-align: -1px; margin-right: .15rem; }
+
+        /* pulsante presentazione */
+        .cinema {
+            display: flex; align-items: center; gap: 1.4rem; text-decoration: none; color: #fff;
+            padding: 1.5rem 1.8rem; border-radius: var(--radius); position: relative; overflow: hidden;
+            background: radial-gradient(ellipse at 15% 50%, #1f6b5a 0%, #0f2f33 45%, #071113 100%);
+            box-shadow: 0 12px 40px rgba(7,17,19,.35); border: 1.5px solid rgba(127,224,168,.25);
+            transition: transform .4s cubic-bezier(.16,1,.3,1), box-shadow .4s;
+        }
+        .cinema::before {
+            content: ''; position: absolute; inset: 0; pointer-events: none;
+            background-image: radial-gradient(rgba(127,224,168,.5) 1px, transparent 1.5px), radial-gradient(rgba(255,217,160,.35) 1px, transparent 1.5px);
+            background-size: 46px 46px, 73px 73px; background-position: 0 0, 20px 30px; opacity: .35;
+        }
+        .cinema:hover { transform: translateY(-4px); box-shadow: 0 20px 56px rgba(7,17,19,.45); }
+        .cinema > * { position: relative; }
+        .cinema-play {
+            width: 74px; height: 74px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center;
+            background: #7FE0A8; color: #06231a; font-size: 2rem; box-shadow: 0 0 0 0 rgba(127,224,168,.5);
+            animation: cinePulse 2.4s ease-out infinite;
+        }
+        @keyframes cinePulse { 0% { box-shadow: 0 0 0 0 rgba(127,224,168,.5); } 70%,100% { box-shadow: 0 0 0 18px rgba(127,224,168,0); } }
+        .cinema-text { flex: 1; display: flex; flex-direction: column; gap: .25rem; min-width: 0; }
+        .cinema-kick { font-size: .7rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #7FE0A8; }
+        .cinema-text b { font-family: 'DM Sans', sans-serif; font-size: 1.45rem; font-weight: 800; line-height: 1.15; letter-spacing: -.01em; }
+        .cinema-sub { font-size: .88rem; font-weight: 600; opacity: .82; line-height: 1.5; }
+        .cinema-cta {
+            display: inline-flex; align-items: center; gap: .45rem; white-space: nowrap; flex-shrink: 0;
+            padding: .75rem 1.3rem; border-radius: 50px; background: #fff; color: #0f2f33;
+            font-size: .88rem; font-weight: 800; transition: gap .3s;
+        }
+        .cinema:hover .cinema-cta { gap: .75rem; }
+
+        /* tabella comparativa */
+        .tab-wrap { background: var(--bg-white); border-radius: var(--radius); box-shadow: var(--shadow-card); padding: .6rem .6rem 1rem; overflow: hidden; }
+        table.confronto { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .confronto th {
+            text-align: left; font-family: 'DM Sans', sans-serif; font-size: .78rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+            padding: .9rem 1rem; border-bottom: 2px solid #eef1f6;
+        }
+        .confronto th .ti { font-size: 1rem; vertical-align: -2px; margin-right: .35rem; }
+        .confronto th.c-meta { color: #b45309; background: #fffbeb; border-radius: 14px 0 0 0; }
+        .confronto th.c-noi { color: #047857; background: #ecfdf5; }
+        .confronto th.c-dove { color: var(--text-light); }
+        .confronto th.c-n { color: var(--text-light); width: 3rem; }
+        .confronto td { padding: .95rem 1rem; vertical-align: top; border-bottom: 1px solid #f0f2f7; font-size: .86rem; font-weight: 600; line-height: 1.5; color: var(--text-medium); }
+        .confronto tbody tr:last-child td { border-bottom: 0; }
+        .confronto td b { display: block; font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 800; color: var(--text-dark); margin-bottom: .15rem; }
+        .confronto td:nth-child(2) { background: #fffdf5; border-left: 3px solid #fcd34d; width: 33%; }
+        .confronto td:nth-child(3) { background: #f7fdfa; border-left: 3px solid #6ee7b7; width: 37%; }
+        .confronto td.c-n { font-family: 'DM Sans', sans-serif; font-weight: 800; color: var(--text-light); font-size: .95rem; }
+        .confronto td:last-child { display: table-cell; }
+        .confronto td:last-child .tag { margin: 0 .3rem .3rem 0; }
+        .confronto .tag.t-g { --card-color: #1a535c; --card-color-bg: #e6f2f1; }
+        .confronto em.imp {
+            display: inline-block; margin-top: .3rem; font-style: normal; font-size: .72rem; font-weight: 800;
+            padding: .2rem .6rem; border-radius: 50px; background: #fef3c7; color: #92400e;
+        }
+        .confronto tbody tr { transition: background .2s; }
+        .confronto tbody tr:hover td:nth-child(2) { background: #fff8e1; }
+        .confronto tbody tr:hover td:nth-child(3) { background: #ecfdf5; }
+        .tab-fonte { padding: .7rem 1rem 0; }
+
+        /* leve a doppio taglio */
+        .doppio { background: #fffbeb; border: 2px dashed #fcd34d; border-radius: var(--radius); padding: 1.3rem 1.5rem; display: flex; gap: 1rem; align-items: flex-start; }
+        .doppio > .ti { font-size: 1.8rem; color: #d97706; flex-shrink: 0; }
+        .doppio h3 { font-family: 'DM Sans', sans-serif; font-size: 1.05rem; font-weight: 800; margin-bottom: .35rem; }
+        .doppio p { font-size: .88rem; font-weight: 600; line-height: 1.6; color: var(--text-medium); }
+        .doppio p b { color: var(--text-dark); }
+        .doppio a { color: inherit; text-decoration-color: #d97706; text-underline-offset: 3px; }
+
+        .claim-etico { text-align: center; padding: 1.4rem 1rem .4rem; }
+        .claim-etico p { font-family: 'DM Sans', sans-serif; font-size: 1.55rem; font-weight: 800; line-height: 1.25; color: var(--text-dark); max-width: 34ch; margin: 0 auto; letter-spacing: -.01em; }
+        .claim-etico p em { font-style: normal; color: #1a535c; }
+        .claim-etico small { display: block; margin-top: .6rem; font-size: .84rem; font-weight: 700; color: var(--text-light); }
+
+        @media (max-width: 900px) {
+            .processo, .ricerca { grid-template-columns: 1fr; }
+            .cinema { flex-wrap: wrap; }
+            .cinema-cta { width: 100%; justify-content: center; }
+            .ricerca .big { justify-self: start; }
+        }
+        @media (max-width: 768px) {
+            .etico { padding-left: 1.25rem; padding-right: 1.25rem; }
+            .confronto thead { display: none; }
+            .confronto, .confronto tbody, .confronto tr, .confronto td { display: block; width: auto !important; }
+            .confronto tr { border-bottom: 2px solid #eef1f6; padding: .4rem 0 .6rem; }
+            .confronto td { border-bottom: 0; padding: .55rem .8rem; }
+            .confronto td[data-l]::before { content: attr(data-l); display: block; font-size: .64rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--text-light); margin-bottom: .2rem; }
+            .confronto td.c-n { padding-bottom: 0; }
+            .cinema-text b { font-size: 1.2rem; }
+            .patto-grid { grid-template-columns: 1fr; }
+            .claim-etico p { font-size: 1.25rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .rv-e { opacity: 1; transform: none; transition: none; }
+        }
+
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: #c5cfb0; border-radius: 4px; }
@@ -389,6 +552,146 @@
             <a href="index.html" class="back-btn">← Torna al Portale</a>
         </div>
     </header>
+
+    <!-- ═══ DESIGN ETICO: DOPO IL PROCESSO AI SOCIAL ═══ -->
+    <div class="section-title" id="design-etico"><h2><i class="ti ti-scale"></i>Design Etico</h2><div class="section-line"></div></div>
+
+    <p class="autori-intro">
+        Le metodologie dicono <b>come si impara</b>; il design etico dice <b>come si progetta lo strumento</b>.
+        Il processo ai social del 2026 ha reso visibili i meccanismi che trattengono i più giovani davanti allo schermo:
+        qui raccogliamo che cosa ne abbiamo imparato e i principi con cui progettiamo ogni web app del laboratorio.
+        Per tutti gli adulti che accompagnano i ragazzi: docenti, genitori, specialisti.
+    </p>
+
+    <section class="etico">
+
+        <!-- pulsante: avvia la presentazione cinematografica -->
+        <a class="cinema" href="designetico.html">
+            <span class="cinema-play"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg></span>
+            <span class="cinema-text">
+                <span class="cinema-kick">Presentazione · circa 5 minuti</span>
+                <b>Design etico: che cosa ci insegna il processo ai social</b>
+                <span class="cinema-sub">La sentenza contro Meta, la ricerca sugli adolescenti, le nostre scelte di design. Da proiettare a docenti, genitori e specialisti.</span>
+            </span>
+            <span class="cinema-cta">Avvia la presentazione<i class="ti ti-arrow-right"></i></span>
+        </a>
+
+        <!-- il contesto -->
+        <article class="processo rv-e">
+            <div>
+                <div class="eyebrow"><i class="ti ti-gavel"></i>Oakland, California · agosto 2026</div>
+                <h3>Il più grande processo mai intentato contro Meta</h3>
+                <p>Per la prima volta un colosso dei social risponde in tribunale di ciò che ha fatto ai più giovani. Le mail interne e i report riservati usciti dal processo descrivono le strategie per <b>attirare i preadolescenti</b> su Instagram e Facebook e <b>trattenerli il più a lungo possibile</b>.</p>
+            </div>
+            <div class="numeri">
+                <div class="num"><b>47</b><span>Stati americani portano Meta in tribunale</span></div>
+                <div class="num"><b>1</b><span>settimana di processo, poi l'accordo, prima della testimonianza di Zuckerberg</span></div>
+                <div class="num"><b>17,1</b><span>miliardi di dollari in dieci anni, circa l'1% del valore dell'azienda</span></div>
+            </div>
+            <div class="regole">
+                <span class="lab">Le nuove regole per i minori</span>
+                <span class="regola">Stop all'uso notturno</span>
+                <span class="regola">Massimo 2 ore al giorno</span>
+                <span class="regola">Verifica più severa dell'età</span>
+                <span class="nota">Valgono solo negli Stati che hanno fatto causa. Per l'Italia, nessun vincolo.</span>
+            </div>
+            <div class="fonte"><i class="ti ti-device-tv"></i>Fonte: PresaDiretta, «Processo ai social», Rai 3, 18 ottobre 2026</div>
+        </article>
+
+        <!-- la ricerca -->
+        <div class="sub-h rv-e"><i class="ti ti-microscope"></i>Che cosa dice la ricerca</div>
+        <article class="ricerca rv-e">
+            <div class="big"><small>più di</small><b>15</b><span>controlli dei social<br>al giorno</span></div>
+            <div>
+                <h3>Il cervello in attesa del like</h3>
+                <p>Un gruppo dell'Università del North Carolina ha seguito per tre anni, con la risonanza magnetica funzionale, ragazzi di prima e seconda media. Chi controllava i social più di quindici volte al giorno è diventato, anno dopo anno, <b>più sensibile all'attesa</b> dell'approvazione e del rifiuto dei coetanei, con una maggiore attivazione delle aree di <b>motivazione, ricompensa e autocontrollo</b>.</p>
+                <p>Il motore è la <b>ricompensa imprevedibile</b>: non sai quando arriverà il prossimo like, ed è per questo che controlli.</p>
+                <div class="cautela"><i class="ti ti-info-circle"></i><p><b>Onestà scientifica.</b> È un'associazione, non la prova di una causa: lo scrivono gli stessi autori, e una maggiore sensibilità potrebbe anche essere un adattamento. A una scuola basta per scegliere la <b>precauzione</b>.</p></div>
+                <div class="fonte"><i class="ti ti-file-text"></i>Maza M.T. et al., «Association of Habitual Checking Behaviors on Social Media With Longitudinal Functional Brain Development», JAMA Pediatrics 2023;177(2):160-167</div>
+            </div>
+        </article>
+
+        <!-- tabella comparativa -->
+        <div class="sub-h rv-e"><i class="ti ti-table"></i>Due modi di progettare<small>per trattenere o per imparare</small></div>
+        <div class="tab-wrap rv-e">
+            <table class="confronto">
+                <thead>
+                    <tr><th class="c-n">#</th><th class="c-meta"><i class="ti ti-infinity"></i>Progettato per trattenere</th><th class="c-noi"><i class="ti ti-school"></i>Progettato per imparare</th><th class="c-dove">Dove si vede</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="c-n">01</td><td data-l="Progettato per trattenere"><b>Strategie per attirare i preadolescenti</b>Mail interne e report descrivono come portare i più giovani su Instagram e Facebook.</td><td data-l="Progettato per imparare"><b>Nessun aggancio verso gli studenti</b>Le app si aprono su indicazione del docente, in classe, per un obiettivo didattico.</td><td data-l="Dove si vede"><span class="tag t-g">Portale del laboratorio</span></td></tr>
+                    <tr><td class="c-n">02</td><td data-l="Progettato per trattenere"><b>Sessioni senza fine</b>Scroll infinito e contenuti che partono da soli: nessun punto in cui fermarsi.</td><td data-l="Progettato per imparare"><b>Percorsi che finiscono</b>Tappe, missioni, buche contate: ogni app ha un traguardo e una schermata finale.</td><td data-l="Dove si vede"><span class="tag t-g">Minigolf delle Skill</span><span class="tag t-g">NET CONTROL</span></td></tr>
+                    <tr><td class="c-n">03</td><td data-l="Progettato per trattenere"><b>Ricompensa sociale imprevedibile</b>Like e commenti a sorpresa: il meccanismo che spinge a controllare di continuo.</td><td data-l="Progettato per imparare"><b>Feedback sul lavoro fatto</b>Il riscontro riguarda il compito. L'oro premia solo il merito, la sfida è di squadra.</td><td data-l="Dove si vede"><span class="tag t-g">Albo d'Oro delle Case</span></td></tr>
+                    <tr><td class="c-n">04</td><td data-l="Progettato per trattenere"><b>Notifiche che richiamano</b>L'app riporta l'utente sullo schermo anche quando non la sta usando.</td><td data-l="Progettato per imparare"><b>Silenzio</b>Nessuna notifica. È il docente ad aprire l'attività, non l'app a chiamare lo studente.</td><td data-l="Dove si vede"><span class="tag t-g">Tutte le web app</span></td></tr>
+                    <tr><td class="c-n">05</td><td data-l="Progettato per trattenere"><b>Algoritmo e contenuti dannosi</b>Una macchina sceglie che cosa vedere, anche contenuti che fanno male ai più fragili.</td><td data-l="Progettato per imparare"><b>Contenuti curati da un insegnante</b>Ogni testo, video e scenario è scelto, scritto e verificato da chi conosce la classe.</td><td data-l="Dove si vede"><span class="tag t-g">Lezioni e percorsi</span></td></tr>
+                    <tr><td class="c-n">06</td><td data-l="Progettato per trattenere"><b>Pubblicità e profilazione</b>Il tempo e i dati dei ragazzi diventano ricavo.</td><td data-l="Progettato per imparare"><b>Zero pubblicità, zero tracciamenti</b>Nessun servizio di terze parti che raccoglie dati. Valutazione d'impatto sulla privacy per le app.</td><td data-l="Dove si vede"><span class="tag t-g">176 DPIA</span></td></tr>
+                    <tr><td class="c-n">07</td><td data-l="Progettato per trattenere"><b>Uso notturno</b><em class="imp">Imposto dall'accordo: stop notturno</em></td><td data-l="Progettato per imparare"><b>Portale acceso solo in orario scolastico</b>Lunedì–venerdì, 8–16. Sera, notte, weekend e pausa estiva: chiuso.</td><td data-l="Dove si vede"><span class="tag t-g">Blocco orario</span></td></tr>
+                    <tr><td class="c-n">08</td><td data-l="Progettato per trattenere"><b>Tempo d'uso senza limiti</b><em class="imp">Imposto dall'accordo: massimo 2 ore al giorno</em></td><td data-l="Progettato per imparare"><b>Il tempo lo decide la classe</b>Le attività stanno dentro l'ora di lezione. Chi finisce prima sceglie da sé dove andare.</td><td data-l="Dove si vede"><span class="tag t-g">Profe, ho finito!</span></td></tr>
+                    <tr><td class="c-n">09</td><td data-l="Progettato per trattenere"><b>Controlli sull'età insufficienti</b><em class="imp">Imposto dall'accordo: verifiche più severe</em></td><td data-l="Progettato per imparare"><b>Nessuna profilazione dei minori</b>Strumenti pensati per l'età della classe e usati con il docente presente.</td><td data-l="Dove si vede"><span class="tag t-g">Laboratorio</span></td></tr>
+                    <tr><td class="c-n">10</td><td data-l="Progettato per trattenere"><b>Rischi tenuti nascosti</b>Il copione già visto con l'industria del tabacco.</td><td data-l="Progettato per imparare"><b>Trasparenza</b>Metodologie, autori e scelte di design sono pubblicati. La ricerca è citata con i suoi limiti.</td><td data-l="Dove si vede"><span class="tag t-g">Questa pagina</span></td></tr>
+                </tbody>
+            </table>
+            <div class="fonte tab-fonte"><i class="ti ti-device-tv"></i>Prima colonna: i meccanismi emersi nel processo a Meta. Fonte: PresaDiretta, «Processo ai social», Rai 3, 18 ottobre 2026.</div>
+        </div>
+
+        <!-- quando il portale è acceso -->
+        <div class="sub-h rv-e"><i class="ti ti-clock-check"></i>Il digitale ha un orario<small>il digitale della scuola si usa a scuola</small></div>
+        <div class="settimana rv-e">
+            <div class="tit"><i class="ti ti-calendar-week"></i>Quando il portale del laboratorio è acceso</div>
+            <div class="wg" id="weekGrid" aria-label="Griglia settimanale: il portale è acceso dal lunedì al venerdì dalle 8 alle 16"></div>
+            <div class="wf"><b id="weekOre">40</b><span>ore su 168 a settimana: il resto del tempo, compresi sera, notte, weekend e pausa estiva, il portale è spento.</span></div>
+        </div>
+
+        <!-- il patto -->
+        <div class="sub-h rv-e"><i class="ti ti-heart-handshake"></i>Il nostro patto di design<small>sei regole che valgono per tutte le web app del laboratorio</small></div>
+        <div class="patto-grid">
+            <div class="method-card rv-e" data-color="emerald">
+                <div class="card-top"><div class="card-emoji"><i class="ti ti-flag-check"></i></div><h2>Ogni sessione ha una fine</h2></div>
+                <div class="card-body"><p>Traguardi chiari e una schermata di chiusura: si esce soddisfatti, non svuotati. È la differenza tra il flow e il bisogno di tornare.</p></div>
+                <div class="tags"><a class="tag" href="#a-csik"><i class="ti ti-link"></i>Csíkszentmihályi</a></div>
+            </div>
+            <div class="method-card rv-e" data-color="amber">
+                <div class="card-top"><div class="card-emoji"><i class="ti ti-medal"></i></div><h2>L'oro solo per il merito</h2></div>
+                <div class="card-body"><p>Il riconoscimento arriva per il lavoro fatto, mai per caso o per semplice presenza. Niente premi a sorpresa, niente ruote della fortuna.</p></div>
+                <div class="tags"><a class="tag" href="#a-deci"><i class="ti ti-link"></i>Deci &amp; Ryan</a></div>
+            </div>
+            <div class="method-card rv-e" data-color="teal">
+                <div class="card-top"><div class="card-emoji"><i class="ti ti-arrow-back-up"></i></div><h2>Nessun rosso per l'errore</h2></div>
+                <div class="card-body"><p>Ambra, verde e blu: sbagliare fa parte del percorso, non è un allarme. L'errore rompe l'equilibrio e apre all'apprendimento.</p></div>
+                <div class="tags"><a class="tag" href="#a-piaget"><i class="ti ti-link"></i>Piaget</a></div>
+            </div>
+            <div class="method-card rv-e" data-color="indigo">
+                <div class="card-top"><div class="card-emoji"><i class="ti ti-shield-half"></i></div><h2>Si gioca per la propria Casa</h2></div>
+                <div class="card-body"><p>AquilaBlu, CeroGiallo, TassoRosso, QuerciaVerde: il merito è di squadra. L'appartenenza conta più della posizione personale.</p></div>
+                <div class="tags"><a class="tag" href="#a-deci"><i class="ti ti-link"></i>Deci &amp; Ryan</a><a class="tag" href="#a-vygotskij"><i class="ti ti-link"></i>Vygotskij</a></div>
+            </div>
+            <div class="method-card rv-e" data-color="cyan">
+                <div class="card-top"><div class="card-emoji"><i class="ti ti-bell-off"></i></div><h2>Niente notifiche, niente pubblicità</h2></div>
+                <div class="card-body"><p>Nessuno richiama i ragazzi sullo schermo. I giochi nascono dentro la scuola e per la scuola, senza SDK di terze parti.</p></div>
+                <div class="tags"><span class="tag">Minigolf delle Skill</span><span class="tag">Labirinto</span></div>
+            </div>
+            <div class="method-card rv-e" data-color="violet">
+                <div class="card-top"><div class="card-emoji"><i class="ti ti-hourglass"></i></div><h2>Il tempo lo decide la classe</h2></div>
+                <div class="card-body"><p>Le attività stanno dentro l'ora di lezione. Chi finisce prima non resta incollato allo schermo: sceglie da sé dove andare con «Profe, ho finito!».</p></div>
+                <div class="tags"><span class="tag">Profe ho finito!</span><a class="tag" href="#a-deci"><i class="ti ti-link"></i>Autonomia</a></div>
+            </div>
+        </div>
+
+        <!-- leve a doppio taglio -->
+        <div class="doppio rv-e">
+            <i class="ti ti-alert-triangle"></i>
+            <div>
+                <h3>Attenzione: alcune leve sono a doppio taglio</h3>
+                <p>L'<a href="#a-zeigarnik"><b>effetto Zeigarnik</b></a> e la <b>gamification</b> sono gli stessi strumenti che usano i social: la storia che si interrompe, il punteggio che sale. La differenza non è nella leva ma in <b>dove si chiude la tensione</b>. Nelle nostre attività si chiude dentro l'attività, che ha una fine. Nei social non si chiude mai. Per questo ogni nuova app viene verificata con una domanda semplice: <b>questo meccanismo spinge a tornare o a imparare?</b></p>
+            </div>
+        </div>
+
+        <div class="claim-etico rv-e">
+            <p>Il digitale a scuola non serve a trattenere i ragazzi. <em>Serve a farli crescere.</em></p>
+            <small>Le ricerche indicano associazioni, non certezze. Per questo, nel dubbio, progettiamo con prudenza.</small>
+        </div>
+
+    </section>
 
     <!-- ═══ APPROCCI ATTIVI ═══ -->
     <div class="section-title"><h2>🔧 Approcci Attivi</h2><div class="section-line"></div></div>
@@ -943,6 +1246,51 @@
         });
     });
     svg.addEventListener('mouseleave',azzera);
+})();
+
+/* ═══ Design etico: comparsa allo scroll e griglia settimanale del portale ═══ */
+(function(){
+    var ridotto = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // griglia 7 giorni × 24 ore: acceso lun–ven, 8–16
+    var g = document.getElementById('weekGrid'), celle = [];
+    if (g) {
+        var html = '<span></span>';
+        for (var h = 0; h < 24; h++) html += '<span class="hh">' + (h % 4 === 0 ? h : '') + '</span>';
+        ['Lun','Mar','Mer','Gio','Ven','Sab','Dom'].forEach(function(d, di){
+            html += '<span class="dd">' + d + '</span>';
+            for (var h = 0; h < 24; h++) html += '<i' + (di < 5 && h >= 8 && h < 16 ? ' data-on="1"' : '') + '></i>';
+        });
+        g.innerHTML = html;
+        celle = [].slice.call(g.querySelectorAll('i[data-on]'));
+    }
+    function accendiSettimana(){
+        var ore = document.getElementById('weekOre');
+        if (ridotto) { celle.forEach(function(c){ c.classList.add('on'); }); return; }
+        celle.forEach(function(c, i){ setTimeout(function(){ c.classList.add('on'); if (ore) ore.textContent = i + 1; }, i * 60); });
+    }
+
+    var els = [].slice.call(document.querySelectorAll('.rv-e'));
+    if (ridotto || !('IntersectionObserver' in window)) {
+        els.forEach(function(e){ e.classList.add('vis'); });
+        accendiSettimana();
+        return;
+    }
+    var io = new IntersectionObserver(function(voci){
+        voci.forEach(function(v){
+            if (!v.isIntersecting) return;
+            var e = v.target;
+            // piccolo sfasamento tra elementi fratelli che entrano insieme
+            var fratelli = [].slice.call(e.parentElement.children).filter(function(x){ return x.classList.contains('rv-e'); });
+            e.style.transitionDelay = (Math.max(0, fratelli.indexOf(e)) % 6) * 70 + 'ms';
+            e.classList.add('vis');
+            // a comparsa finita restituisce all'elemento il suo comportamento normale (es. hover delle card)
+            setTimeout(function(){ e.classList.remove('rv-e', 'vis'); e.style.transitionDelay = ''; }, 1300);
+            if (e.classList.contains('settimana')) accendiSettimana();
+            io.unobserve(e);
+        });
+    }, { threshold: .15 });
+    els.forEach(function(e){ io.observe(e); });
 })();
 </script>
 </body>
