@@ -150,6 +150,8 @@
         .chip[data-cat="esame"].active { background: var(--c-esame); }
         .chip[data-cat="scuola"].active { background: var(--c-scuola); }
         .chip[data-cat="sport"].active { background: var(--c-sport); }
+        .chip[data-cat="novita"] { background: #FCE8B2; color: #7A5200; border-color: #E6C367; }
+        .chip[data-cat="novita"].active { background: #E0A100; color: #fff; border-color: #E0A100; }
 
         /* ═══ GRID ═══ */
         .grid { max-width: 1200px; margin: 2rem auto 0; padding: 0 2rem 3rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem; }
@@ -177,7 +179,9 @@
         .card-list li.card-sub:hover { background: transparent; }
         .card-sub-label { display: flex; align-items: center; gap: .55rem; padding: .85rem .7rem .35rem; font-family: 'DM Sans', sans-serif; font-size: .62rem; font-weight: 800; text-transform: uppercase; letter-spacing: .09em; color: var(--card-color); }
         .card-sub-label::after { content: ""; flex: 1; height: 1px; background: var(--card-color-light, #e2e8f0); }
-        .link-new { display: inline-block; margin-left: .4rem; vertical-align: middle; font-family: 'DM Sans', sans-serif; font-size: .55rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #7A5200; background: #FCE8B2; border: 1px solid #E6C367; padding: .06rem .4rem; border-radius: 50px; }
+        .link-new { display: inline-block; margin-left: .4rem; vertical-align: middle; font-family: 'DM Sans', sans-serif; font-size: .55rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #7A5200; background: #FCE8B2; border: 1px solid #E6C367; padding: .06rem .4rem; border-radius: 50px; animation: newPulse 2.4s ease-in-out infinite; }
+        @keyframes newPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(214,160,40,0); } 50% { box-shadow: 0 0 0 3px rgba(214,160,40,.32); } }
+        @media (prefers-reduced-motion: reduce) { .link-new { animation: none; } }
         .card-pdf-btn { display: inline-block; font-size: .68rem; font-weight: 700; color: #5d6e3b; background: #f2f5ec; padding: .25rem .7rem; border-radius: 50px; text-decoration: none; margin: .4rem 0 .2rem 1rem; border: 1px solid #e3e8d8; transition: all .25s ease; }
         .card-pdf-btn:hover { background: #5d6e3b; color: #fff; transform: translateY(-1px); }
 
@@ -275,9 +279,9 @@
                 </div>
             </div>
             <div class="hero-counters">
-                <div class="hero-stat"><span class="stat-num" data-target="174">0</span><span class="stat-label">Web App<br>Studenti & Docenti</span></div>
+                <div class="hero-stat"><span class="stat-num" data-target="176">0</span><span class="stat-label">Web App<br>Studenti & Docenti</span></div>
                 <div class="hero-stat"><span class="stat-num" data-target="20">0</span><span class="stat-label">Strumenti<br>Area Riservata</span></div>
-                <div class="hero-stat"><span class="stat-num" data-target="6">0</span><span class="stat-label">Web App<br>Genitori</span></div>
+                <div class="hero-stat"><span class="stat-num" data-target="8">0</span><span class="stat-label">Web App<br>Genitori</span></div>
                 <div class="hero-stat hero-update"><span class="stat-num" id="dayNum"></span><span class="stat-label" id="dateLabel"></span></div>
             </div>
             <div class="hero-survey">
@@ -291,12 +295,10 @@
 
     <div class="quick-links">
         <a href="#genitori" onclick="filterByCategory('genitori');document.getElementById('grid').scrollIntoView({behavior:'smooth'});return false;"><i class="ti ti-home-heart"></i> Genitori</a>
-        <a href="https://chatbotai.neocities.org/" target="_blank"><i class="ti ti-robot"></i> Didattica e AI</a>
         <span class="ql-sep"></span>
         <a href="metodologie.html" class="ql-glass"><i class="ti ti-brain"></i> Metodologie</a>
         <a href="laboratorio.html" class="ql-glass"><i class="ti ti-camera"></i> Laboratorio</a>
         <a href="scuolafutura.html" class="ql-glass"><i class="ti ti-school"></i> Percorsi Scuola Futura</a>
-        <a href="https://ineai.neocities.org/" target="_blank" class="ql-glass"><i class="ti ti-brain"></i> IN + IA</a>
         <a href="riservata.html" class="ql-glass ql-lock"><i class="ti ti-lock"></i></a>
         <a href="presentazione.html" class="ql-glass ql-present" title="Il progetto" aria-label="Il progetto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l13 2-1 4-13-2z"/><path d="M10 11.6V19"/><path d="M6.5 19h7"/></svg></a>
         <a href="galassia.html" class="ql-glass ql-present" title="La Galassia delle web app didattiche" aria-label="La Galassia delle web app didattiche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="12.5" rx="9.6" ry="3.6" transform="rotate(-18 12 12.5)"/><circle cx="12" cy="12.5" r="2.3" fill="currentColor" stroke="none"/><circle cx="18.6" cy="5" r=".9" fill="currentColor" stroke="none"/><circle cx="5" cy="19.2" r=".7" fill="currentColor" stroke="none"/></svg></a>
@@ -307,6 +309,7 @@
 
     <div class="filters" id="filters">
         <span class="chip active" data-cat="all" onclick="filterByCategory('all', this)">Tutte</span>
+        <span class="chip" data-cat="novita" onclick="filterByCategory('novita', this)">Novità</span>
         <span class="chip" data-cat="cittadinanza" onclick="filterByCategory('cittadinanza', this)">Cittadinanza</span>
         <span class="chip" data-cat="scrittura" onclick="filterByCategory('scrittura', this)">Scrittura</span>
         <span class="chip" data-cat="biblioteca" onclick="filterByCategory('biblioteca', this)">Biblioteca</span>
@@ -320,6 +323,12 @@
     </div>
 
     <main class="grid" id="grid">
+
+        <!-- ══════ NOVITÀ (raccoglie le ultime inserite, newest-first) ══════ -->
+        <div class="card novita-card" id="novitaCard" data-category="novita" style="display:none">
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-sparkles"></i></div><div class="card-info"><div class="card-name">Novità</div><span class="card-badge">ultime inserite</span></div></div>
+            <ul class="card-list" id="novitaList"></ul>
+        </div>
 
         <!-- ══════ CITTADINANZA DIGITALE ══════ -->
         <div class="card" data-theme="cittadinanza" data-category="cittadinanza">
@@ -494,9 +503,9 @@
                     <span class="link-text"><span class="link-name">ScriviMeglio</span><span class="link-desc">Costruisci la scaletta del tuo testo e scarica il PDF</span></span>
                     <span class="link-go">→</span>
                 </a></li>
-                <li><a href="https://ita3primaria.vercel.app/" target="_blank">
+                <li class="is-new" data-new="1"><a href="https://ita3primaria.vercel.app/" target="_blank">
                     <span class="link-num"></span>
-                    <span class="link-text"><span class="link-name">La Punteggiatura delle Casate</span><span class="link-desc">Metti i segni di punteggiatura: 7 tappe dalla tastiera al grande ripasso, con modalità Sfida tra le Case e classifica live. Per la terza</span></span>
+                    <span class="link-text"><span class="link-name">La Punteggiatura delle Casate <span class="link-new">New</span></span><span class="link-desc">Metti i segni di punteggiatura: 7 tappe dalla tastiera al grande ripasso, con modalità Sfida tra le Case e classifica live. Per la terza</span></span>
                     <span class="link-go">→</span>
                 </a></li>
             </ul>
@@ -714,9 +723,9 @@
                     <span class="link-text"><span class="link-name">Keyboard Training</span><span class="link-desc">Esercizi pratici per digitare con velocità e precisione</span></span>
                     <span class="link-go">→</span>
                 </a></li>
-                <li><a href="https://ditaveloci.vercel.app/" target="_blank">
+                <li class="is-new" data-new="8"><a href="https://ditaveloci.vercel.app/" target="_blank">
                     <span class="link-num"></span>
-                    <span class="link-text"><span class="link-name">Dita Veloci</span><span class="link-desc">Dieci dita, dieci missioni: allena la dattilografia con frasi guidate, velocità e precisione</span></span>
+                    <span class="link-text"><span class="link-name">Dita Veloci <span class="link-new">New</span></span><span class="link-desc">Dieci dita, dieci missioni: allena la dattilografia con frasi guidate, velocità e precisione</span></span>
                     <span class="link-go">→</span>
                 </a></li>
                 <li><a href="https://typegame.neocities.org/" target="_blank">
@@ -895,14 +904,14 @@
                     <span class="link-text"><span class="link-name">Quello che sei, quello che crei</span><span class="link-desc">Dati personali, diritto d'autore e licenze: cosa protegge chi sei e cosa protegge quello che crei</span></span>
                     <span class="link-go">→</span>
                 </a></li>
-                <li><a href="https://nonnathelma.vercel.app/" target="_blank">
+                <li class="is-new" data-new="9"><a href="https://nonnathelma.vercel.app/" target="_blank">
                     <span class="link-num"></span>
-                    <span class="link-text"><span class="link-name">Pronto, nonna Thelma?</span><span class="link-desc">Spiegare la tecnologia a chi ha meno dimestichezza: la tecnica di Feynman e l'empatia digitale</span></span>
+                    <span class="link-text"><span class="link-name">Pronto, nonna Thelma? <span class="link-new">New</span></span><span class="link-desc">Spiegare la tecnologia a chi ha meno dimestichezza: la tecnica di Feynman e l'empatia digitale</span></span>
                     <span class="link-go">→</span>
                 </a></li>
-                <li><a href="https://webquest-ten.vercel.app/" target="_blank">
+                <li class="is-new" data-new="4"><a href="https://webquest-ten.vercel.app/" target="_blank">
                     <span class="link-num"></span>
-                    <span class="link-text"><span class="link-name">Web Quest del Campus</span><span class="link-desc">Caccia al tesoro digitale su siti ufficiali: otto tappe, una lettera a ogni risposta esatta, fino alla parola che apre il tesoro</span></span>
+                    <span class="link-text"><span class="link-name">Web Quest del Campus <span class="link-new">New</span></span><span class="link-desc">Caccia al tesoro digitale su siti ufficiali: otto tappe, una lettera a ogni risposta esatta, fino alla parola che apre il tesoro</span></span>
                     <span class="link-go">→</span>
                 </a></li>
                 <li class="card-sub"><span class="card-sub-label">Alfabetizzazione iPad</span></li>
@@ -931,9 +940,9 @@
                     <span class="link-text"><span class="link-name">iPad e Carta</span><span class="link-desc">Quando usare il digitale e quando la carta: scegliere lo strumento giusto</span></span>
                     <span class="link-go">→</span>
                 </a></li>
-                <li><a href="https://patenteipad.vercel.app/" target="_blank">
+                <li class="is-new" data-new="5"><a href="https://patenteipad.vercel.app/" target="_blank">
                     <span class="link-num"></span>
-                    <span class="link-text"><span class="link-name">Patente iPad</span><span class="link-desc">La prova finale: sei moduli da dieci domande, superali tutti e ottieni la patente d'uso dell'iPad</span></span>
+                    <span class="link-text"><span class="link-name">Patente iPad <span class="link-new">New</span></span><span class="link-desc">La prova finale: sei moduli da dieci domande, superali tutti e ottieni la patente d'uso dell'iPad</span></span>
                     <span class="link-go">→</span>
                 </a></li>
             </ul>
@@ -1023,9 +1032,9 @@
                     <span class="link-text"><span class="link-name">Le Lezioni del Prof</span><span class="link-desc">Videolezioni del prof Enrico Galiano su miti greci, canzoni e poesie spiegate</span></span>
                     <span class="link-go">→</span>
                 </a></li>
-                <li><a href="https://aulamagnacerio.vercel.app/" target="_blank">
+                <li class="is-new" data-new="2"><a href="https://aulamagnacerio.vercel.app/" target="_blank">
                     <span class="link-num"></span>
-                    <span class="link-text"><span class="link-name">Aula Magna 3D</span><span class="link-desc">Esplora un'aula magna in 3D: ruota la vista, vola tra i mondi sul pavimento e clicca le etichette per scoprire i contenuti</span></span>
+                    <span class="link-text"><span class="link-name">Aula Magna 3D <span class="link-new">New</span></span><span class="link-desc">Esplora un'aula magna in 3D: ruota la vista, vola tra i mondi sul pavimento e clicca le etichette per scoprire i contenuti</span></span>
                     <span class="link-go">→</span>
                 </a></li>
             </ul>
@@ -1137,19 +1146,19 @@
                     <span class="link-text"><span class="link-name">Canestro in Laboratorio</span><span class="link-desc">Tira a canestro e accumula punti per la tua Casa: sfida in tempo reale tra Aquila, Cero, Quercia e Tasso</span></span>
                     <span class="link-go">→</span>
                 </a></li>
-                <li><a href="https://aceriogolf.vercel.app/" target="_blank">
+                <li class="is-new" data-new="7"><a href="https://aceriogolf.vercel.app/" target="_blank">
                     <span class="link-num"></span>
                     <span class="link-text"><span class="link-name">Minigolf delle Skill <span class="link-new">New</span></span><span class="link-desc">Il laboratorio di informatica diventa un campo da minigolf: 7 buche, in ognuna una skill nascosta che porta punti alla tua Casa</span></span>
                     <span class="link-go">→</span>
                 </a></li>
-                <li><a href="https://house-day.vercel.app/" target="_blank">
+                <li class="is-new" data-new="6"><a href="https://house-day.vercel.app/" target="_blank">
                     <span class="link-num"></span>
-                    <span class="link-text"><span class="link-name">House Day</span><span class="link-desc">La classifica dell'House Day: posizioni, squadre ed efficienza per classe, con card scaricabile in PNG</span></span>
+                    <span class="link-text"><span class="link-name">House Day <span class="link-new">New</span></span><span class="link-desc">La classifica dell'House Day: posizioni, squadre ed efficienza per classe, con card scaricabile in PNG</span></span>
                     <span class="link-go">→</span>
                 </a></li>
-                <li><a href="https://labirinto-three.vercel.app/" target="_blank">
+                <li class="is-new" data-new="3"><a href="https://labirinto-three.vercel.app/" target="_blank">
                     <span class="link-num"></span>
-                    <span class="link-text"><span class="link-name">Il Labirinto delle Casate</span><span class="link-desc">Scegli la tua Casata e trova l'uscita del labirinto: classifica live tra le Case</span></span>
+                    <span class="link-text"><span class="link-name">Il Labirinto delle Casate <span class="link-new">New</span></span><span class="link-desc">Scegli la tua Casata e trova l'uscita del labirinto: classifica live tra le Case</span></span>
                     <span class="link-go">→</span>
                 </a></li>
                 <li class="card-sub"><span class="card-sub-label">Sondaggi</span></li>
@@ -1240,7 +1249,7 @@
 
         <!-- ══════ GENITORI E FAMIGLIE ══════ -->
         <div class="card" data-theme="genitori" data-category="genitori">
-            <div class="card-head"><div class="card-emoji"><i class="ti ti-home-heart"></i></div><div class="card-info"><div class="card-name">Genitori e Famiglie</div><span class="card-badge">6 risorse</span></div></div>
+            <div class="card-head"><div class="card-emoji"><i class="ti ti-home-heart"></i></div><div class="card-info"><div class="card-name">Genitori e Famiglie</div><span class="card-badge">8 risorse</span></div></div>
             <ul class="card-list">
                 <li><a href="https://crescerecittadinidigitali.neocities.org/" target="_blank">
                     <span class="link-num"></span>
@@ -1270,6 +1279,16 @@
                 <li><a href="https://ai-video-azure.vercel.app/" target="_blank">
                     <span class="link-num"></span>
                     <span class="link-text"><span class="link-name">AI Video</span><span class="link-desc">Quando l'intelligenza artificiale crea video: capire, riconoscere, valutare</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://ineai.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">IN + IA</span><span class="link-desc">Dietro le quinte: come l'insegnante guida l'IA nel costruire le attività — Intelligenza Naturale + Intelligenza Artificiale</span></span>
+                    <span class="link-go">→</span>
+                </a></li>
+                <li><a href="https://chatbotai.neocities.org/" target="_blank">
+                    <span class="link-num"></span>
+                    <span class="link-text"><span class="link-name">Didattica e AI</span><span class="link-desc">Assistente conversazionale per esplorare didattica e intelligenza artificiale; le conversazioni di classe sono anonimizzate</span></span>
                     <span class="link-go">→</span>
                 </a></li>
             </ul>
@@ -1492,7 +1511,7 @@
     <script>
         /* auto-allineamento counter "Studenti & Docenti" = <li> delle card + eventuali app pinned (<a>) nell'hero */
         (function() {
-            var liCount = document.querySelectorAll('.card .card-list > li:not(.card-sub)').length;
+            var liCount = document.querySelectorAll('.card:not(.novita-card) .card-list > li:not(.card-sub)').length;
             var pinnedCount = document.querySelectorAll('.hero-survey > a').length;
             var total = liCount + pinnedCount;
             document.querySelectorAll('.hero-counters .hero-stat').forEach(function(stat) {
@@ -1535,20 +1554,43 @@
         })();
     </script>
     <script>
+        function clearNovita() {
+            var nl = document.getElementById('novitaList');
+            if (nl) nl.innerHTML = '';
+            var nc = document.getElementById('novitaCard');
+            if (nc) nc.style.display = 'none';
+        }
+        function renderNovita() {
+            var list = document.getElementById('novitaList');
+            if (!list) return;
+            var lis = [].slice.call(document.querySelectorAll('.card:not(.novita-card) .card-list > li.is-new'));
+            lis.sort(function(a, b) { return (parseInt(a.getAttribute('data-new'), 10) || 99) - (parseInt(b.getAttribute('data-new'), 10) || 99); });
+            list.innerHTML = '';
+            lis.forEach(function(li) { var c = li.cloneNode(true); c.style.display = ''; list.appendChild(c); });
+        }
         function filterByCategory(cat, chip) {
             /* il filtro categoria azzera la ricerca testuale */
             var box = document.getElementById('searchBox');
             if (box) box.value = '';
             document.querySelectorAll('.filters .chip').forEach(function(c) { c.classList.remove('active'); });
             if (chip) chip.classList.add('active');
-            document.querySelectorAll('.card').forEach(function(card) {
+            var grid = document.getElementById('grid');
+            if (cat === 'novita') {
+                document.querySelectorAll('.card:not(.novita-card)').forEach(function(card) { card.style.display = 'none'; });
+                renderNovita();
+                var nc = document.getElementById('novitaCard');
+                if (nc) nc.style.display = '';
+                if (grid) grid.classList.add('solo-mode');
+                return;
+            }
+            clearNovita();
+            document.querySelectorAll('.card:not(.novita-card)').forEach(function(card) {
                 var show = (cat === 'all') || (card.dataset.category === cat);
                 card.style.display = show ? '' : 'none';
                 /* ripristina eventuali li nascosti da una ricerca precedente */
                 card.querySelectorAll('.card-list li').forEach(function(li) { li.style.display = ''; });
             });
             /* una sola categoria attiva → vista a griglia full-width; "Tutte" → mosaico */
-            var grid = document.getElementById('grid');
             if (grid) grid.classList.toggle('solo-mode', cat !== 'all');
         }
         function filterCards(q) {
@@ -1559,7 +1601,8 @@
             });
             var grid = document.getElementById('grid');
             if (grid) grid.classList.remove('solo-mode');
-            document.querySelectorAll('.card').forEach(card => {
+            clearNovita();
+            document.querySelectorAll('.card:not(.novita-card)').forEach(card => {
                 var items = card.querySelectorAll('.card-list li');
                 var hasMatch = false;
                 items.forEach(li => {
