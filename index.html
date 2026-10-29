@@ -1570,6 +1570,7 @@
             if (!list) return;
             var lis = [].slice.call(document.querySelectorAll('.card:not(.novita-card) .card-list > li.is-new'));
             lis.sort(function(a, b) { return (parseInt(a.getAttribute('data-new'), 10) || 99) - (parseInt(b.getAttribute('data-new'), 10) || 99); });
+            lis = lis.slice(0, 9); /* solo le 9 più recenti: recupera l'ultima riga */
             list.innerHTML = '';
             lis.forEach(function(li) { var c = li.cloneNode(true); c.style.display = ''; list.appendChild(c); });
         }
