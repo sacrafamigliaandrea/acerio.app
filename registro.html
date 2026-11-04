@@ -272,6 +272,39 @@
         .op-msg.ok { color:#15803d; } .op-msg.err { color:#b45309; }
         .op-reload { border:none; background:var(--accent-light); color:var(--accent); border-radius:10px; padding:.6rem 1rem; font-family:'Nunito'; font-weight:700; font-size:.8rem; cursor:pointer; }
 
+        /* ═══ PANNELLO FEEDBACK LEZIONI ═══ */
+        .fb-panel { background:var(--bg-white); border-radius:var(--radius); box-shadow:var(--shadow-card); padding:1.3rem 1.4rem 1.5rem; margin-bottom:1.4rem; --fb-s:#5d6e3b; --fb-p:#1f6feb; --fb-r:#c6881f; }
+        .fb-head { display:flex; align-items:center; gap:.6rem; margin-bottom:.4rem; }
+        .fb-head .ti-mood-heart { color:var(--accent); font-size:1.2rem; }
+        .fb-head .fb-title { font-family:'DM Sans',sans-serif; font-weight:800; font-size:1.05rem; }
+        .fb-head .fb-refresh { margin-left:auto; border:none; background:var(--accent-light); color:var(--accent); border-radius:10px; padding:.5rem .9rem; font-family:'Nunito'; font-weight:700; font-size:.8rem; cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; }
+        .fb-lbl { font-family:'DM Sans',sans-serif; font-weight:800; font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text-light); margin:1.3rem 0 .7rem; }
+        .fb-tot-row { display:grid; grid-template-columns:132px 1fr 84px; gap:.7rem; align-items:center; margin:.5rem 0; }
+        .fb-tot-name { font-weight:700; font-size:.9rem; }
+        .fb-track { height:13px; border-radius:7px; background:#eef1ec; overflow:hidden; }
+        .fb-fill { height:100%; width:0; border-radius:7px; transition:width .9s cubic-bezier(.22,1,.36,1); }
+        .fb-pct { font-family:'DM Sans',sans-serif; font-weight:800; font-size:.85rem; text-align:right; }
+        .fb-pct small { color:var(--text-light); font-weight:700; }
+        .fb-legend { display:flex; gap:1.2rem; flex-wrap:wrap; font-size:.75rem; font-weight:700; color:var(--text-medium); margin-top:.6rem; }
+        .fb-legend i { display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:.35rem; vertical-align:-1px; }
+        .fb-classi { display:grid; grid-template-columns:repeat(auto-fit,minmax(235px,1fr)); gap:.8rem; }
+        .fb-cls { border:1.5px solid #e8ecf0; border-radius:12px; padding:.7rem .8rem; }
+        .fb-cls-top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:.5rem; }
+        .fb-cls-name { font-family:'DM Sans',sans-serif; font-weight:800; font-size:.9rem; }
+        .fb-cls-voti { font-size:.72rem; color:var(--text-light); font-weight:700; }
+        .fb-stack { display:flex; height:14px; border-radius:7px; overflow:hidden; background:#eef1ec; }
+        .fb-stack span { height:100%; }
+        .fb-boards { display:grid; grid-template-columns:repeat(auto-fit,minmax(245px,1fr)); gap:.9rem; }
+        .fb-board h5 { margin:0 0 .6rem; font-family:'DM Sans',sans-serif; font-weight:800; font-size:.82rem; display:flex; align-items:center; gap:.4rem; }
+        .fb-board h5 .dotc { width:11px; height:11px; border-radius:3px; }
+        .fb-brow { display:grid; grid-template-columns:16px 1fr auto; gap:.5rem; align-items:center; margin:.4rem 0; }
+        .fb-brank { font-weight:800; color:var(--text-light); font-size:.75rem; text-align:center; }
+        .fb-bname { font-size:.82rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .fb-bbar { height:6px; border-radius:6px; margin-top:3px; min-width:6px; }
+        .fb-bnum { font-family:'DM Sans',sans-serif; font-weight:800; font-size:.78rem; }
+        .fb-empty { color:var(--text-light); font-size:.82rem; padding:.3rem 0; }
+        .fb-state { display:flex; align-items:center; gap:.5rem; color:var(--text-medium); font-size:.85rem; padding:.5rem 0; }
+
     </style>
 </head>
 <body>
@@ -322,6 +355,18 @@
               <span class="op-msg" id="opMsg"></span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- PANNELLO FEEDBACK LEZIONI -->
+      <div class="fb-panel" id="fbPanel">
+        <div class="fb-head">
+          <i class="ti ti-mood-heart"></i>
+          <span class="fb-title">Feedback delle lezioni</span>
+          <button class="fb-refresh" id="fbRefresh"><i class="ti ti-refresh"></i> Aggiorna</button>
+        </div>
+        <div id="fbBody">
+          <div class="fb-state"><i class="ti ti-loader-2 rc-spin"></i> Caricamento feedback…</div>
         </div>
       </div>
 
@@ -400,6 +445,7 @@
                 // Mostro la zona card sopra la dashboard e avvio il caricamento
                 document.getElementById('cardsWrap').classList.add('visible');
                 if (typeof window.rcInit === 'function') window.rcInit();
+                if (typeof window.fbInit === 'function') window.fbInit();
             } catch (e) {
                 err.textContent = 'Password non corretta. Riprova.';
                 document.getElementById('pwdInput').value = '';
@@ -648,6 +694,107 @@
     if (rel && !rel._bound){ rel._bound=true; rel.addEventListener('click', orarioLoad); }
     orarioLoad();
   }
+})();
+</script>
+<script>
+/* ═══ PANNELLO FEEDBACK LEZIONI — legge fb_stats (lettura pubblica), parte dopo il login ═══ */
+(function(){
+  'use strict';
+  var FB_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwOIxvpNEQnOr-TQTqzMycue8D8BN2Ths81ewTjAG7junkAeDhd26mBHsPlc5S3c-hE/exec';
+  var TOKENS = 5, MIN_VOTI = 1, TOP_N = 5;
+  var PRIMARIA   = ['1A','1B','2A','2B','3A','3B','4A','4B','5A','5B'];
+  var SECONDARIA = ['1A','1B','1C','2A','2B','2C','3A','3B','3C'];
+  var CATS = [
+    { key:'servito', name:'Mi è servito', board:'Le più utili',        color:'#5d6e3b' },
+    { key:'preso',   name:'Mi ha preso',       board:'Le più coinvolgenti', color:'#1f6feb' },
+    { key:'ricordo', name:'Non lo dimentico',  board:'Le più memorabili',   color:'#c6881f' }
+  ];
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(m){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]);}); }
+  function set(html){ var b=document.getElementById('fbBody'); if(b) b.innerHTML=html; }
+  function classeLabel(id){ if(!id) return id; var sec=id.indexOf('SEC_')===0; return (id.split('_')[1]||'')+' '+(sec?'Secondaria':'Primaria'); }
+
+  function load(){
+    set('<div class="fb-state"><i class="ti ti-loader-2 rc-spin"></i> Caricamento feedback…</div>');
+    var cb='fbStatsCb_'+Date.now();
+    var s=document.createElement('script');
+    window[cb]=function(resp){
+      try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+      if(s.parentNode) s.parentNode.removeChild(s);
+      if(!resp || resp.ok===false){ set('<div class="fb-state"><i class="ti ti-alert-triangle"></i> Errore: '+esc((resp&&resp.error)||'risposta non valida')+'</div>'); return; }
+      render(resp);
+    };
+    s.src = FB_ENDPOINT + '?action=fb_stats&callback='+cb+'&_='+Date.now();
+    s.onerror=function(){ set('<div class="fb-state"><i class="ti ti-wifi-off"></i> Impossibile contattare il registro.</div>'); };
+    document.body.appendChild(s);
+  }
+
+  function render(stats){
+    var t = stats.totali || {servito:0,preso:0,ricordo:0,voti:0};
+    if(!t.voti){ set('<div class="fb-empty">Ancora nessun voto raccolto. Appena gli studenti votano su <b>feedback.html</b>, qui compaiono i dati.</div>'); return; }
+    var html = '';
+
+    /* --- Totali --- */
+    var tot = t.servito+t.preso+t.ricordo; if(tot<=0) tot=1;
+    html += '<div class="fb-lbl">Quadro generale · '+t.voti+' '+(t.voti===1?'voto':'voti')+'</div>';
+    CATS.forEach(function(c){
+      var pct = Math.round(t[c.key]/tot*100);
+      html += '<div class="fb-tot-row"><div class="fb-tot-name">'+c.name+'</div>'
+            + '<div class="fb-track"><div class="fb-fill" style="background:'+c.color+';width:'+pct+'%"></div></div>'
+            + '<div class="fb-pct">'+pct+'% <small>'+t[c.key]+'</small></div></div>';
+    });
+    html += '<div class="fb-legend">'+CATS.map(function(c){ return '<span><i style="background:'+c.color+'"></i>'+c.name+'</span>'; }).join('')+'</div>';
+
+    /* --- Per classe --- */
+    var pc = stats.perClasse || {};
+    var order = PRIMARIA.map(function(c){return 'PRIM_'+c;}).concat(SECONDARIA.map(function(c){return 'SEC_'+c;}));
+    var cells = '';
+    order.forEach(function(cid){
+      var C = pc[cid]; if(!C || !C.voti) return;
+      var ct = C.servito+C.preso+C.ricordo; if(ct<=0) ct=1;
+      var seg = CATS.map(function(c){ return '<span style="background:'+c.color+';width:'+(C[c.key]/ct*100)+'%" title="'+c.name+': '+C[c.key]+'"></span>'; }).join('');
+      cells += '<div class="fb-cls"><div class="fb-cls-top"><span class="fb-cls-name">'+esc(C.label||classeLabel(cid))+'</span>'
+             + '<span class="fb-cls-voti">'+C.voti+' '+(C.voti===1?'voto':'voti')+'</span></div>'
+             + '<div class="fb-stack">'+seg+'</div></div>';
+    });
+    if(cells){ html += '<div class="fb-lbl">Composizione per classe</div><div class="fb-classi">'+cells+'</div>'; }
+
+    /* --- Classifica per categoria (media gettoni/votante, indipendente dal numero di votanti) --- */
+    var per = stats.perLezione || {};
+    var names = Object.keys(per);
+    var boards = '';
+    CATS.forEach(function(c){
+      var list = [];
+      names.forEach(function(nm){
+        var L = per[nm]; if(!L || L.voti<MIN_VOTI) return;
+        var intensity = L[c.key]/L.voti;      // 0..5
+        list.push({ name:nm, pct:Math.round(intensity/TOKENS*100), i:intensity });
+      });
+      list.sort(function(a,b){ return b.i-a.i; });
+      list = list.slice(0, TOP_N);
+      var max = list.length ? list[0].pct : 1; if(max<=0) max=1;
+      var rows = list.length ? list.map(function(it,ix){
+        var w = Math.max(10, Math.round(it.pct/max*100));
+        return '<div class="fb-brow"><span class="fb-brank">'+(ix+1)+'</span>'
+             + '<div><div class="fb-bname">'+esc(it.name)+'</div><div class="fb-bbar" style="background:'+c.color+';width:'+w+'%"></div></div>'
+             + '<span class="fb-bnum" style="color:'+c.color+'">'+it.pct+'%</span></div>';
+      }).join('') : '<div class="fb-empty">Ancora pochi dati.</div>';
+      boards += '<div class="fb-board"><h5><span class="dotc" style="background:'+c.color+'"></span>'+c.board+'</h5>'+rows+'</div>';
+    });
+    html += '<div class="fb-lbl">Classifica lezioni per categoria</div><div class="fb-boards">'+boards+'</div>';
+
+    set(html);
+    // anima le barre dei totali
+    setTimeout(function(){
+      var fills=document.querySelectorAll('#fbBody .fb-fill');
+      for(var i=0;i<fills.length;i++){ var w=fills[i].style.width; fills[i].style.width='0'; void fills[i].offsetWidth; fills[i].style.width=w; }
+    }, 40);
+  }
+
+  window.fbInit = function(){
+    var rf = document.getElementById('fbRefresh');
+    if(rf && !rf._bound){ rf._bound=true; rf.addEventListener('click', load); }
+    load();
+  };
 })();
 </script>
 </body>

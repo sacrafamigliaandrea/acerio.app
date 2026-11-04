@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Feedback lezione · Sacra Famiglia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* =============================================================================
+   FEEDBACK LEZIONE — pagina studente (aperta, senza password)
+   Legge l'orario pubblico del registro (getOrario), rileva la classe in corso,
+   raccoglie 5 gettoni su 3 categorie (servito+preso+ricordo=5), li invia con
+   fb_save e mostra gli aggregati con fb_stats. Stile arancione tecnologico di
+   tv.html. Niente dipendenze oltre ai Google Fonts. Niente WAAPI (solo CSS +
+   setTimeout) per robustezza su browser datati.
+   ============================================================================= */
+:root{
+  --org:#EE7C00; --org-2:#DA6C00; --org-d:#C35E00; --ink:#2B1100;
+  --blu:#102C78; --cyan:#82E1FF; --panel:rgba(43,17,0,.18); --line:rgba(255,255,255,.14);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;min-height:100%;}
+body{
+  font-family:'Manrope','Helvetica Neue',Arial,sans-serif; color:#fff;
+  -webkit-font-smoothing:antialiased; font-variant-numeric:tabular-nums;
+  background-color:#EE7C00;
+  background-image:
+    radial-gradient(ellipse 70% 55% at 30% 32%, rgba(255,170,70,.55), rgba(255,170,70,0) 70%),
+    radial-gradient(ellipse 140% 120% at 50% 42%, #EE7C00 42%, #DA6C00 78%, #C35E00 100%);
+  background-attachment:fixed;
+}
+/* ---- sfondo tecnologico ---- */
+.bg{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+.bg-grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);
+  background-size:32px 32px;background-position:center;
+  -webkit-mask-image:radial-gradient(ellipse 80% 75% at 50% 40%,#000 30%,transparent 92%);
+          mask-image:radial-gradient(ellipse 80% 75% at 50% 40%,#000 30%,transparent 92%);}
+.bg-circ{position:absolute;inset:0;width:100%;height:100%;}
+.bg-circ .pista{fill:none;stroke:rgba(255,255,255,.28);stroke-width:1.4;stroke-linejoin:round;}
+.bg-circ .nodo{fill:#EE7C00;stroke:rgba(255,255,255,.7);stroke-width:1.4;}
+.bg-circ .alone,.bg-circ .impulso{fill:none;stroke-linecap:round;stroke-dasharray:46 1200;stroke-dashoffset:46;animation:imp 11s linear infinite;}
+.bg-circ .alone{stroke:rgba(255,255,255,.32);stroke-width:9;}
+.bg-circ .impulso{stroke:#fff;stroke-width:2.4;}
+@keyframes imp{0%{stroke-dashoffset:46;}50%{stroke-dashoffset:-1150;}100%{stroke-dashoffset:-1150;}}
+
+.wrap{position:relative;z-index:2;max-width:1060px;margin:0 auto;padding:26px 22px 60px;}
+/* layout 60:40 */
+.cols{display:flex;gap:28px;align-items:flex-start;}
+.col-left{flex:0 0 58%;max-width:58%;min-width:0;}
+.col-right{flex:1 1 auto;min-width:0;}
+.col-right .zhead{margin-top:4px;}
+@media (max-width:880px){.cols{flex-direction:column;}.col-left,.col-right{flex:1 1 auto;max-width:100%;width:100%;}}
+/* box "nessuna lezione" in colonna */
+.notebox{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 20px;text-align:center;}
+.notebox .big{font-size:1.3rem;font-weight:800;margin:12px 0 6px;}
+.notebox .small{font-size:.92rem;color:rgba(255,255,255,.85);line-height:1.5;max-width:30ch;margin:0 auto;}
+
+/* ---- intestazione ---- */
+.micro{display:flex;align-items:center;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:rgba(43,17,0,.82);}
+.led{width:9px;height:9px;margin-right:11px;background:#fff;box-shadow:0 0 9px #fff,0 0 20px rgba(255,255,255,.8);animation:blink 2.6s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.45;}}
+.cls{margin:13px 0 0;font-size:2.3rem;font-weight:800;line-height:1;letter-spacing:-.01em;text-shadow:0 0 .03em rgba(255,255,255,.55);}
+.clssub{font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;color:rgba(43,17,0,.78);margin-top:8px;letter-spacing:.02em;}
+
+/* ---- sezioni ---- */
+.zhead{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:rgba(43,17,0,.82);margin:30px 0 14px;display:flex;align-items:center;}
+.zhead .ln{flex:1;height:1px;margin-left:12px;background:rgba(255,255,255,.28);}
+
+/* ---- categorie / gettoni ---- */
+.cat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:11px;transition:border-color .2s,background .2s;}
+.cat.has{border-color:rgba(255,255,255,.4);}
+.cat-top{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.cat-name{font-weight:800;font-size:1.05rem;}
+.cat-sub{font-size:.76rem;font-weight:600;color:rgba(255,255,255,.72);margin-top:2px;}
+.stepper{display:flex;align-items:center;gap:10px;flex:none;}
+.btn-pm{width:38px;height:38px;flex:none;border:0;border-radius:11px;background:rgba(255,255,255,.14);color:#fff;font-size:1.5rem;font-weight:700;line-height:1;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .05s;}
+.btn-pm:hover{background:rgba(255,255,255,.26);}
+.btn-pm:active{transform:scale(.92);}
+.btn-pm[disabled]{opacity:.3;cursor:default;}
+.toks{display:flex;gap:7px;margin-top:12px;}
+.tk{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.07);transition:background .18s,box-shadow .18s,border-color .18s;}
+.tk.on{background:#fff;border-color:#fff;box-shadow:0 0 9px #fff,0 0 20px rgba(255,255,255,.65);}
+
+/* ---- riepilogo + invio ---- */
+.summary{display:flex;align-items:center;justify-content:space-between;margin:20px 2px 14px;font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:600;color:rgba(43,17,0,.85);}
+.summary b{color:#fff;font-size:1.05rem;text-shadow:0 0 8px rgba(255,255,255,.55);}
+.send{width:100%;border:0;border-radius:15px;padding:17px;font-family:'Manrope',sans-serif;font-size:1.08rem;font-weight:800;color:#2B1100;cursor:pointer;
+  background:#fffaf3;box-shadow:0 0 0 3px rgba(255,255,255,.4),0 0 36px rgba(255,240,215,.55);transition:opacity .2s,transform .06s;}
+.send:active{transform:scale(.99);}
+.send[disabled]{opacity:.45;cursor:default;box-shadow:none;background:rgba(255,250,243,.6);}
+.hint{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.03em;color:rgba(43,17,0,.72);text-align:center;margin-top:11px;line-height:1.5;}
+.alt{display:block;margin:12px auto 0;background:none;border:0;color:rgba(43,17,0,.8);font-family:'JetBrains Mono',monospace;font-size:.72rem;text-decoration:underline;cursor:pointer;}
+
+/* ---- barre mix (grazie) ---- */
+.mixrow{margin:12px 0;}
+.mixrow .mh{display:flex;justify-content:space-between;font-size:.9rem;font-weight:700;margin-bottom:6px;}
+.mixrow .mh .pct{font-family:'JetBrains Mono',monospace;}
+.track{height:12px;border-radius:7px;background:rgba(43,17,0,.22);overflow:hidden;}
+.fill{height:100%;width:0;border-radius:7px;background:#fff;box-shadow:0 0 10px rgba(255,255,255,.6);transition:width .9s cubic-bezier(.22,1,.36,1);}
+
+/* ---- classifica ---- */
+.board{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:11px;}
+.board h4{margin:0 0 12px;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:9px;}
+.board h4 svg{width:15px;height:15px;color:#fff;flex:none;}
+.lrow{display:grid;grid-template-columns:16px 1fr auto;gap:11px;align-items:center;margin:9px 0;}
+.rank{font-family:'JetBrains Mono',monospace;font-weight:600;color:rgba(255,255,255,.7);font-size:.78rem;text-align:center;}
+.lname{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lbar{height:6px;border-radius:6px;background:#fff;box-shadow:0 0 9px rgba(255,255,255,.6);margin-top:5px;min-width:6px;}
+.lnum{font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600;}
+.empty{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:rgba(255,255,255,.7);padding:4px 2px;}
+.foot{font-family:'JetBrains Mono',monospace;font-size:.66rem;line-height:1.6;color:rgba(43,17,0,.72);margin-top:10px;}
+
+/* ---- stati pieni (loading / nessuna lezione / grazie) ---- */
+.hero{min-height:52vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;}
+.hero .big{font-size:1.7rem;font-weight:800;margin:14px 0 6px;}
+.hero .small{font-size:.95rem;color:rgba(255,255,255,.85);max-width:30ch;line-height:1.5;}
+.spin{width:46px;height:46px;border-radius:50%;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;animation:sp 1s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.badge-ok{width:64px;height:64px;border-radius:50%;background:#fffaf3;color:#C35E00;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(255,255,255,.4),0 0 36px rgba(255,240,215,.6);}
+.badge-ok svg{width:34px;height:34px;}
+.hidden{display:none !important;}
+@media (prefers-reduced-motion:reduce){.bg-circ .alone,.bg-circ .impulso,.led,.spin{animation:none;}.fill{transition:none;}}
+</style>
+</head>
+<body>
+<div class="bg">
+  <div class="bg-grid"></div>
+  <svg class="bg-circ" viewBox="0 0 620 1000" preserveAspectRatio="none">
+    <path class="pista" d="M-10 140 H90 V230 H170"/>
+    <path class="pista" d="M630 340 H520 V250 H440"/>
+    <path class="pista" d="M-10 820 H140 V740 H230"/>
+    <path class="pista" d="M630 760 H540 V840 H470"/>
+    <circle class="nodo" cx="170" cy="230" r="5"/>
+    <circle class="nodo" cx="440" cy="250" r="5"/>
+    <circle class="nodo" cx="230" cy="740" r="5"/>
+    <circle class="nodo" cx="470" cy="840" r="5"/>
+    <path class="alone" d="M-10 140 H90 V230 H170"/><path class="impulso" d="M-10 140 H90 V230 H170"/>
+    <path class="alone" d="M630 340 H520 V250 H440" style="animation-delay:-4s"/><path class="impulso" d="M630 340 H520 V250 H440" style="animation-delay:-4s"/>
+    <path class="alone" d="M-10 820 H140 V740 H230" style="animation-delay:-7s"/><path class="impulso" d="M-10 820 H140 V740 H230" style="animation-delay:-7s"/>
+  </svg>
+</div>
+
+<div class="wrap">
+
+  <!-- STATO: caricamento -->
+  <div id="loading" class="hero">
+    <div class="spin"></div>
+    <div class="big" style="font-size:1.1rem;margin-top:22px;font-family:'JetBrains Mono',monospace;letter-spacing:.1em;font-weight:600;">RILEVO LA LEZIONE…</div>
+  </div>
+
+  <!-- Layout 60:40 -->
+  <div id="cols" class="cols hidden">
+   <div class="col-left">
+
+  <!-- STATO: nessuna lezione in corso -->
+  <div id="noLesson" class="notebox hidden">
+    <svg viewBox="0 0 24 24" width="54" height="54" fill="none" stroke="#fffaf3" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5M12 16h.01"/></svg>
+    <div class="big">Nessuna lezione in corso</div>
+    <div class="small">Il feedback si raccoglie durante o subito dopo la lezione. Riprova quando siete in laboratorio.</div>
+    <button class="alt" id="noLessonManual">Scegli la classe a mano</button>
+  </div>
+
+  <!-- STATO: voto -->
+  <div id="voteView" class="hidden">
+    <div class="micro"><span class="led"></span> Feedback // lezione in corso</div>
+    <h1 class="cls" id="vClasse">—</h1>
+    <div class="clssub" id="vMeta">—</div>
+
+    <div class="zhead">Hai 5 gettoni · dove li metti?<span class="ln"></span></div>
+    <div id="cats"></div>
+
+    <div class="summary"><span>GETTONI RIMASTI <b id="rem">5</b>/5</span><span id="remState">assegnali tutti</span></div>
+    <button class="send" id="sendBtn" disabled>Invia il mio feedback</button>
+    <div class="hint">dopo l'invio vedi come ha votato la tua classe · un voto per dispositivo</div>
+    <button class="alt hidden" id="voteManual">non è la tua classe?</button>
+  </div>
+
+  <!-- STATO: grazie + mix classe -->
+  <div id="thanks" class="hidden">
+    <div class="hero" style="min-height:auto;padding:18px 0 4px;">
+      <div class="badge-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="big" style="font-size:1.4rem;">Grazie!</div>
+      <div class="small" id="tSub">Ecco come ha votato la tua classe oggi.</div>
+    </div>
+    <div id="mix"></div>
+  </div>
+
+   </div><!-- /col-left -->
+
+   <div class="col-right">
+    <!-- ZONA STORICA (sempre visibile a destra) -->
+    <div id="storico">
+      <div class="zhead">Classifica storica · per categoria<span class="ln"></span></div>
+      <div id="boards"></div>
+      <div class="foot">% = quanto, in media, i votanti hanno puntato su quella categoria<br>(indipendente da quanti erano: le classi numerose non vincono d'ufficio)</div>
+    </div>
+   </div><!-- /col-right -->
+
+  </div><!-- /cols -->
+
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ===== CONFIG ===== */
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbwOIxvpNEQnOr-TQTqzMycue8D8BN2Ths81ewTjAG7junkAeDhd26mBHsPlc5S3c-hE/exec';
+  var TOKENS = 5;
+  var GRACE_MIN = 15;          // minuti di cortesia dopo la fine della fascia
+  var MIN_VOTI = 1;            // voti minimi perché una lezione entri in classifica
+
+  var PRIMARIA   = ['1A','1B','2A','2B','3A','3B','4A','4B','5A','5B'];
+  var SECONDARIA = ['1A','1B','1C','2A','2B','2C','3A','3B','3C'];
+  var CATS = [
+    {key:'servito', name:'Mi è servito', sub:'ho imparato qualcosa'},
+    {key:'preso',   name:'Mi ha preso',       sub:'ero dentro, mi è piaciuto'},
+    {key:'ricordo', name:'Non lo dimentico',  sub:'mi ha colpito'}
+  ];
+
+  /* ===== STATO ===== */
+  var lesson = null;          // {classe_id, label, from, to, giorno}
+  var alloc = {servito:0, preso:0, ricordo:0};
+  var lezioneTitolo = '';     // ultima app aperta oggi da quella classe
+  var lezioneUrl = '';
+  var lastStats = null;       // ultimo fb_stats ricevuto (per ridisegnare le classifiche)
+  var hasVoted = false;       // finché è false, la lezione di oggi è esclusa dalle classifiche (anti-ancoraggio)
+
+  /* ===== UTIL ===== */
+  function $(id){ return document.getElementById(id); }
+  function show(id){ $(id).classList.remove('hidden'); }
+  function hide(id){ $(id).classList.add('hidden'); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(m){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]);}); }
+
+  function jsonp(params){
+    return new Promise(function(resolve,reject){
+      var cb = 'fbcb_' + Math.random().toString(36).slice(2) + Date.now();
+      var s = document.createElement('script');
+      var qs = ['callback='+cb,'_='+Date.now()];
+      for(var k in params){ if(params.hasOwnProperty(k)) qs.push(encodeURIComponent(k)+'='+encodeURIComponent(params[k])); }
+      var done = false;
+      window[cb] = function(resp){ done = true; cleanup(); resolve(resp); };
+      function cleanup(){ try{ delete window[cb]; }catch(e){ window[cb]=undefined; } if(s.parentNode) s.parentNode.removeChild(s); }
+      s.onerror = function(){ if(done) return; cleanup(); reject(new Error('rete')); };
+      s.src = ENDPOINT + '?' + qs.join('&');
+      document.body.appendChild(s);
+      setTimeout(function(){ if(!done){ cleanup(); reject(new Error('timeout')); } }, 12000);
+    });
+  }
+
+  // Ora corrente nel fuso Europe/Rome → { giorno:1..7, hhmm:"HH:MM", iso:"YYYY-MM-DD" }
+  function nowRome(){
+    var parts = new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Rome',weekday:'short',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date());
+    var get = function(t){ for(var i=0;i<parts.length;i++){ if(parts[i].type===t) return parts[i].value; } return ''; };
+    var wk = {Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:7}[get('weekday')] || 0;
+    var hh = get('hour'); if(hh==='24') hh='00';
+    return { giorno:wk, hhmm:hh+':'+get('minute'), iso:get('year')+'-'+get('month')+'-'+get('day') };
+  }
+  function toMin(hhmm){ var p=String(hhmm||'').split(':'); return (parseInt(p[0],10)||0)*60+(parseInt(p[1],10)||0); }
+  function classeLabel(id){ if(!id) return ''; var sec=id.indexOf('SEC_')===0; return (id.split('_')[1]||'')+' '+(sec?'Secondaria':'Primaria'); }
+
+  function deviceId(){
+    var k='acerio_fb_device', v;
+    try{ v=localStorage.getItem(k); if(!v){ v='d'+Math.random().toString(36).slice(2)+Date.now().toString(36); localStorage.setItem(k,v); } }
+    catch(e){ v='d'+Date.now(); }
+    return v;
+  }
+  function nonceFor(l){ return l.classe_id+'|'+l.iso+'|'+l.from+'-'+l.to+'|'+deviceId(); }
+  function alreadyVoted(n){ try{ return (localStorage.getItem('acerio_fb_voted')||'').indexOf(n) >= 0; }catch(e){ return false; } }
+  function markVoted(n){ try{ var p=localStorage.getItem('acerio_fb_voted')||''; localStorage.setItem('acerio_fb_voted', p+'\n'+n); }catch(e){} }
+
+  /* ===== AVVIO ===== */
+  function boot(){
+    renderBoards(null); // placeholder
+    Promise.all([ jsonp({action:'getOrario'}).catch(function(){return{ok:false};}),
+                  jsonp({action:'fb_stats'}).catch(function(){return{ok:false};}) ])
+      .then(function(res){
+        var orario = (res[0]&&res[0].ok) ? res[0].orario : {};
+        var stats  = (res[1]&&res[1].ok) ? res[1] : null;
+        renderStorico(stats);
+        var now = nowRome();
+        var l = detectLesson(orario, now);
+        hide('loading'); show('cols');
+        if(!l){ show('noLesson'); return; }
+        lesson = l;
+        var n = nonceFor(l);
+        if(alreadyVoted(n)){ afterVote(l, true); return; }  // già votato da questo iPad
+        startVote(l);
+      })
+      .catch(function(){ hide('loading'); show('cols'); show('noLesson'); });
+  }
+
+  function detectLesson(orario, now){
+    var slots = orario[String(now.giorno)] || [];
+    var cur = toMin(now.hhmm);
+    for(var i=0;i<slots.length;i++){
+      var s=slots[i], a=toMin(s.from), b=toMin(s.to);
+      if(cur>=a && cur < b+GRACE_MIN){
+        return { classe_id:s.id, label:classeLabel(s.id), from:s.from, to:s.to, giorno:now.giorno, iso:now.iso };
+      }
+    }
+    return null;
+  }
+
+  /* ===== VOTO ===== */
+  function startVote(l){
+    $('vClasse').textContent = l.label;
+    var gg = ['','Lun','Mar','Mer','Gio','Ven','Sab','Dom'][l.giorno]||'';
+    $('vMeta').textContent = (gg+' · '+l.from+'–'+l.to).toUpperCase();
+    buildCats();
+    show('voteView');
+    // in parallelo, prova a dedurre il titolo-lezione dall'ultima app aperta oggi da quella classe
+    jsonp({action:'list'}).then(function(r){
+      if(!r||!r.ok||!r.rows) return;
+      var best=null;
+      for(var i=0;i<r.rows.length;i++){
+        var row=r.rows[i];
+        if(String(row.classe_id)!==l.classe_id) continue;
+        var d=String(row.data||''); if(d.slice(0,10)!==l.iso) continue;
+        best=row; // l'ultima in ordine di foglio
+      }
+      if(best){ lezioneTitolo = cleanTitle(best.webapp_titolo); lezioneUrl = best.webapp_url||''; renderBoards(null); }
+    }).catch(function(){});
+  }
+  function cleanTitle(t){ return String(t||'').replace(/\s*[A-Z]$/,'').trim(); }
+
+  function buildCats(){
+    var html='';
+    for(var i=0;i<CATS.length;i++){
+      var c=CATS[i];
+      html+='<div class="cat" data-k="'+c.key+'">'
+        +'<div class="cat-top"><div><div class="cat-name">'+c.name+'</div><div class="cat-sub">'+c.sub+'</div></div>'
+        +'<div class="stepper"><button class="btn-pm" data-op="minus" data-k="'+c.key+'" aria-label="togli">−</button>'
+        +'<button class="btn-pm" data-op="plus" data-k="'+c.key+'" aria-label="aggiungi">+</button></div></div>'
+        +'<div class="toks" data-toks="'+c.key+'"></div></div>';
+    }
+    $('cats').innerHTML=html;
+    var btns=$('cats').querySelectorAll('.btn-pm');
+    for(var j=0;j<btns.length;j++){ btns[j].addEventListener('click', onStep); }
+    paint();
+  }
+  function remaining(){ return TOKENS - (alloc.servito+alloc.preso+alloc.ricordo); }
+  function onStep(e){
+    var b=e.currentTarget, k=b.getAttribute('data-k'), op=b.getAttribute('data-op');
+    if(op==='plus'){ if(remaining()>0) alloc[k]++; }
+    else { if(alloc[k]>0) alloc[k]--; }
+    paint();
+  }
+  function paint(){
+    for(var i=0;i<CATS.length;i++){
+      var k=CATS[i].key, v=alloc[k];
+      var box=$('cats').querySelector('[data-toks="'+k+'"]');
+      var dots=''; for(var d=0;d<TOKENS;d++){ dots+='<span class="tk'+(d<v?' on':'')+'"></span>'; }
+      box.innerHTML=dots;
+      var card=$('cats').querySelector('.cat[data-k="'+k+'"]'); card.className='cat'+(v>0?' has':'');
+      var plus=$('cats').querySelector('.btn-pm[data-op="plus"][data-k="'+k+'"]');
+      var minus=$('cats').querySelector('.btn-pm[data-op="minus"][data-k="'+k+'"]');
+      plus.disabled = remaining()<=0; minus.disabled = v<=0;
+    }
+    var rem=remaining();
+    $('rem').textContent=rem;
+    $('remState').textContent = rem===0 ? 'pronto da inviare' : (rem===TOKENS ? 'assegnali tutti' : 'ne restano '+rem);
+    $('sendBtn').disabled = rem!==0;
+  }
+
+  $('sendBtn').addEventListener('click', function(){
+    if(remaining()!==0 || !lesson) return;
+    var btn=$('sendBtn'); btn.disabled=true; btn.textContent='Invio…';
+    var n=nonceFor(lesson);
+    jsonp({ action:'fb_save', classe_id:lesson.classe_id, classe_label:lesson.label,
+            data:lesson.iso, giorno:lesson.giorno, servito:alloc.servito, preso:alloc.preso, ricordo:alloc.ricordo,
+            lezione:lezioneTitolo, webapp_url:lezioneUrl, nonce:n })
+      .then(function(r){
+        if(r&&r.ok){ markVoted(n); afterVote(lesson, false); }
+        else { btn.disabled=false; btn.textContent='Invia il mio feedback'; alert((r&&r.error)||'Invio non riuscito, riprova.'); }
+      })
+      .catch(function(){ btn.disabled=false; btn.textContent='Invia il mio feedback'; alert('Niente rete, riprova.'); });
+  });
+
+  /* ===== DOPO IL VOTO ===== */
+  function afterVote(l, wasAlready){
+    hasVoted = true;
+    hide('voteView'); show('thanks');
+    if(wasAlready) $('tSub').textContent='Hai già votato questa lezione da questo iPad. Ecco il mix della tua classe.';
+    jsonp({action:'fb_stats', classe_id:l.classe_id, data:l.iso})
+      .then(function(r){ renderMix((r&&r.ok&&r.filtrato)?r.filtrato:null); refreshStorico(); })
+      .catch(function(){ renderMix(null); });
+  }
+  function renderMix(f){
+    if(!f || !f.voti){ $('mix').innerHTML='<div class="empty" style="text-align:center;margin-top:10px;">Ancora nessun altro voto oggi in questa classe.</div>'; return; }
+    var tot=f.servito+f.preso+f.ricordo; if(tot<=0) tot=1;
+    var html='';
+    for(var i=0;i<CATS.length;i++){
+      var c=CATS[i], val=f[c.key], pct=Math.round(val/tot*100);
+      html+='<div class="mixrow"><div class="mh"><span>'+c.name+'</span><span class="pct">'+pct+'%</span></div>'
+        +'<div class="track"><div class="fill" data-w="'+pct+'"></div></div></div>';
+    }
+    html+='<div class="foot" style="text-align:center;">'+f.voti+' '+(f.voti===1?'voto':'voti')+' nella tua classe oggi</div>';
+    $('mix').innerHTML=html;
+    var fills=$('mix').querySelectorAll('.fill');
+    setTimeout(function(){ for(var i=0;i<fills.length;i++){ fills[i].style.width=fills[i].getAttribute('data-w')+'%'; } }, 60);
+  }
+
+  /* ===== CLASSIFICA STORICA ===== */
+  var ICONS={
+    servito:'<path d="M12 2 15 9l7 .5-5.5 4.5L18 21l-6-3.8L6 21l1.5-7L2 9.5 9 9z"/>',
+    preso:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>',
+    ricordo:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'
+  };
+  var TITLES={servito:'Le più utili', preso:'Le più coinvolgenti', ricordo:'Le più memorabili'};
+
+  function renderStorico(stats){ renderBoards(stats); }
+  function refreshStorico(){ jsonp({action:'fb_stats'}).then(function(r){ renderBoards((r&&r.ok)?r:null); }).catch(function(){}); }
+
+  function renderBoards(stats){
+    if(stats) lastStats = stats;
+    var per = (lastStats && lastStats.perLezione) ? lastStats.perLezione : {};
+    var exclude = (!hasVoted && lezioneTitolo) ? lezioneTitolo : '';   // anti-ancoraggio: oggi non si vede finché non voti
+    var names = Object.keys(per);
+    var html='';
+    for(var i=0;i<CATS.length;i++){
+      var key=CATS[i].key;
+      var list=[];
+      for(var j=0;j<names.length;j++){
+        if(names[j]===exclude) continue;
+        var L=per[names[j]];
+        if(!L || L.voti<MIN_VOTI) continue;
+        var intensity = L[key]/L.voti;          // media gettoni/votante in quella categoria (0..5)
+        list.push({ name:names[j], pct:Math.round(intensity/TOKENS*100), i:intensity });
+      }
+      list.sort(function(a,b){ return b.i-a.i; });
+      list=list.slice(0,5);
+      var max=list.length?list[0].pct:1; if(max<=0) max=1;
+      html+='<div class="board"><h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'+ICONS[key]+'</svg> '+TITLES[key]+'</h4>';
+      if(list.length){
+        for(var r=0;r<list.length;r++){
+          var w=Math.max(10, Math.round(list[r].pct/max*100));
+          html+='<div class="lrow"><span class="rank">'+(r+1)+'</span><div><div class="lname">'+esc(list[r].name)+'</div><div class="lbar" style="width:'+w+'%"></div></div><span class="lnum">'+list[r].pct+'%</span></div>';
+        }
+      } else {
+        html+='<div class="empty">Ancora pochi dati.</div>';
+      }
+      html+='</div>';
+    }
+    $('boards').innerHTML=html;
+  }
+
+  /* ===== OVERRIDE MANUALE CLASSE ===== */
+  function manualPick(){
+    var opts=[]; var labels=[];
+    for(var i=0;i<PRIMARIA.length;i++){ opts.push('PRIM_'+PRIMARIA[i]); labels.push(PRIMARIA[i]+' Primaria'); }
+    for(var k=0;k<SECONDARIA.length;k++){ opts.push('SEC_'+SECONDARIA[k]); labels.push(SECONDARIA[k]+' Secondaria'); }
+    var msg='Scrivi il numero della tua classe:\n';
+    for(var j=0;j<labels.length;j++){ msg+=(j+1)+') '+labels[j]+'\n'; }
+    var ans=prompt(msg); if(!ans) return;
+    var n=parseInt(ans,10); if(isNaN(n)||n<1||n>opts.length){ alert('Numero non valido.'); return; }
+    var now=nowRome();
+    lesson={ classe_id:opts[n-1], label:labels[n-1], from:'manual', to:'manual', giorno:now.giorno, iso:now.iso };
+    hide('noLesson'); hide('thanks');
+    var nn=nonceFor(lesson);
+    if(alreadyVoted(nn)){ afterVote(lesson,true); return; }
+    alloc={servito:0,preso:0,ricordo:0};
+    startVote(lesson);
+  }
+  $('noLessonManual').addEventListener('click', manualPick);
+  $('voteManual').addEventListener('click', manualPick);
+
+  boot();
+})();
+</script>
+</body>
+</html>
