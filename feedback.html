@@ -199,7 +199,6 @@ body{
 
     <div class="zhead">L'app / lezione<span class="ln"></span></div>
     <select id="pickApp" class="pick-sel"><option value="">— prima scegli la classe —</option></select>
-    <input id="pickAppText" class="pick-txt hidden" placeholder="Scrivi il nome dell'app">
 
     <button class="send" id="pickGo" style="margin-top:18px;">Continua</button>
     <button class="alt" id="pickBack">torna indietro</button>
@@ -490,43 +489,36 @@ body{
     for(var k=0;k<SECONDARIA.length;k++){ html+='<option value="SEC_'+SECONDARIA[k]+'">'+SECONDARIA[k]+' Secondaria</option>'; }
     sel.innerHTML=html;
     sel.addEventListener('change', onPickClass);
-    $('pickApp').addEventListener('change', function(){
-      $('pickAppText').classList.toggle('hidden', this.value!=='__ALTRA__');
-      if(this.value==='__ALTRA__') $('pickAppText').focus();
-    });
   }
   function showPicker(){
     pickReturn = !$('voteView').classList.contains('hidden') ? 'voteView' : 'noLesson';
     fillClassSelect();
     $('pickClass').value='';
     $('pickApp').innerHTML='<option value="">— prima scegli la classe —</option>';
-    $('pickAppText').classList.add('hidden'); $('pickAppText').value='';
     hide('noLesson'); hide('voteView'); hide('thanks'); show('pickView');
   }
   function onPickClass(){
     var cid=$('pickClass').value, ap=$('pickApp');
-    $('pickAppText').classList.add('hidden');
     if(!cid){ ap.innerHTML='<option value="">— prima scegli la classe —</option>'; return; }
     ap.innerHTML='<option value="">caricamento…</option>';
     getRows().then(function(rows){
-      var seen={}, opts='<option value="">— scegli l\'app —</option>';
+      var seen={}, opts='';
       for(var i=rows.length-1;i>=0;i--){               // più recenti prima
         var r=rows[i]; if(String(r.classe_id)!==cid) continue;
         var t=cleanTitle(r.webapp_titolo); if(!t||seen.hasOwnProperty(t)) continue;
         seen[t]=r.webapp_url||'';
         opts+='<option value="'+esc(t)+'" data-url="'+esc(seen[t])+'">'+esc(t)+'</option>';
       }
-      opts+='<option value="__ALTRA__">— altra app (scrivi) —</option>';
-      ap.innerHTML=opts;
-    }).catch(function(){ ap.innerHTML='<option value="">—</option><option value="__ALTRA__">scrivi l\'app</option>'; });
+      ap.innerHTML = opts ? ('<option value="">— scegli l\'app —</option>'+opts)
+                          : '<option value="">— nessuna app registrata per questa classe —</option>';
+    }).catch(function(){ ap.innerHTML='<option value="">— errore nel caricamento —</option>'; });
   }
   function pickGo(){
     var cid=$('pickClass').value;
     if(!cid){ alert('Scegli la classe.'); return; }
     var ap=$('pickApp'), v=ap.value, title='', url='';
-    if(v==='__ALTRA__'){ title=($('pickAppText').value||'').trim(); }
-    else if(v){ title=v; var o=ap.options[ap.selectedIndex]; url=o?(o.getAttribute('data-url')||''):''; }
-    if(!title){ alert('Indica l\'app / lezione.'); return; }
+    if(v){ title=v; var o=ap.options[ap.selectedIndex]; url=o?(o.getAttribute('data-url')||''):''; }
+    if(!title){ alert('Scegli l\'app dall\'elenco.'); return; }
     var now=nowRome();
     lezioneTitolo=title; lezioneUrl=url;
     lesson={ classe_id:cid, label:classeLabel(cid), slot:'app:'+title, giorno:now.giorno, iso:now.iso };
