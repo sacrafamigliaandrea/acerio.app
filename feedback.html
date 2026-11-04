@@ -91,6 +91,12 @@ body{
 .send[disabled]{opacity:.45;cursor:default;box-shadow:none;background:rgba(255,250,243,.6);}
 .hint{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.03em;color:rgba(43,17,0,.72);text-align:center;margin-top:11px;line-height:1.5;}
 .alt{display:block;margin:12px auto 0;background:none;border:0;color:rgba(43,17,0,.8);font-family:'JetBrains Mono',monospace;font-size:.72rem;text-decoration:underline;cursor:pointer;}
+/* selettori modalità libera */
+.pick-sel,.pick-txt{display:block;width:100%;margin-top:4px;background:rgba(43,17,0,.22);border:1px solid rgba(255,255,255,.26);color:#fff;font-family:'Manrope',sans-serif;font-size:1rem;font-weight:700;padding:13px 14px;border-radius:13px;-webkit-appearance:none;appearance:none;}
+.pick-sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;padding-right:38px;}
+.pick-sel option{color:#2B1100;}
+.pick-txt::-webkit-input-placeholder{color:rgba(255,255,255,.6);}
+.pick-txt::placeholder{color:rgba(255,255,255,.6);}
 
 /* ---- barre mix (grazie) ---- */
 .mixrow{margin:12px 0;}
@@ -154,7 +160,7 @@ body{
     <svg viewBox="0 0 24 24" width="54" height="54" fill="none" stroke="#fffaf3" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5M12 16h.01"/></svg>
     <div class="big">Nessuna lezione in corso</div>
     <div class="small">Il feedback si raccoglie durante o subito dopo la lezione. Riprova quando siete in laboratorio.</div>
-    <button class="alt" id="noLessonManual">Scegli la classe a mano</button>
+    <button class="alt" id="noLessonManual">Vota comunque una lezione &rarr;</button>
   </div>
 
   <!-- STATO: voto -->
@@ -163,13 +169,13 @@ body{
     <h1 class="cls" id="vClasse">—</h1>
     <div class="clssub" id="vMeta">—</div>
 
-    <div class="zhead">Hai 5 gettoni · dove li metti?<span class="ln"></span></div>
+    <div class="zhead">Hai fino a 5 gettoni · dove li metti?<span class="ln"></span></div>
     <div id="cats"></div>
 
-    <div class="summary"><span>GETTONI RIMASTI <b id="rem">5</b>/5</span><span id="remState">assegnali tutti</span></div>
-    <button class="send" id="sendBtn" disabled>Invia il mio feedback</button>
-    <div class="hint">dopo l'invio vedi come ha votato la tua classe · un voto per dispositivo</div>
-    <button class="alt hidden" id="voteManual">non è la tua classe?</button>
+    <div class="summary"><span>GETTONI RIMASTI <b id="rem">5</b>/5</span><span id="remState">puoi anche non darne</span></div>
+    <button class="send" id="sendBtn">Invia il mio feedback</button>
+    <div class="hint">puoi anche non assegnarne nessuno, se non ti è piaciuta · un voto per dispositivo</div>
+    <button class="alt hidden" id="voteManual">vota un'altra classe o app</button>
   </div>
 
   <!-- STATO: grazie + mix classe -->
@@ -180,6 +186,23 @@ body{
       <div class="small" id="tSub">Ecco come ha votato la tua classe oggi.</div>
     </div>
     <div id="mix"></div>
+  </div>
+
+  <!-- STATO: modalità libera (scegli classe + app) -->
+  <div id="pickView" class="hidden">
+    <div class="micro"><span class="led"></span> Feedback // scegli tu</div>
+    <h1 class="cls" style="font-size:1.55rem;">Vota una lezione</h1>
+    <div class="clssub">Indica la classe e l'app di cui vuoi dare un parere</div>
+
+    <div class="zhead">La tua classe<span class="ln"></span></div>
+    <select id="pickClass" class="pick-sel"><option value="">— scegli la classe —</option></select>
+
+    <div class="zhead">L'app / lezione<span class="ln"></span></div>
+    <select id="pickApp" class="pick-sel"><option value="">— prima scegli la classe —</option></select>
+    <input id="pickAppText" class="pick-txt hidden" placeholder="Scrivi il nome dell'app">
+
+    <button class="send" id="pickGo" style="margin-top:18px;">Continua</button>
+    <button class="alt" id="pickBack">torna indietro</button>
   </div>
 
    </div><!-- /col-left -->
@@ -262,7 +285,12 @@ body{
     catch(e){ v='d'+Date.now(); }
     return v;
   }
-  function nonceFor(l){ return l.classe_id+'|'+l.iso+'|'+l.from+'-'+l.to+'|'+deviceId(); }
+  function nonceFor(l){ return l.classe_id+'|'+l.iso+'|'+(l.slot||'')+'|'+deviceId(); }
+  var allRows = null;   // righe del registro (list), cacheate per dedurre/elencare le app
+  function getRows(){
+    if(allRows) return Promise.resolve(allRows);
+    return jsonp({action:'list'}).then(function(r){ allRows=(r&&r.ok&&r.rows)?r.rows:[]; return allRows; });
+  }
   function alreadyVoted(n){ try{ return (localStorage.getItem('acerio_fb_voted')||'').indexOf(n) >= 0; }catch(e){ return false; } }
   function markVoted(n){ try{ var p=localStorage.getItem('acerio_fb_voted')||''; localStorage.setItem('acerio_fb_voted', p+'\n'+n); }catch(e){} }
 
@@ -293,33 +321,42 @@ body{
     for(var i=0;i<slots.length;i++){
       var s=slots[i], a=toMin(s.from), b=toMin(s.to);
       if(cur>=a && cur < b+GRACE_MIN){
-        return { classe_id:s.id, label:classeLabel(s.id), from:s.from, to:s.to, giorno:now.giorno, iso:now.iso };
+        return { classe_id:s.id, label:classeLabel(s.id), from:s.from, to:s.to, slot:s.from+'-'+s.to, giorno:now.giorno, iso:now.iso };
       }
     }
     return null;
   }
 
   /* ===== VOTO ===== */
-  function startVote(l){
+  function startVote(l, manual){
+    alloc = {servito:0, preso:0, ricordo:0};
     $('vClasse').textContent = l.label;
-    var gg = ['','Lun','Mar','Mer','Gio','Ven','Sab','Dom'][l.giorno]||'';
-    $('vMeta').textContent = (gg+' · '+l.from+'–'+l.to).toUpperCase();
+    if(manual){
+      $('vMeta').textContent = ('Lezione: ' + (lezioneTitolo||'—')).toUpperCase();
+    } else {
+      var gg = ['','Lun','Mar','Mer','Gio','Ven','Sab','Dom'][l.giorno]||'';
+      $('vMeta').textContent = (gg+' · '+l.from+'–'+l.to).toUpperCase();
+    }
     buildCats();
-    show('voteView');
-    // in parallelo, prova a dedurre il titolo-lezione dall'ultima app aperta oggi da quella classe
-    jsonp({action:'list'}).then(function(r){
-      if(!r||!r.ok||!r.rows) return;
-      var best=null;
-      for(var i=0;i<r.rows.length;i++){
-        var row=r.rows[i];
-        if(String(row.classe_id)!==l.classe_id) continue;
-        var d=String(row.data||''); if(d.slice(0,10)!==l.iso) continue;
-        best=row; // l'ultima in ordine di foglio
-      }
-      if(best){ lezioneTitolo = cleanTitle(best.webapp_titolo); lezioneUrl = best.webapp_url||''; renderBoards(null); }
-    }).catch(function(){});
+    hide('noLesson'); hide('thanks'); hide('pickView'); show('voteView');
+    var vm=$('voteManual'); if(vm) vm.classList.remove('hidden');
+    renderBoards(null); // in manual il titolo è già noto → esclusione anti-ancoraggio subito attiva
+    if(!manual){
+      // deduci il titolo-lezione dall'ultima app aperta oggi da quella classe
+      getRows().then(function(rows){
+        var best=null;
+        for(var i=0;i<rows.length;i++){
+          var row=rows[i];
+          if(String(row.classe_id)!==l.classe_id) continue;
+          if(String(row.data||'').slice(0,10)!==l.iso) continue;
+          best=row;
+        }
+        if(best){ lezioneTitolo=cleanTitle(best.webapp_titolo); lezioneUrl=best.webapp_url||''; renderBoards(null); }
+      }).catch(function(){});
+    }
   }
-  function cleanTitle(t){ return String(t||'').replace(/\s*[A-Z]$/,'').trim(); }
+  // i titoli del registro finiscono con un badge: [NEW]+lettera-cluster DPIA (es. "Word GamesD", "…Casate NEWD")
+  function cleanTitle(t){ return String(t||'').replace(/\s*(?:NEW)?\s*[A-Z]\s*$/,'').trim(); }
 
   function buildCats(){
     var html='';
@@ -354,14 +391,15 @@ body{
       var minus=$('cats').querySelector('.btn-pm[data-op="minus"][data-k="'+k+'"]');
       plus.disabled = remaining()<=0; minus.disabled = v<=0;
     }
-    var rem=remaining();
+    var rem=remaining(), used=TOKENS-rem;
     $('rem').textContent=rem;
-    $('remState').textContent = rem===0 ? 'pronto da inviare' : (rem===TOKENS ? 'assegnali tutti' : 'ne restano '+rem);
-    $('sendBtn').disabled = rem!==0;
+    $('remState').textContent = used===0 ? 'puoi anche non darne' : (rem===0 ? 'tutti assegnati' : 'ne restano '+rem);
+    $('sendBtn').disabled=false;
+    $('sendBtn').textContent = used===0 ? 'Non mi ha convinto · invia' : 'Invia il mio feedback';
   }
 
   $('sendBtn').addEventListener('click', function(){
-    if(remaining()!==0 || !lesson) return;
+    if(!lesson) return;
     var btn=$('sendBtn'); btn.disabled=true; btn.textContent='Invio…';
     var n=nonceFor(lesson);
     jsonp({ action:'fb_save', classe_id:lesson.classe_id, classe_label:lesson.label,
@@ -369,9 +407,9 @@ body{
             lezione:lezioneTitolo, webapp_url:lezioneUrl, nonce:n })
       .then(function(r){
         if(r&&r.ok){ markVoted(n); afterVote(lesson, false); }
-        else { btn.disabled=false; btn.textContent='Invia il mio feedback'; alert((r&&r.error)||'Invio non riuscito, riprova.'); }
+        else { paint(); alert((r&&r.error)||'Invio non riuscito, riprova.'); }
       })
-      .catch(function(){ btn.disabled=false; btn.textContent='Invia il mio feedback'; alert('Niente rete, riprova.'); });
+      .catch(function(){ paint(); alert('Niente rete, riprova.'); });
   });
 
   /* ===== DOPO IL VOTO ===== */
@@ -442,25 +480,65 @@ body{
     $('boards').innerHTML=html;
   }
 
-  /* ===== OVERRIDE MANUALE CLASSE ===== */
-  function manualPick(){
-    var opts=[]; var labels=[];
-    for(var i=0;i<PRIMARIA.length;i++){ opts.push('PRIM_'+PRIMARIA[i]); labels.push(PRIMARIA[i]+' Primaria'); }
-    for(var k=0;k<SECONDARIA.length;k++){ opts.push('SEC_'+SECONDARIA[k]); labels.push(SECONDARIA[k]+' Secondaria'); }
-    var msg='Scrivi il numero della tua classe:\n';
-    for(var j=0;j<labels.length;j++){ msg+=(j+1)+') '+labels[j]+'\n'; }
-    var ans=prompt(msg); if(!ans) return;
-    var n=parseInt(ans,10); if(isNaN(n)||n<1||n>opts.length){ alert('Numero non valido.'); return; }
-    var now=nowRome();
-    lesson={ classe_id:opts[n-1], label:labels[n-1], from:'manual', to:'manual', giorno:now.giorno, iso:now.iso };
-    hide('noLesson'); hide('thanks');
-    var nn=nonceFor(lesson);
-    if(alreadyVoted(nn)){ afterVote(lesson,true); return; }
-    alloc={servito:0,preso:0,ricordo:0};
-    startVote(lesson);
+  /* ===== MODALITÀ LIBERA: scegli classe + app (anche fuori dall'ora) ===== */
+  var pickReturn = 'noLesson';
+  function fillClassSelect(){
+    var sel=$('pickClass');
+    if(sel._filled) return; sel._filled=true;
+    var html='<option value="">— scegli la classe —</option>';
+    for(var i=0;i<PRIMARIA.length;i++){ html+='<option value="PRIM_'+PRIMARIA[i]+'">'+PRIMARIA[i]+' Primaria</option>'; }
+    for(var k=0;k<SECONDARIA.length;k++){ html+='<option value="SEC_'+SECONDARIA[k]+'">'+SECONDARIA[k]+' Secondaria</option>'; }
+    sel.innerHTML=html;
+    sel.addEventListener('change', onPickClass);
+    $('pickApp').addEventListener('change', function(){
+      $('pickAppText').classList.toggle('hidden', this.value!=='__ALTRA__');
+      if(this.value==='__ALTRA__') $('pickAppText').focus();
+    });
   }
-  $('noLessonManual').addEventListener('click', manualPick);
-  $('voteManual').addEventListener('click', manualPick);
+  function showPicker(){
+    pickReturn = !$('voteView').classList.contains('hidden') ? 'voteView' : 'noLesson';
+    fillClassSelect();
+    $('pickClass').value='';
+    $('pickApp').innerHTML='<option value="">— prima scegli la classe —</option>';
+    $('pickAppText').classList.add('hidden'); $('pickAppText').value='';
+    hide('noLesson'); hide('voteView'); hide('thanks'); show('pickView');
+  }
+  function onPickClass(){
+    var cid=$('pickClass').value, ap=$('pickApp');
+    $('pickAppText').classList.add('hidden');
+    if(!cid){ ap.innerHTML='<option value="">— prima scegli la classe —</option>'; return; }
+    ap.innerHTML='<option value="">caricamento…</option>';
+    getRows().then(function(rows){
+      var seen={}, opts='<option value="">— scegli l\'app —</option>';
+      for(var i=rows.length-1;i>=0;i--){               // più recenti prima
+        var r=rows[i]; if(String(r.classe_id)!==cid) continue;
+        var t=cleanTitle(r.webapp_titolo); if(!t||seen.hasOwnProperty(t)) continue;
+        seen[t]=r.webapp_url||'';
+        opts+='<option value="'+esc(t)+'" data-url="'+esc(seen[t])+'">'+esc(t)+'</option>';
+      }
+      opts+='<option value="__ALTRA__">— altra app (scrivi) —</option>';
+      ap.innerHTML=opts;
+    }).catch(function(){ ap.innerHTML='<option value="">—</option><option value="__ALTRA__">scrivi l\'app</option>'; });
+  }
+  function pickGo(){
+    var cid=$('pickClass').value;
+    if(!cid){ alert('Scegli la classe.'); return; }
+    var ap=$('pickApp'), v=ap.value, title='', url='';
+    if(v==='__ALTRA__'){ title=($('pickAppText').value||'').trim(); }
+    else if(v){ title=v; var o=ap.options[ap.selectedIndex]; url=o?(o.getAttribute('data-url')||''):''; }
+    if(!title){ alert('Indica l\'app / lezione.'); return; }
+    var now=nowRome();
+    lezioneTitolo=title; lezioneUrl=url;
+    lesson={ classe_id:cid, label:classeLabel(cid), slot:'app:'+title, giorno:now.giorno, iso:now.iso };
+    var n=nonceFor(lesson);
+    if(alreadyVoted(n)){ afterVote(lesson,true); return; }
+    startVote(lesson, true);
+  }
+  function pickBack(){ hide('pickView'); show(pickReturn); }
+  $('noLessonManual').addEventListener('click', showPicker);
+  $('voteManual').addEventListener('click', showPicker);
+  $('pickGo').addEventListener('click', pickGo);
+  $('pickBack').addEventListener('click', pickBack);
 
   boot();
 })();
