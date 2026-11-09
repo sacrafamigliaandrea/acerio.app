@@ -167,23 +167,17 @@
         .card:nth-child(1) { animation-delay: .45s; } .card:nth-child(2) { animation-delay: .52s; }
         .card:nth-child(3) { animation-delay: .59s; } .card:nth-child(4) { animation-delay: .66s; }
         .card:nth-child(5) { animation-delay: .73s; } .card:nth-child(6) { animation-delay: .8s; }
-        /* ═══ Andrea seduto sul bordo destro: compare al tocco dell'intestazione ═══ */
-        .card-head{ cursor:pointer; }
-        .mascot-hint{ margin-left:.4rem; flex-shrink:0; width:30px; height:30px; border-radius:50%;
-            display:flex; align-items:center; justify-content:center; background:var(--card-color-bg);
-            color:var(--card-color); border:1.5px solid transparent; transition:all .25s ease; }
-        .mascot-hint .ti{ font-size:1rem; }
-        .card-head:hover .mascot-hint{ border-color:var(--card-color-light, #e2e8f0); }
-        .card.mascot-open .mascot-hint{ background:var(--card-color); color:#fff; }
+        /* ═══ Andrea seduto sulla linea dell'intestazione, sempre visibile ═══ */
+        .card-head{ position:relative; }
         .card-mascot{
-            position:absolute; right:-4px; bottom:0; z-index:3;
-            height:150px; width:auto; pointer-events:none;
-            opacity:0; visibility:hidden; transform:scaleX(-1) translateY(20px);
-            transition:opacity .4s ease, transform .5s cubic-bezier(.16,1,.3,1), visibility .4s;
-            filter:drop-shadow(0 6px 9px rgba(13,30,20,.16));
+            position:absolute; right:2px; bottom:-30px; z-index:3;
+            height:104px; width:auto; pointer-events:none;
+            transform:scaleX(-1);
+            filter:drop-shadow(0 7px 10px rgba(13,30,20,.18));
+            animation:mascotRise .6s cubic-bezier(.16,1,.3,1) both; animation-delay:.3s;
         }
-        .card.mascot-open .card-mascot{ opacity:1; visibility:visible; transform:scaleX(-1) translateY(0); }
-        @media (prefers-reduced-motion: reduce){ .card-mascot{ transition:none; } }
+        @keyframes mascotRise{ from{opacity:0; transform:scaleX(-1) translateY(16px);} to{opacity:1; transform:scaleX(-1) translateY(0);} }
+        @media (prefers-reduced-motion: reduce){ .card-mascot{ animation:none; } }
 
         .card-head { padding: 1.3rem 1.4rem .6rem; display: flex; align-items: center; gap: .8rem; }
         .card-emoji { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: var(--card-color-bg); transition: transform .3s cubic-bezier(.175,.885,.32,1.275); flex-shrink: 0; }
@@ -2109,29 +2103,12 @@
   });
 })();
 
-  /* ── Andrea-assistente: si appoggia al bordo destro al tocco dell'intestazione ── */
+  /* ── Andrea-assistente: ancorato alla linea dell'intestazione, sempre visibile ── */
   (function(){
     document.querySelectorAll('.grid .card').forEach(function(card){
       var head = card.querySelector('.card-head');
       var mascot = card.querySelector('.card-mascot');
-      if(!head || !mascot) return;
-      var hint = document.createElement('span');
-      hint.className = 'mascot-hint';
-      hint.setAttribute('aria-hidden','true');
-      hint.innerHTML = '<i class="ti ti-user"></i>';
-      head.appendChild(hint);
-      head.setAttribute('role','button');
-      head.setAttribute('tabindex','0');
-      head.setAttribute('aria-pressed','false');
-      head.setAttribute('aria-label','Mostra o nascondi Andrea');
-      function toggle(){
-        var open = card.classList.toggle('mascot-open');
-        head.setAttribute('aria-pressed', open ? 'true' : 'false');
-      }
-      head.addEventListener('click', toggle);
-      head.addEventListener('keydown', function(e){
-        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
-      });
+      if(head && mascot) head.appendChild(mascot); /* ancora il mascot al bordo inferiore dell'intestazione (la linea grigia) */
     });
   })();
 </script>
