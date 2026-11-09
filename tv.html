@@ -236,6 +236,32 @@ body.inattivo, body.inattivo * { cursor: none !important; }
 .esito.ok { color: #8CF5B5; border-color: rgba(140,245,181,.7); }
 .esito.attenzione { color: #FFC266; border-color: rgba(255,194,102,.8); }
 .esito.info { color: rgba(255,255,255,.7); border-color: rgba(255,255,255,.35); }
+
+/* ---------- OPEN DAY: schermo diviso 30 : 70 (classe "openday" sul body) ---------- */
+.tv-od-titolo, .tv-od-firma, .tv-od-pannello { display: none; }
+body.openday .tv-sx { width: 30%; padding: 6rem 3rem 6rem 7rem; }
+body.openday .tv-sx .tv-micro { margin-bottom: 1.6rem; }
+body.openday .tv-od-titolo { display: block; font-size: 10.5rem; font-weight: 800; line-height: .9; letter-spacing: -.03em; margin: 0 0 5rem -.04em;
+  text-shadow: 0 0 .04em rgba(255,255,255,.6), 0 .03em .08em rgba(120,45,0,.3); }
+body.openday .tv-od-titolo span { display: block; color: #2B1100; text-shadow: none; }
+body.openday .tv-ora { font-size: 15rem; }
+body.openday .tv-secondi { margin-top: 2.6rem; }
+body.openday .tv-righello { margin-right: 1.6rem; }
+body.openday .tv-sec { width: 4.4rem; font-size: 2.8rem; }
+body.openday .tv-data { margin-top: 4rem; }
+body.openday .tv-giorno { font-size: 5.4rem; }
+body.openday .tv-data-estesa { font-size: 3.4rem; }
+body.openday .tv-stato { display: none; }
+body.openday .tv-od-firma { display: block; position: absolute; left: 7rem; right: 3rem; bottom: 6rem; font-size: 2.4rem; font-weight: 600; line-height: 1.3; color: rgba(255,255,255,.92); }
+body.openday .tv-od-firma b { display: block; font-size: 2.8rem; font-weight: 800; color: #fff; }
+body.openday .tv-divisore { margin: 9rem 0; }
+body.openday .tv-dx { display: none; }
+body.openday .tv-od-pannello { display: block; position: relative; -webkit-flex: 1; flex: 1; min-width: 0; }
+.tv-od-cornice {
+  position: absolute; top: 3.2rem; right: 3.2rem; bottom: 3.2rem; left: 3.2rem; overflow: hidden; border-radius: 2rem; background: #05070f;
+  box-shadow: 0 0 0 .3rem rgba(255,255,255,.6), 0 0 4rem rgba(255,255,255,.45), 0 0 12rem rgba(255,235,210,.35);
+}
+.tv-od-cornice iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; display: block; background: #05070f; }
 </style>
 </head>
 <body>
@@ -262,7 +288,8 @@ body.inattivo, body.inattivo * { cursor: none !important; }
   <div class="tv-stage" id="stage">
     <div class="tv-cornici"></div>
     <section class="tv-sx">
-      <div class="tv-micro"><span class="tv-led"></span>Ora</div>
+      <div class="tv-micro"><span class="tv-led"></span><span id="microSx">Ora</span></div>
+      <div class="tv-od-titolo">Open<span>Day</span></div>
       <div class="tv-ora"><span id="hh">--</span><span class="tv-dp">:</span><span id="mm">--</span></div>
       <div class="tv-secondi">
         <div class="tv-righello"><div class="tv-raggio" id="raggio"></div></div>
@@ -277,6 +304,7 @@ body.inattivo, body.inattivo * { cursor: none !important; }
         <span class="tv-voce" id="statoSync"></span>
         <span class="tv-voce warn vuota" id="statoSim"></span>
       </div>
+      <div class="tv-od-firma"><b>Scuola Sacra Famiglia</b>Orzinuovi</div>
     </section>
     <div class="tv-divisore"></div>
     <section class="tv-dx">
@@ -292,6 +320,9 @@ body.inattivo, body.inattivo * { cursor: none !important; }
         <div class="tv-msg-titolo" id="msgTitolo"></div>
         <div class="tv-msg-sub" id="msgSub"></div>
       </div>
+    </section>
+    <section class="tv-od-pannello" id="odPannello">
+      <div class="tv-od-cornice"><iframe id="odFrame" title="Galassia" allow="autoplay; fullscreen 'none'" scrolling="no"></iframe></div>
     </section>
   </div>
 </div>
@@ -324,7 +355,7 @@ body.inattivo, body.inattivo * { cursor: none !important; }
   /* ===========================================================================
      CONFIGURAZIONE
      =========================================================================== */
-  var VERSIONE = '1.0 · 15/10/2026';
+  var VERSIONE = '1.2 · 09/11/2026 · Open Day';
   // App web del foglio "Orario lezioni": qui si usa SOLO la lettura (azione=leggi), nessuna chiave.
   var ORARIO_ENDPOINT = 'https://script.google.com/macros/s/AKfycby5MtvFxnvEK2faMzEKSJ1Zm4w_I2NUGTX8E_zWvWt-Fte2gao95zMcJMda5uHkcEe0dA/exec';
   var INTERVALLO = { from: '10:40', to: '10:55' };   // fisso per tutta la scuola
@@ -350,6 +381,15 @@ body.inattivo, body.inattivo * { cursor: none !important; }
     muto:     [77, 405, 51, 99],   // M · giallo · 3
     schermo:  [70, 406, 52, 100],  // F · blu · 4
     diag:     [68, 48, 96]         // D · 0
+  };
+  // Giornate speciali: al posto delle lezioni, schermo 30:70 con orologio "Open Day" e galassia in loop.
+  // Ora italiana (come il resto della pagina). Test: tv.html?openday=1 (forza) · ?openday=0 (spegne)
+  //   oppure simulando la data: tv.html?data=2026-11-14&ora=10:00
+  var OPEN_DAY = {
+    giorni: [ { data: '2026-11-14', from: '00:00', to: '23:59' } ],
+    src: 'galassia.html',     // stesso dominio di tv.html: niente blocchi cross-origin
+    ricaricaMin: 12,          // paracadute del loop: riparte ogni N minuti (0 = solo segnale di fine)
+    fineMsg: 'galassia:end'   // postMessage che galassia.html invia alla fine per ripartire subito
   };
   var CHIAVE_CACHE = 'tv_orario_v1', CHIAVE_MUTO = 'tv_muto';
   var GIORNI = ['domenica', 'lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato'];
@@ -724,6 +764,55 @@ body.inattivo, body.inattivo * { cursor: none !important; }
   }
 
   /* ===========================================================================
+     OPEN DAY: override programmato della schermata lezioni
+     =========================================================================== */
+  var openDay = false, odTimer = null, odAvvii = 0, odUltimoAvvio = null, odHaAttivato = false;
+  function openDayDel(now) {
+    var f = param('openday');
+    if (f === '1') return true;
+    if (f === '0') return false;
+    var chiave = ymd(now), t = pad(now.getUTCHours()) + ':' + pad(now.getUTCMinutes());
+    return !!trova(OPEN_DAY.giorni, function (g) { return g.data === chiave && t >= g.from && t <= g.to; });
+  }
+  function avviaGalassia() {
+    var src = OPEN_DAY.src;
+    $('odFrame').src = src + (src.indexOf('?') >= 0 ? '&' : '?') + 'tv=1&t=' + new Date().getTime(); // riparte dall'inizio
+    odAvvii++; odUltimoAvvio = adessoReale();
+    clearInterval(odTimer);
+    if (OPEN_DAY.ricaricaMin > 0) odTimer = setInterval(avviaGalassia, OPEN_DAY.ricaricaMin * 60000);
+  }
+  function applicaOpenDay(on) {
+    openDay = on;
+    classe(document.body, 'openday', on);
+    setTesto($('microSx'), on ? 'Benvenuti' : 'Ora');
+    if (on) {
+      avviaGalassia();
+      if (!attivato) { attiva(true); odHaAttivato = true; } // niente schermata "premi OK": oggi la campanella non serve
+    } else {
+      // Se la schermata OK l'ha tolta l'Open Day e l'audio non è mai stato sbloccato, la ripropongo:
+      // altrimenti al rientro la campanella resterebbe muta senza modo di attivarla con OK
+      if (odHaAttivato && audio.stato !== 'attivo') { attivato = false; classe($('attiva'), 'via', false); aggiornaStato(); }
+      odHaAttivato = false;
+      clearInterval(odTimer);
+      $('odFrame').src = 'about:blank'; // libera GPU e memoria del TV
+      firma = '';                        // ridisegna la scaletta al ritorno
+    }
+  }
+  // Paracadute: se un browser lascia comunque andare l'iframe a schermo intero, lo riporto nel riquadro
+  function odFuoriDaFs() {
+    var el = fsElemento();
+    if (openDay && el && el.id === 'odFrame') {
+      try { var x = document.exitFullscreen || document.webkitExitFullscreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || document.msExitFullscreen; if (x) x.call(document); } catch (e) {}
+    }
+  }
+  var evFs = ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'];
+  for (var iFs = 0; iFs < evFs.length; iFs++) document.addEventListener(evFs[iFs], odFuoriDaFs, false);
+  window.addEventListener('message', function (e) {
+    var d = e && e.data;
+    if (openDay && (d === OPEN_DAY.fineMsg || (d && d.type === OPEN_DAY.fineMsg))) avviaGalassia();
+  }, false);
+
+  /* ===========================================================================
      DISEGNO
      =========================================================================== */
   var firma = '', giornoPrec = '', secPrec = null, fuocoIdx = -1, suonate = {};
@@ -872,6 +961,10 @@ body.inattivo, body.inattivo * { cursor: none !important; }
     setTesto($('giorno'), cap(GIORNI[now.getUTCDay()]));
     setTesto($('dataEstesa'), now.getUTCDate() + ' ' + MESI[now.getUTCMonth()] + ' ' + now.getUTCFullYear());
 
+    var od = openDayDel(now);
+    if (od !== openDay) applicaOpenDay(od);
+    if (openDay) { secPrec = null; if (diagAperta) disegnaDiag(); return; } // niente scaletta né campanella
+
     var chiave = ymd(now);
     if (chiave !== giornoPrec) { giornoPrec = chiave; secPrec = null; }
     var righe = scalettaDel(now), f = chiave + JSON.stringify(righe);
@@ -916,6 +1009,7 @@ body.inattivo, body.inattivo * { cursor: none !important; }
     r.push(['Font', font, font === 'Manrope caricato' ? 'ok' : 'info']);
     r.push(['Web Audio API', (window.AudioContext || window.webkitAudioContext) ? 'presente (non necessaria)' : 'assente (non necessaria: la campanella è un file WAV)', 'info']);
     r.push(['Blocco standby', navigator.wakeLock ? 'Wake Lock disponibile' + (wake ? ' e attivo' : '') : 'non disponibile: disattiva lo spegnimento automatico nelle impostazioni del TV', navigator.wakeLock ? 'ok' : 'info']);
+    r.push(['Open Day', openDay ? 'attivo · galassia avviata ' + odAvvii + ' volte, ultima alle ' + pad(odUltimoAvvio.getUTCHours()) + ':' + pad(odUltimoAvvio.getUTCMinutes()) + (OPEN_DAY.ricaricaMin ? ' · ripartenza ogni ' + OPEN_DAY.ricaricaMin + ' min' : '') : 'programmato: ' + (function () { var a = []; for (var i = 0; i < OPEN_DAY.giorni.length; i++) a.push(OPEN_DAY.giorni[i].data + ' ' + OPEN_DAY.giorni[i].from + '–' + OPEN_DAY.giorni[i].to); return a.join(', '); })(), openDay ? 'ok' : 'info']);
     r.push(['Ultimo tasto premuto', ultimoTasto, 'info']);
     r.push(['Versione pagina', VERSIONE + (sim ? ' · SIMULAZIONE attiva' : ''), 'info']);
     return r;
@@ -954,7 +1048,7 @@ body.inattivo, body.inattivo * { cursor: none !important; }
     if (contiene(TASTI.prova, k)) { if (audio.stato !== 'attivo' && serveSblocco()) sbloccaAudio(); suona(audio.tre); if (fuocoIdx >= 0) evidenzia(fuocoIdx); }
     else if (contiene(TASTI.muto, k)) { muto = !muto; scriviLS(CHIAVE_MUTO, muto ? '1' : '0'); if (!muto && audio.stato !== 'attivo' && serveSblocco()) sbloccaAudio(); aggiornaStato(); }
     else if (contiene(TASTI.schermo, k)) schermoIntero();
-    else if (contiene(TASTI.aggiorna, k)) caricaFoglio();
+    else if (contiene(TASTI.aggiorna, k)) { if (openDay) avviaGalassia(); else caricaFoglio(); }
     else if (contiene(TASTI.diag, k)) mostraDiag(!diagAperta);
     else usato = false;
     if (diagAperta) disegnaDiag();
