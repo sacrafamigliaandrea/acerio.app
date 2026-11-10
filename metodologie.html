@@ -533,6 +533,15 @@
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: #c5cfb0; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #9aab7d; }
+        /* ═══ IN UN MINUTO: presentazione incorporata ═══
+           galassia-minuto.html è una pagina autonoma (stili e script propri): la incorporo in un iframe
+           per non mescolare CSS e JS con questa pagina. Ha bisogno della cartella galassia-clips/ accanto. */
+        .minuto { max-width: 1200px; margin: 1.1rem auto 0; padding: 0 2rem; }
+        .minuto-frame { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden; background: #04120C; box-shadow: var(--shadow-card); }
+        .minuto-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+        .minuto-link { display: inline-flex; align-items: center; gap: .4rem; margin-top: .7rem; font-size: .88rem; font-weight: 800; color: #1a535c; text-decoration: none; }
+        .minuto-link:hover { text-decoration: underline; }
+        @media (max-width: 700px) { .minuto { padding-left: 1.25rem; padding-right: 1.25rem; } }
     </style>
 </head>
 <body>
@@ -552,6 +561,21 @@
             <a href="index.html" class="back-btn">← Torna al Portale</a>
         </div>
     </header>
+
+    <!-- ═══ IN UN MINUTO: il percorso raccontato dalle web app didattiche ═══ -->
+    <div class="section-title" id="in-un-minuto"><h2><i class="ti ti-player-play"></i>In un minuto</h2><div class="section-line"></div></div>
+
+    <p class="autori-intro">
+        Dai primi tasti allo sguardo critico: le web app didattiche del laboratorio seguono la <b>crescita dello studente</b>.
+        Poco più di un minuto, senza audio, per vedere le metodologie al lavoro.
+    </p>
+
+    <section class="minuto">
+        <div class="minuto-frame">
+            <iframe src="galassia-minuto.html" title="Le web app didattiche in un minuto" loading="lazy" allow="fullscreen; autoplay" allowfullscreen></iframe>
+        </div>
+        <a class="minuto-link" href="galassia-minuto.html"><i class="ti ti-maximize"></i>Apri a tutto schermo</a>
+    </section>
 
     <!-- ═══ DESIGN ETICO: DOPO IL PROCESSO AI SOCIAL ═══ -->
     <div class="section-title" id="design-etico"><h2><i class="ti ti-scale"></i>Design Etico</h2><div class="section-line"></div></div>
