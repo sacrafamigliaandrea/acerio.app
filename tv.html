@@ -355,7 +355,7 @@ body.openday .tv-od-pannello { display: block; position: relative; -webkit-flex:
   /* ===========================================================================
      CONFIGURAZIONE
      =========================================================================== */
-  var VERSIONE = '1.2 · 09/11/2026 · Open Day';
+  var VERSIONE = '1.3 · 14/11/2026 · Open Day autoavvio';
   // App web del foglio "Orario lezioni": qui si usa SOLO la lettura (azione=leggi), nessuna chiave.
   var ORARIO_ENDPOINT = 'https://script.google.com/macros/s/AKfycby5MtvFxnvEK2faMzEKSJ1Zm4w_I2NUGTX8E_zWvWt-Fte2gao95zMcJMda5uHkcEe0dA/exec';
   var INTERVALLO = { from: '10:40', to: '10:55' };   // fisso per tutta la scuola
@@ -388,7 +388,8 @@ body.openday .tv-od-pannello { display: block; position: relative; -webkit-flex:
   var OPEN_DAY = {
     giorni: [ { data: '2026-11-14', from: '00:00', to: '23:59' } ],
     src: 'galassia.html',     // stesso dominio di tv.html: niente blocchi cross-origin
-    ricaricaMin: 12,          // paracadute del loop: riparte ogni N minuti (0 = solo segnale di fine)
+    ricaricaMin: 0,           // 0 = mai: la galassia si ripete già da sola (ogni ricarica farebbe ricomparire "Accendi")
+    testoAvvio: 'accendi',    // testo del pulsante di avvio che tv.html preme da sola
     fineMsg: 'galassia:end'   // postMessage che galassia.html invia alla fine per ripartire subito
   };
   var CHIAVE_CACHE = 'tv_orario_v1', CHIAVE_MUTO = 'tv_muto';
@@ -766,7 +767,73 @@ body.openday .tv-od-pannello { display: block; position: relative; -webkit-flex:
   /* ===========================================================================
      OPEN DAY: override programmato della schermata lezioni
      =========================================================================== */
-  var openDay = false, odTimer = null, odAvvii = 0, odUltimoAvvio = null, odHaAttivato = false;
+  var openDay = false, odTimer = null, odAvvii = 0, odUltimoAvvio = null, odHaAttivato = false, odStato = '-', odClic = 0;
+
+  /* Autoavvio: tv.html e galassia.html stanno sullo stesso dominio, quindi la pagina può
+     "entrare" nell'iframe, neutralizzare schermo intero e audio bloccato, e premere "Accendi".
+     Un controllo ogni 3 s ripreme il pulsante se la galassia torna alla schermata iniziale. */
+  function odDoc() {
+    try { var w = $('odFrame').contentWindow; return w && w.document && w.document.body ? w : null; }
+    catch (e) { odStato = 'altro dominio: autoavvio impossibile'; return null; }
+  }
+  function odPrepara(w) {
+    if (w.__odPronta) return;
+    w.__odPronta = true;
+    var nulla = function () { return { then: function (ok) { if (ok) ok(); return this; }, 'catch': function () { return this; } }; };
+    var E = w.Element && w.Element.prototype;
+    if (E) { E.requestFullscreen = nulla; E.webkitRequestFullscreen = nulla; E.webkitRequestFullScreen = nulla; E.mozRequestFullScreen = nulla; E.msRequestFullscreen = nulla; }
+    // audio: senza un tasto premuto il TV lo blocca e play() fallirebbe, interrompendo l'avvio → parte muto
+    var M = w.HTMLMediaElement && w.HTMLMediaElement.prototype;
+    var AC = w.AudioContext || w.webkitAudioContext;
+    if (AC && AC.prototype && AC.prototype.resume) { var res = AC.prototype.resume; AC.prototype.resume = function () { try { var p = res.apply(this, arguments); return (p && p.then) ? p.then(null, function () {}) : nulla(); } catch (e) { return nulla(); } }; }
+    if (M && M.play) {
+      var play = M.play;
+      // risponde sempre "ok": se il TV rifiuta l'audio, la galassia prosegue comunque (muta)
+      M.play = function () { this.muted = true; try { var p = play.apply(this, arguments); return (p && p.then) ? p.then(null, function () {}) : nulla(); } catch (e) { return nulla(); } };
+    }
+  }
+  function odVisibile(w, el) {
+    var r = el.getBoundingClientRect();
+    if (!(r.width > 0 && r.height > 0)) return false;
+    for (var n = el; n && n.nodeType === 1; n = n.parentNode) {
+      var cs = w.getComputedStyle(n);
+      if (cs.display === 'none' || cs.visibility === 'hidden' || parseFloat(cs.opacity) < 0.05) return false;
+    }
+    return true;
+  }
+  function odPulsante(w) {
+    var tutti = w.document.querySelectorAll('button, [role="button"], a, [onclick], [tabindex], div, span'), best = null, i;
+    for (i = 0; i < tutti.length; i++) {
+      var el = tutti[i], t = (el.textContent || '').toLowerCase();
+      if (t.indexOf(OPEN_DAY.testoAvvio) < 0 || t.length > 120 || !odVisibile(w, el)) continue;
+      if (!best || t.length < (best.textContent || '').length) best = el;   // l'elemento più interno che contiene il testo
+    }
+    // risalgo al vero pulsante, se il testo sta in uno <span> dentro un <button>
+    for (var n = best; n && n.nodeType === 1; n = n.parentNode) if (/^(BUTTON|A)$/.test(n.tagName) || n.getAttribute('role') === 'button') return n;
+    return best;
+  }
+  function odPremi(w, el) {
+    odClic++;
+    var r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+    var tipi = ['pointerdown', 'mousedown', 'pointerup', 'mouseup'];
+    for (var i = 0; i < tipi.length; i++) {
+      var ev;
+      try { ev = new w.MouseEvent(tipi[i], { bubbles: true, cancelable: true, view: w, clientX: x, clientY: y }); }
+      catch (e) { ev = w.document.createEvent('MouseEvents'); ev.initMouseEvent(tipi[i], true, true, w, 1, x, y, x, y, false, false, false, false, 0, null); }
+      el.dispatchEvent(ev);
+    }
+    el.click();
+  }
+  function odControlla() {
+    if (!openDay) return;
+    var w = odDoc();
+    if (!w) return;
+    odPrepara(w);
+    var b = odPulsante(w);
+    if (b) { odPremi(w, b); odStato = 'pulsante premuto (' + odClic + ')'; }
+    else if (odStato === 'caricamento' || odStato.indexOf('pulsante') === 0) odStato = 'in riproduzione';
+  }
+  setInterval(odControlla, 3000);
   function openDayDel(now) {
     var f = param('openday');
     if (f === '1') return true;
@@ -777,7 +844,7 @@ body.openday .tv-od-pannello { display: block; position: relative; -webkit-flex:
   function avviaGalassia() {
     var src = OPEN_DAY.src;
     $('odFrame').src = src + (src.indexOf('?') >= 0 ? '&' : '?') + 'tv=1&t=' + new Date().getTime(); // riparte dall'inizio
-    odAvvii++; odUltimoAvvio = adessoReale();
+    odAvvii++; odUltimoAvvio = adessoReale(); odStato = 'caricamento';
     clearInterval(odTimer);
     if (OPEN_DAY.ricaricaMin > 0) odTimer = setInterval(avviaGalassia, OPEN_DAY.ricaricaMin * 60000);
   }
@@ -807,6 +874,11 @@ body.openday .tv-od-pannello { display: block; position: relative; -webkit-flex:
   }
   var evFs = ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'];
   for (var iFs = 0; iFs < evFs.length; iFs++) document.addEventListener(evFs[iFs], odFuoriDaFs, false);
+  $('odFrame').onload = function () {
+    if (!openDay) return;
+    var w = odDoc(); if (w) odPrepara(w);
+    setTimeout(odControlla, 800); setTimeout(odControlla, 2000);
+  };
   window.addEventListener('message', function (e) {
     var d = e && e.data;
     if (openDay && (d === OPEN_DAY.fineMsg || (d && d.type === OPEN_DAY.fineMsg))) avviaGalassia();
@@ -1009,7 +1081,7 @@ body.openday .tv-od-pannello { display: block; position: relative; -webkit-flex:
     r.push(['Font', font, font === 'Manrope caricato' ? 'ok' : 'info']);
     r.push(['Web Audio API', (window.AudioContext || window.webkitAudioContext) ? 'presente (non necessaria)' : 'assente (non necessaria: la campanella è un file WAV)', 'info']);
     r.push(['Blocco standby', navigator.wakeLock ? 'Wake Lock disponibile' + (wake ? ' e attivo' : '') : 'non disponibile: disattiva lo spegnimento automatico nelle impostazioni del TV', navigator.wakeLock ? 'ok' : 'info']);
-    r.push(['Open Day', openDay ? 'attivo · galassia avviata ' + odAvvii + ' volte, ultima alle ' + pad(odUltimoAvvio.getUTCHours()) + ':' + pad(odUltimoAvvio.getUTCMinutes()) + (OPEN_DAY.ricaricaMin ? ' · ripartenza ogni ' + OPEN_DAY.ricaricaMin + ' min' : '') : 'programmato: ' + (function () { var a = []; for (var i = 0; i < OPEN_DAY.giorni.length; i++) a.push(OPEN_DAY.giorni[i].data + ' ' + OPEN_DAY.giorni[i].from + '–' + OPEN_DAY.giorni[i].to); return a.join(', '); })(), openDay ? 'ok' : 'info']);
+    r.push(['Open Day', openDay ? 'attivo · ' + odStato + ' · galassia caricata ' + odAvvii + ' volte, ultima alle ' + pad(odUltimoAvvio.getUTCHours()) + ':' + pad(odUltimoAvvio.getUTCMinutes()) + (OPEN_DAY.ricaricaMin ? ' · ripartenza ogni ' + OPEN_DAY.ricaricaMin + ' min' : '') : 'programmato: ' + (function () { var a = []; for (var i = 0; i < OPEN_DAY.giorni.length; i++) a.push(OPEN_DAY.giorni[i].data + ' ' + OPEN_DAY.giorni[i].from + '–' + OPEN_DAY.giorni[i].to); return a.join(', '); })(), openDay ? 'ok' : 'info']);
     r.push(['Ultimo tasto premuto', ultimoTasto, 'info']);
     r.push(['Versione pagina', VERSIONE + (sim ? ' · SIMULAZIONE attiva' : ''), 'info']);
     return r;
